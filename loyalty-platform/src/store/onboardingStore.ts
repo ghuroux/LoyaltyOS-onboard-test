@@ -45,7 +45,7 @@ export interface Tier {
   threshold: number;
   color: string;
   benefits: string[];
-  earningMultiplier?: number;
+  earningRules: EarningRules;
 }
 
 export interface EarningRules {

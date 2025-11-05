@@ -3,8 +3,8 @@ import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
-import { useOnboardingStore, type Tier } from '../../store/onboardingStore';
-import { Star, DollarSign, Ticket, RefreshCw, Plus, Edit2, Trash2 } from 'lucide-react';
+import { useOnboardingStore, type Tier, type EarningRules } from '../../store/onboardingStore';
+import { Star, DollarSign, Ticket, RefreshCw, Plus, Edit2, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 
 const valueTypes = [
   { id: 'points', icon: Star, name: 'Points-Based', desc: 'Traditional points accumulation with flexible redemption options' },
@@ -28,6 +28,357 @@ const categoryOptions = [
   'Groceries', 'Electronics', 'Clothing', 'Dining', 'Entertainment', 'Travel', 'Health & Beauty', 'Home & Garden'
 ];
 
+const getDefaultEarningRules = (): EarningRules => ({
+  baseRate: { points: 1, spend: 1 },
+  categoryMultipliers: {},
+  behavioralBonuses: {
+    frequencyBonus: { enabled: false, visits: 3, points: 50 },
+    thresholdBonus: { enabled: false, spend: 100, points: 100 },
+    birthdayMultiplier: { enabled: false, multiplier: 2 },
+    firstPurchase: { enabled: false, points: 500 },
+  },
+});
+
+interface EarningRulesEditorProps {
+  rules: EarningRules;
+  onUpdate: (rules: Partial<EarningRules>) => void;
+  currency: string;
+}
+
+const EarningRulesEditor: React.FC<EarningRulesEditorProps> = ({ rules, onUpdate, currency }) => {
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('');
+  const [categoryMultiplier, setCategoryMultiplier] = useState(1);
+
+  const handleAddCategory = () => {
+    if (selectedCategory && categoryMultiplier) {
+      onUpdate({
+        categoryMultipliers: {
+          ...rules.categoryMultipliers,
+          [selectedCategory]: categoryMultiplier,
+        },
+      });
+      setSelectedCategory('');
+      setCategoryMultiplier(1);
+      setShowCategoryModal(false);
+    }
+  };
+
+  const handleRemoveCategory = (category: string) => {
+    const newMultipliers = { ...rules.categoryMultipliers };
+    delete newMultipliers[category];
+    onUpdate({ categoryMultipliers: newMultipliers });
+  };
+
+  return (
+    <div className="space-y-6">
+      {/* Base Rate */}
+      <div>
+        <label className="block font-semibold mb-3 text-sm">Base Earning Rate</label>
+        <div className="flex items-center gap-3">
+          <input
+            type="number"
+            value={rules.baseRate.points}
+            onChange={(e) => onUpdate({
+              baseRate: { ...rules.baseRate, points: parseInt(e.target.value) }
+            })}
+            className="px-3 py-2 border border-gray-300 rounded-lg w-24"
+          />
+          <span className="text-gray-600">points per</span>
+          <input
+            type="number"
+            value={rules.baseRate.spend}
+            onChange={(e) => onUpdate({
+              baseRate: { ...rules.baseRate, spend: parseInt(e.target.value) }
+            })}
+            className="px-3 py-2 border border-gray-300 rounded-lg w-24"
+          />
+          <span className="text-gray-600">{currency} spent</span>
+        </div>
+      </div>
+
+      {/* Category Multipliers */}
+      <div>
+        <div className="flex justify-between items-center mb-3">
+          <label className="block font-semibold text-sm">Category Multipliers</label>
+          <Button onClick={() => setShowCategoryModal(true)} size="sm" variant="secondary">
+            <Plus size={16} className="mr-1" />
+            Add Category
+          </Button>
+        </div>
+
+        {Object.keys(rules.categoryMultipliers).length > 0 ? (
+          <div className="space-y-2">
+            {Object.entries(rules.categoryMultipliers).map(([category, multiplier]) => (
+              <div key={category} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                <span className="text-sm font-medium text-gray-900">{category}</span>
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-gray-600">{multiplier}x multiplier</span>
+                  <button
+                    onClick={() => handleRemoveCategory(category)}
+                    className="text-gray-400 hover:text-red-600 transition-colors"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="p-4 bg-gray-50 rounded-lg text-sm text-gray-600 text-center">
+            No category multipliers configured
+          </div>
+        )}
+      </div>
+
+      {/* Behavioral Bonuses */}
+      <div>
+        <label className="block font-semibold mb-3 text-sm">Behavioral Bonuses</label>
+        <div className="space-y-4">
+          {/* Frequency Bonus */}
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <label className="flex items-center gap-2 mb-3">
+              <input
+                type="checkbox"
+                checked={rules.behavioralBonuses.frequencyBonus?.enabled || false}
+                onChange={(e) => onUpdate({
+                  behavioralBonuses: {
+                    ...rules.behavioralBonuses,
+                    frequencyBonus: {
+                      ...rules.behavioralBonuses.frequencyBonus,
+                      enabled: e.target.checked,
+                      visits: rules.behavioralBonuses.frequencyBonus?.visits || 3,
+                      points: rules.behavioralBonuses.frequencyBonus?.points || 50,
+                    },
+                  },
+                })}
+                className="w-4 h-4 text-primary rounded"
+              />
+              <span className="font-medium text-gray-900">Frequency Bonus</span>
+            </label>
+            {rules.behavioralBonuses.frequencyBonus?.enabled && (
+              <div className="flex items-center gap-3 ml-6">
+                <span className="text-sm text-gray-600">Reward</span>
+                <input
+                  type="number"
+                  value={rules.behavioralBonuses.frequencyBonus.points}
+                  onChange={(e) => onUpdate({
+                    behavioralBonuses: {
+                      ...rules.behavioralBonuses,
+                      frequencyBonus: {
+                        ...rules.behavioralBonuses.frequencyBonus!,
+                        points: parseInt(e.target.value),
+                      },
+                    },
+                  })}
+                  className="px-3 py-2 border border-gray-300 rounded-lg w-24"
+                />
+                <span className="text-sm text-gray-600">points after</span>
+                <input
+                  type="number"
+                  value={rules.behavioralBonuses.frequencyBonus.visits}
+                  onChange={(e) => onUpdate({
+                    behavioralBonuses: {
+                      ...rules.behavioralBonuses,
+                      frequencyBonus: {
+                        ...rules.behavioralBonuses.frequencyBonus!,
+                        visits: parseInt(e.target.value),
+                      },
+                    },
+                  })}
+                  className="px-3 py-2 border border-gray-300 rounded-lg w-24"
+                />
+                <span className="text-sm text-gray-600">visits</span>
+              </div>
+            )}
+          </div>
+
+          {/* Threshold Bonus */}
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <label className="flex items-center gap-2 mb-3">
+              <input
+                type="checkbox"
+                checked={rules.behavioralBonuses.thresholdBonus?.enabled || false}
+                onChange={(e) => onUpdate({
+                  behavioralBonuses: {
+                    ...rules.behavioralBonuses,
+                    thresholdBonus: {
+                      ...rules.behavioralBonuses.thresholdBonus,
+                      enabled: e.target.checked,
+                      spend: rules.behavioralBonuses.thresholdBonus?.spend || 100,
+                      points: rules.behavioralBonuses.thresholdBonus?.points || 100,
+                    },
+                  },
+                })}
+                className="w-4 h-4 text-primary rounded"
+              />
+              <span className="font-medium text-gray-900">Spending Threshold Bonus</span>
+            </label>
+            {rules.behavioralBonuses.thresholdBonus?.enabled && (
+              <div className="flex items-center gap-3 ml-6">
+                <span className="text-sm text-gray-600">Reward</span>
+                <input
+                  type="number"
+                  value={rules.behavioralBonuses.thresholdBonus.points}
+                  onChange={(e) => onUpdate({
+                    behavioralBonuses: {
+                      ...rules.behavioralBonuses,
+                      thresholdBonus: {
+                        ...rules.behavioralBonuses.thresholdBonus!,
+                        points: parseInt(e.target.value),
+                      },
+                    },
+                  })}
+                  className="px-3 py-2 border border-gray-300 rounded-lg w-24"
+                />
+                <span className="text-sm text-gray-600">points when spending over</span>
+                <input
+                  type="number"
+                  value={rules.behavioralBonuses.thresholdBonus.spend}
+                  onChange={(e) => onUpdate({
+                    behavioralBonuses: {
+                      ...rules.behavioralBonuses,
+                      thresholdBonus: {
+                        ...rules.behavioralBonuses.thresholdBonus!,
+                        spend: parseInt(e.target.value),
+                      },
+                    },
+                  })}
+                  className="px-3 py-2 border border-gray-300 rounded-lg w-24"
+                />
+                <span className="text-sm text-gray-600">{currency}</span>
+              </div>
+            )}
+          </div>
+
+          {/* Birthday Multiplier */}
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <label className="flex items-center gap-2 mb-3">
+              <input
+                type="checkbox"
+                checked={rules.behavioralBonuses.birthdayMultiplier?.enabled || false}
+                onChange={(e) => onUpdate({
+                  behavioralBonuses: {
+                    ...rules.behavioralBonuses,
+                    birthdayMultiplier: {
+                      ...rules.behavioralBonuses.birthdayMultiplier,
+                      enabled: e.target.checked,
+                      multiplier: rules.behavioralBonuses.birthdayMultiplier?.multiplier || 2,
+                    },
+                  },
+                })}
+                className="w-4 h-4 text-primary rounded"
+              />
+              <span className="font-medium text-gray-900">Birthday Month Multiplier</span>
+            </label>
+            {rules.behavioralBonuses.birthdayMultiplier?.enabled && (
+              <div className="flex items-center gap-3 ml-6">
+                <input
+                  type="number"
+                  step="0.5"
+                  value={rules.behavioralBonuses.birthdayMultiplier.multiplier}
+                  onChange={(e) => onUpdate({
+                    behavioralBonuses: {
+                      ...rules.behavioralBonuses,
+                      birthdayMultiplier: {
+                        ...rules.behavioralBonuses.birthdayMultiplier!,
+                        multiplier: parseFloat(e.target.value),
+                      },
+                    },
+                  })}
+                  className="px-3 py-2 border border-gray-300 rounded-lg w-24"
+                />
+                <span className="text-sm text-gray-600">x multiplier during birthday month</span>
+              </div>
+            )}
+          </div>
+
+          {/* First Purchase */}
+          <div className="p-4 bg-gray-50 rounded-lg">
+            <label className="flex items-center gap-2 mb-3">
+              <input
+                type="checkbox"
+                checked={rules.behavioralBonuses.firstPurchase?.enabled || false}
+                onChange={(e) => onUpdate({
+                  behavioralBonuses: {
+                    ...rules.behavioralBonuses,
+                    firstPurchase: {
+                      ...rules.behavioralBonuses.firstPurchase,
+                      enabled: e.target.checked,
+                      points: rules.behavioralBonuses.firstPurchase?.points || 500,
+                    },
+                  },
+                })}
+                className="w-4 h-4 text-primary rounded"
+              />
+              <span className="font-medium text-gray-900">First Purchase Bonus</span>
+            </label>
+            {rules.behavioralBonuses.firstPurchase?.enabled && (
+              <div className="flex items-center gap-3 ml-6">
+                <span className="text-sm text-gray-600">Reward</span>
+                <input
+                  type="number"
+                  value={rules.behavioralBonuses.firstPurchase.points}
+                  onChange={(e) => onUpdate({
+                    behavioralBonuses: {
+                      ...rules.behavioralBonuses,
+                      firstPurchase: {
+                        ...rules.behavioralBonuses.firstPurchase!,
+                        points: parseInt(e.target.value),
+                      },
+                    },
+                  })}
+                  className="px-3 py-2 border border-gray-300 rounded-lg w-24"
+                />
+                <span className="text-sm text-gray-600">bonus points on first purchase</span>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Category Modal */}
+      <Modal isOpen={showCategoryModal} onClose={() => setShowCategoryModal(false)} title="Add Category Multiplier">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Category</label>
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            >
+              <option value="">Select a category</option>
+              {categoryOptions.map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Multiplier</label>
+            <input
+              type="number"
+              step="0.1"
+              value={categoryMultiplier}
+              onChange={(e) => setCategoryMultiplier(parseFloat(e.target.value))}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            />
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <Button variant="secondary" onClick={() => setShowCategoryModal(false)} className="flex-1">
+              Cancel
+            </Button>
+            <Button onClick={handleAddCategory} className="flex-1">
+              Add Category
+            </Button>
+          </div>
+        </div>
+      </Modal>
+    </div>
+  );
+};
+
 export const Screen2Value: React.FC = () => {
   const {
     valueType,
@@ -47,7 +398,7 @@ export const Screen2Value: React.FC = () => {
   // Modal states
   const [showTierModal, setShowTierModal] = useState(false);
   const [editingTier, setEditingTier] = useState<Tier | null>(null);
-  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [expandedTier, setExpandedTier] = useState<string | null>(null);
 
   // Tier form state
   const [tierForm, setTierForm] = useState({
@@ -56,12 +407,7 @@ export const Screen2Value: React.FC = () => {
     threshold: 0,
     color: 'blue',
     benefits: [''],
-    earningMultiplier: 1,
   });
-
-  // Category multiplier state
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [categoryMultiplier, setCategoryMultiplier] = useState(1);
 
   const handleAddTier = () => {
     setEditingTier(null);
@@ -71,7 +417,6 @@ export const Screen2Value: React.FC = () => {
       threshold: 0,
       color: 'blue',
       benefits: [''],
-      earningMultiplier: 1,
     });
     setShowTierModal(true);
   };
@@ -84,7 +429,6 @@ export const Screen2Value: React.FC = () => {
       threshold: tier.threshold,
       color: tier.color,
       benefits: tier.benefits.length > 0 ? tier.benefits : [''],
-      earningMultiplier: tier.earningMultiplier || 1,
     });
     setShowTierModal(true);
   };
@@ -96,7 +440,6 @@ export const Screen2Value: React.FC = () => {
       threshold: tierForm.threshold,
       color: tierForm.color,
       benefits: tierForm.benefits.filter(b => b.trim() !== ''),
-      earningMultiplier: tierForm.earningMultiplier,
     };
 
     if (editingTier) {
@@ -105,6 +448,7 @@ export const Screen2Value: React.FC = () => {
       const newTier: Tier = {
         id: `tier_${Date.now()}`,
         ...tierData,
+        earningRules: getDefaultEarningRules(),
       };
       addTier(newTier);
     }
@@ -114,6 +458,22 @@ export const Screen2Value: React.FC = () => {
   const handleDeleteTier = (tierId: string) => {
     if (confirm('Are you sure you want to delete this tier?')) {
       removeTier(tierId);
+    }
+  };
+
+  const handleUpdateTierEarningRules = (tierId: string, rulesUpdate: Partial<EarningRules>) => {
+    const tier = tiers.find(t => t.id === tierId);
+    if (tier) {
+      updateTier(tierId, {
+        earningRules: {
+          ...tier.earningRules,
+          ...rulesUpdate,
+          behavioralBonuses: {
+            ...tier.earningRules.behavioralBonuses,
+            ...rulesUpdate.behavioralBonuses,
+          },
+        },
+      });
     }
   };
 
@@ -130,26 +490,6 @@ export const Screen2Value: React.FC = () => {
   const removeBenefit = (index: number) => {
     const newBenefits = tierForm.benefits.filter((_, i) => i !== index);
     setTierForm({ ...tierForm, benefits: newBenefits });
-  };
-
-  const handleAddCategory = () => {
-    if (selectedCategory && categoryMultiplier) {
-      updateEarningRules({
-        categoryMultipliers: {
-          ...earningRules.categoryMultipliers,
-          [selectedCategory]: categoryMultiplier,
-        },
-      });
-      setSelectedCategory('');
-      setCategoryMultiplier(1);
-      setShowCategoryModal(false);
-    }
-  };
-
-  const handleRemoveCategory = (category: string) => {
-    const newMultipliers = { ...earningRules.categoryMultipliers };
-    delete newMultipliers[category];
-    updateEarningRules({ categoryMultipliers: newMultipliers });
   };
 
   const renderValueConfigForm = () => {
@@ -451,7 +791,12 @@ export const Screen2Value: React.FC = () => {
           <div className="flex justify-between items-center mb-6">
             <div>
               <h3 className="text-xl font-semibold">Customer Segmentation</h3>
-              <p className="text-sm text-gray-600 mt-1">Choose between tier-based or program-wide earning rules</p>
+              <p className="text-sm text-gray-600 mt-1">
+                {useTiers
+                  ? 'Configure earning rules for each tier separately'
+                  : 'Program-wide earning rules apply to all members'
+                }
+              </p>
             </div>
             <div className="flex items-center gap-3">
               <span className="text-sm text-gray-600">Program-Wide</span>
@@ -472,7 +817,7 @@ export const Screen2Value: React.FC = () => {
           {useTiers && (
             <div className="space-y-4">
               <div className="flex justify-between items-center">
-                <p className="text-sm text-gray-600">Define membership tiers with different thresholds and benefits</p>
+                <p className="text-sm text-gray-600">Define membership tiers with different thresholds and earning rules</p>
                 <Button onClick={handleAddTier} size="sm">
                   <Plus size={16} className="mr-1" />
                   Add Tier
@@ -482,28 +827,49 @@ export const Screen2Value: React.FC = () => {
               {tiers.length > 0 && (
                 <div className="space-y-3">
                   {tiers.map((tier) => (
-                    <div key={tier.id} className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                      <div className={`w-3 h-3 rounded-full ${tierColors.find(c => c.value === tier.color)?.class || 'bg-gray-500'}`}></div>
-                      <div className="flex-1">
-                        <div className="font-semibold text-gray-900">{tier.name}</div>
-                        <div className="text-sm text-gray-600">
-                          {tier.threshold.toLocaleString()} points • {tier.earningMultiplier}x multiplier
+                    <div key={tier.id} className="border border-gray-200 rounded-lg">
+                      {/* Tier Header */}
+                      <div className="flex items-center gap-4 p-4 bg-gray-50">
+                        <div className={`w-3 h-3 rounded-full ${tierColors.find(c => c.value === tier.color)?.class || 'bg-gray-500'}`}></div>
+                        <div className="flex-1">
+                          <div className="font-semibold text-gray-900">{tier.name}</div>
+                          <div className="text-sm text-gray-600">
+                            {tier.threshold.toLocaleString()} points threshold • {tier.earningRules.baseRate.points} point{tier.earningRules.baseRate.points !== 1 ? 's' : ''} per ${tier.earningRules.baseRate.spend}
+                          </div>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => setExpandedTier(expandedTier === tier.id ? null : tier.id)}
+                            className="p-2 text-gray-600 hover:text-primary transition-colors"
+                          >
+                            {expandedTier === tier.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                          </button>
+                          <button
+                            onClick={() => handleEditTier(tier)}
+                            className="p-2 text-gray-600 hover:text-primary transition-colors"
+                          >
+                            <Edit2 size={16} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteTier(tier.id)}
+                            className="p-2 text-gray-600 hover:text-red-600 transition-colors"
+                          >
+                            <Trash2 size={16} />
+                          </button>
                         </div>
                       </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleEditTier(tier)}
-                          className="p-2 text-gray-600 hover:text-primary transition-colors"
-                        >
-                          <Edit2 size={16} />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteTier(tier.id)}
-                          className="p-2 text-gray-600 hover:text-red-600 transition-colors"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
+
+                      {/* Tier Earning Rules (Expanded) */}
+                      {expandedTier === tier.id && (
+                        <div className="p-6 border-t border-gray-200 bg-white">
+                          <h4 className="font-semibold text-gray-900 mb-4">Earning Rules for {tier.name}</h4>
+                          <EarningRulesEditor
+                            rules={tier.earningRules}
+                            onUpdate={(rulesUpdate) => handleUpdateTierEarningRules(tier.id, rulesUpdate)}
+                            currency={valueConfig.currency || 'USD'}
+                          />
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -518,279 +884,17 @@ export const Screen2Value: React.FC = () => {
           )}
         </Card>
 
-        {/* Earning Rules */}
-        <Card className="p-6">
-          <h3 className="text-xl font-semibold mb-6">
-            Earning Rules {useTiers && tiers.length > 0 ? '(Base Rules - Modified by Tier Multipliers)' : '(Program-Wide)'}
-          </h3>
-
-          <div className="space-y-6">
-            {/* Base Rate */}
-            <div>
-              <label className="block font-semibold mb-3 text-sm">Base Earning Rate</label>
-              <div className="flex items-center gap-3">
-                <input
-                  type="number"
-                  value={earningRules.baseRate.points}
-                  onChange={(e) => updateEarningRules({
-                    baseRate: { ...earningRules.baseRate, points: parseInt(e.target.value) }
-                  })}
-                  className="px-3 py-2 border border-gray-300 rounded-lg w-24"
-                />
-                <span className="text-gray-600">points per</span>
-                <input
-                  type="number"
-                  value={earningRules.baseRate.spend}
-                  onChange={(e) => updateEarningRules({
-                    baseRate: { ...earningRules.baseRate, spend: parseInt(e.target.value) }
-                  })}
-                  className="px-3 py-2 border border-gray-300 rounded-lg w-24"
-                />
-                <span className="text-gray-600">{valueConfig.currency || 'USD'} spent</span>
-              </div>
-            </div>
-
-            {/* Category Multipliers */}
-            <div>
-              <div className="flex justify-between items-center mb-3">
-                <label className="block font-semibold text-sm">Category Multipliers</label>
-                <Button onClick={() => setShowCategoryModal(true)} size="sm" variant="secondary">
-                  <Plus size={16} className="mr-1" />
-                  Add Category
-                </Button>
-              </div>
-
-              {Object.keys(earningRules.categoryMultipliers).length > 0 ? (
-                <div className="space-y-2">
-                  {Object.entries(earningRules.categoryMultipliers).map(([category, multiplier]) => (
-                    <div key={category} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                      <span className="text-sm font-medium text-gray-900">{category}</span>
-                      <div className="flex items-center gap-3">
-                        <span className="text-sm text-gray-600">{multiplier}x multiplier</span>
-                        <button
-                          onClick={() => handleRemoveCategory(category)}
-                          className="text-gray-400 hover:text-red-600 transition-colors"
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="p-4 bg-gray-50 rounded-lg text-sm text-gray-600 text-center">
-                  No category multipliers configured
-                </div>
-              )}
-            </div>
-
-            {/* Behavioral Bonuses */}
-            <div>
-              <label className="block font-semibold mb-3 text-sm">Behavioral Bonuses</label>
-              <div className="space-y-4">
-                {/* Frequency Bonus */}
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <label className="flex items-center gap-2 mb-3">
-                    <input
-                      type="checkbox"
-                      checked={earningRules.behavioralBonuses.frequencyBonus?.enabled || false}
-                      onChange={(e) => updateEarningRules({
-                        behavioralBonuses: {
-                          ...earningRules.behavioralBonuses,
-                          frequencyBonus: {
-                            ...earningRules.behavioralBonuses.frequencyBonus,
-                            enabled: e.target.checked,
-                            visits: earningRules.behavioralBonuses.frequencyBonus?.visits || 3,
-                            points: earningRules.behavioralBonuses.frequencyBonus?.points || 50,
-                          },
-                        },
-                      })}
-                      className="w-4 h-4 text-primary rounded"
-                    />
-                    <span className="font-medium text-gray-900">Frequency Bonus</span>
-                  </label>
-                  {earningRules.behavioralBonuses.frequencyBonus?.enabled && (
-                    <div className="flex items-center gap-3 ml-6">
-                      <span className="text-sm text-gray-600">Reward</span>
-                      <input
-                        type="number"
-                        value={earningRules.behavioralBonuses.frequencyBonus.points}
-                        onChange={(e) => updateEarningRules({
-                          behavioralBonuses: {
-                            ...earningRules.behavioralBonuses,
-                            frequencyBonus: {
-                              ...earningRules.behavioralBonuses.frequencyBonus!,
-                              points: parseInt(e.target.value),
-                            },
-                          },
-                        })}
-                        className="px-3 py-2 border border-gray-300 rounded-lg w-24"
-                      />
-                      <span className="text-sm text-gray-600">points after</span>
-                      <input
-                        type="number"
-                        value={earningRules.behavioralBonuses.frequencyBonus.visits}
-                        onChange={(e) => updateEarningRules({
-                          behavioralBonuses: {
-                            ...earningRules.behavioralBonuses,
-                            frequencyBonus: {
-                              ...earningRules.behavioralBonuses.frequencyBonus!,
-                              visits: parseInt(e.target.value),
-                            },
-                          },
-                        })}
-                        className="px-3 py-2 border border-gray-300 rounded-lg w-24"
-                      />
-                      <span className="text-sm text-gray-600">visits</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Threshold Bonus */}
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <label className="flex items-center gap-2 mb-3">
-                    <input
-                      type="checkbox"
-                      checked={earningRules.behavioralBonuses.thresholdBonus?.enabled || false}
-                      onChange={(e) => updateEarningRules({
-                        behavioralBonuses: {
-                          ...earningRules.behavioralBonuses,
-                          thresholdBonus: {
-                            ...earningRules.behavioralBonuses.thresholdBonus,
-                            enabled: e.target.checked,
-                            spend: earningRules.behavioralBonuses.thresholdBonus?.spend || 100,
-                            points: earningRules.behavioralBonuses.thresholdBonus?.points || 100,
-                          },
-                        },
-                      })}
-                      className="w-4 h-4 text-primary rounded"
-                    />
-                    <span className="font-medium text-gray-900">Spending Threshold Bonus</span>
-                  </label>
-                  {earningRules.behavioralBonuses.thresholdBonus?.enabled && (
-                    <div className="flex items-center gap-3 ml-6">
-                      <span className="text-sm text-gray-600">Reward</span>
-                      <input
-                        type="number"
-                        value={earningRules.behavioralBonuses.thresholdBonus.points}
-                        onChange={(e) => updateEarningRules({
-                          behavioralBonuses: {
-                            ...earningRules.behavioralBonuses,
-                            thresholdBonus: {
-                              ...earningRules.behavioralBonuses.thresholdBonus!,
-                              points: parseInt(e.target.value),
-                            },
-                          },
-                        })}
-                        className="px-3 py-2 border border-gray-300 rounded-lg w-24"
-                      />
-                      <span className="text-sm text-gray-600">points when spending over</span>
-                      <input
-                        type="number"
-                        value={earningRules.behavioralBonuses.thresholdBonus.spend}
-                        onChange={(e) => updateEarningRules({
-                          behavioralBonuses: {
-                            ...earningRules.behavioralBonuses,
-                            thresholdBonus: {
-                              ...earningRules.behavioralBonuses.thresholdBonus!,
-                              spend: parseInt(e.target.value),
-                            },
-                          },
-                        })}
-                        className="px-3 py-2 border border-gray-300 rounded-lg w-24"
-                      />
-                      <span className="text-sm text-gray-600">{valueConfig.currency || 'USD'}</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* Birthday Multiplier */}
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <label className="flex items-center gap-2 mb-3">
-                    <input
-                      type="checkbox"
-                      checked={earningRules.behavioralBonuses.birthdayMultiplier?.enabled || false}
-                      onChange={(e) => updateEarningRules({
-                        behavioralBonuses: {
-                          ...earningRules.behavioralBonuses,
-                          birthdayMultiplier: {
-                            ...earningRules.behavioralBonuses.birthdayMultiplier,
-                            enabled: e.target.checked,
-                            multiplier: earningRules.behavioralBonuses.birthdayMultiplier?.multiplier || 2,
-                          },
-                        },
-                      })}
-                      className="w-4 h-4 text-primary rounded"
-                    />
-                    <span className="font-medium text-gray-900">Birthday Month Multiplier</span>
-                  </label>
-                  {earningRules.behavioralBonuses.birthdayMultiplier?.enabled && (
-                    <div className="flex items-center gap-3 ml-6">
-                      <input
-                        type="number"
-                        step="0.5"
-                        value={earningRules.behavioralBonuses.birthdayMultiplier.multiplier}
-                        onChange={(e) => updateEarningRules({
-                          behavioralBonuses: {
-                            ...earningRules.behavioralBonuses,
-                            birthdayMultiplier: {
-                              ...earningRules.behavioralBonuses.birthdayMultiplier!,
-                              multiplier: parseFloat(e.target.value),
-                            },
-                          },
-                        })}
-                        className="px-3 py-2 border border-gray-300 rounded-lg w-24"
-                      />
-                      <span className="text-sm text-gray-600">x multiplier during birthday month</span>
-                    </div>
-                  )}
-                </div>
-
-                {/* First Purchase */}
-                <div className="p-4 bg-gray-50 rounded-lg">
-                  <label className="flex items-center gap-2 mb-3">
-                    <input
-                      type="checkbox"
-                      checked={earningRules.behavioralBonuses.firstPurchase?.enabled || false}
-                      onChange={(e) => updateEarningRules({
-                        behavioralBonuses: {
-                          ...earningRules.behavioralBonuses,
-                          firstPurchase: {
-                            ...earningRules.behavioralBonuses.firstPurchase,
-                            enabled: e.target.checked,
-                            points: earningRules.behavioralBonuses.firstPurchase?.points || 500,
-                          },
-                        },
-                      })}
-                      className="w-4 h-4 text-primary rounded"
-                    />
-                    <span className="font-medium text-gray-900">First Purchase Bonus</span>
-                  </label>
-                  {earningRules.behavioralBonuses.firstPurchase?.enabled && (
-                    <div className="flex items-center gap-3 ml-6">
-                      <span className="text-sm text-gray-600">Reward</span>
-                      <input
-                        type="number"
-                        value={earningRules.behavioralBonuses.firstPurchase.points}
-                        onChange={(e) => updateEarningRules({
-                          behavioralBonuses: {
-                            ...earningRules.behavioralBonuses,
-                            firstPurchase: {
-                              ...earningRules.behavioralBonuses.firstPurchase!,
-                              points: parseInt(e.target.value),
-                            },
-                          },
-                        })}
-                        className="px-3 py-2 border border-gray-300 rounded-lg w-24"
-                      />
-                      <span className="text-sm text-gray-600">bonus points on first purchase</span>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        </Card>
+        {/* Global Earning Rules (Only when tiers are disabled) */}
+        {!useTiers && (
+          <Card className="p-6">
+            <h3 className="text-xl font-semibold mb-6">Program-Wide Earning Rules</h3>
+            <EarningRulesEditor
+              rules={earningRules}
+              onUpdate={updateEarningRules}
+              currency={valueConfig.currency || 'USD'}
+            />
+          </Card>
+        )}
       </div>
 
       {/* Tier Modal */}
@@ -825,17 +929,6 @@ export const Screen2Value: React.FC = () => {
               value={tierForm.threshold}
               onChange={(e) => setTierForm({ ...tierForm, threshold: parseInt(e.target.value) })}
               placeholder="Points required to reach this tier"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Earning Multiplier</label>
-            <input
-              type="number"
-              step="0.1"
-              value={tierForm.earningMultiplier}
-              onChange={(e) => setTierForm({ ...tierForm, earningMultiplier: parseFloat(e.target.value) })}
               className="w-full px-3 py-2 border border-gray-300 rounded-lg"
             />
           </div>
@@ -888,51 +981,16 @@ export const Screen2Value: React.FC = () => {
             </div>
           </div>
 
+          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-900">
+            After creating the tier, expand it to configure its specific earning rules.
+          </div>
+
           <div className="flex gap-3 pt-4">
             <Button variant="secondary" onClick={() => setShowTierModal(false)} className="flex-1">
               Cancel
             </Button>
             <Button onClick={handleSaveTier} className="flex-1">
               {editingTier ? 'Update Tier' : 'Add Tier'}
-            </Button>
-          </div>
-        </div>
-      </Modal>
-
-      {/* Category Modal */}
-      <Modal isOpen={showCategoryModal} onClose={() => setShowCategoryModal(false)} title="Add Category Multiplier">
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Category</label>
-            <select
-              value={selectedCategory}
-              onChange={(e) => setSelectedCategory(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            >
-              <option value="">Select a category</option>
-              {categoryOptions.map((cat) => (
-                <option key={cat} value={cat}>{cat}</option>
-              ))}
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">Multiplier</label>
-            <input
-              type="number"
-              step="0.1"
-              value={categoryMultiplier}
-              onChange={(e) => setCategoryMultiplier(parseFloat(e.target.value))}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
-            />
-          </div>
-
-          <div className="flex gap-3 pt-4">
-            <Button variant="secondary" onClick={() => setShowCategoryModal(false)} className="flex-1">
-              Cancel
-            </Button>
-            <Button onClick={handleAddCategory} className="flex-1">
-              Add Category
             </Button>
           </div>
         </div>
