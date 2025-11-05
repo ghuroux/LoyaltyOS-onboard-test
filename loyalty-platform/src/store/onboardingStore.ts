@@ -25,9 +25,7 @@ export interface HierarchyLevel {
 export interface Template {
   name: string;
   badge: string;
-  implementations: number;
-  timeline: string;
-  patterns: number;
+  description: string;
 }
 
 export interface Queue {
@@ -70,8 +68,13 @@ interface OnboardingState {
   setIndustry: (industry: string) => void;
   setTemplate: (template: Template | null) => void;
   updateHierarchyLevel: (id: string, updates: Partial<HierarchyLevel>) => void;
+  addCustomHierarchyLevel: (name: string, description: string) => void;
+  reorderHierarchyLevel: (id: string, direction: 'up' | 'down') => void;
+  updateCustomerHierarchyLevel: (id: string, updates: Partial<HierarchyLevel>) => void;
+  addCustomerType: (name: string, description: string) => void;
   setSelectedEntity: (entity: string) => void;
   updateEntityAttribute: (attribute: string, enabled: boolean) => void;
+  addCustomAttribute: (entity: string, name: string, type: string) => void;
   recalculateKPIs: () => void;
   setValueType: (type: string) => void;
   updateValueConfig: (config: any) => void;
@@ -181,6 +184,48 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
     ),
   })),
 
+  addCustomHierarchyLevel: (name, description) => set((state) => {
+    const newLevel: HierarchyLevel = {
+      id: `custom_${Date.now()}`,
+      name,
+      displayName: name,
+      description,
+      enabled: true,
+    };
+    return { organizationHierarchy: [...state.organizationHierarchy, newLevel] };
+  }),
+
+  reorderHierarchyLevel: (id, direction) => set((state) => {
+    const index = state.organizationHierarchy.findIndex((level) => level.id === id);
+    if (index === -1) return state;
+
+    const newHierarchy = [...state.organizationHierarchy];
+    const targetIndex = direction === 'up' ? index - 1 : index + 1;
+
+    if (targetIndex < 0 || targetIndex >= newHierarchy.length) return state;
+
+    [newHierarchy[index], newHierarchy[targetIndex]] = [newHierarchy[targetIndex], newHierarchy[index]];
+
+    return { organizationHierarchy: newHierarchy };
+  }),
+
+  updateCustomerHierarchyLevel: (id, updates) => set((state) => ({
+    customerHierarchy: state.customerHierarchy.map((level) =>
+      level.id === id ? { ...level, ...updates } : level
+    ),
+  })),
+
+  addCustomerType: (name, description) => set((state) => {
+    const newType: HierarchyLevel = {
+      id: `customer_${Date.now()}`,
+      name,
+      displayName: name,
+      description,
+      enabled: true,
+    };
+    return { customerHierarchy: [...state.customerHierarchy, newType] };
+  }),
+
   setSelectedEntity: (entity) => set({ selectedEntity: entity }),
 
   updateEntityAttribute: (attribute, enabled) => {
@@ -188,6 +233,16 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
       entityAttributes: {
         ...state.entityAttributes,
         [attribute]: { ...state.entityAttributes[attribute], enabled },
+      },
+    }));
+    get().recalculateKPIs();
+  },
+
+  addCustomAttribute: (_entity, name, _type) => {
+    set((state) => ({
+      entityAttributes: {
+        ...state.entityAttributes,
+        [name]: { enabled: true },
       },
     }));
     get().recalculateKPIs();

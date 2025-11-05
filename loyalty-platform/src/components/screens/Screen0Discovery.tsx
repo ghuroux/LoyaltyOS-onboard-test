@@ -17,16 +17,42 @@ const industries = [
 
 const templates: { [key: string]: Template[] } = {
   'retail-franchise': [
-    { name: 'Quick Service Restaurant', badge: 'POPULAR', implementations: 47, timeline: '30 days', patterns: 52 },
-    { name: 'Multi-Brand Franchise', badge: 'ADVANCED', implementations: 23, timeline: '45 days', patterns: 68 },
+    { name: 'Quick Service Restaurant', badge: 'POPULAR', description: 'Optimized for fast-casual dining with drive-through and delivery support' },
+    { name: 'Multi-Brand Franchise', badge: 'ADVANCED', description: 'Manage multiple brands under one franchise umbrella with consolidated insights' },
+    { name: 'Retail Store Network', badge: 'FLEXIBLE', description: 'Traditional retail with product categories and inventory intelligence' },
   ],
   'retail-chain': [
-    { name: 'Fashion Retail Chain', badge: 'PROVEN', implementations: 35, timeline: '30 days', patterns: 44 },
-    { name: 'Grocery Chain', badge: 'COMPLEX', implementations: 18, timeline: '60 days', patterns: 73 },
+    { name: 'Fashion Retail Chain', badge: 'POPULAR', description: 'Apparel and accessories with seasonal collections and style preferences' },
+    { name: 'Grocery Chain', badge: 'COMPREHENSIVE', description: 'Fresh and packaged goods with basket analysis and shopper missions' },
+    { name: 'Department Store', badge: 'ENTERPRISE', description: 'Multi-category retail with cross-department intelligence' },
+  ],
+  'online-retail': [
+    { name: 'E-Commerce Platform', badge: 'POPULAR', description: 'Digital-first with cart abandonment recovery and browse behavior tracking' },
+    { name: 'Marketplace Model', badge: 'ADVANCED', description: 'Multi-vendor platform with seller performance and product recommendations' },
+    { name: 'Subscription Commerce', badge: 'SPECIALIZED', description: 'Recurring revenue model with churn prediction and upgrade paths' },
   ],
   'hospitality': [
-    { name: 'Hotel Loyalty Program', badge: 'PREMIUM', implementations: 29, timeline: '45 days', patterns: 61 },
-    { name: 'Restaurant Group', badge: 'FLEXIBLE', implementations: 41, timeline: '30 days', patterns: 49 },
+    { name: 'Hotel Loyalty Program', badge: 'PREMIUM', description: 'Stay-based rewards with room preferences and ancillary upsells' },
+    { name: 'Restaurant Group', badge: 'FLEXIBLE', description: 'Dining rewards with reservation preferences and menu personalization' },
+    { name: 'QSR Chain', badge: 'POPULAR', description: 'Fast service with mobile ordering and pickup/delivery optimization' },
+  ],
+  'airlines': [
+    { name: 'Full-Service Carrier', badge: 'COMPREHENSIVE', description: 'Miles-based program with cabin upgrades and partner networks' },
+    { name: 'Low-Cost Carrier', badge: 'STREAMLINED', description: 'Simplified rewards focused on flight frequency and ancillary purchases' },
+    { name: 'Regional Airline', badge: 'SPECIALIZED', description: 'Route-specific rewards with business traveler focus' },
+  ],
+  'banking': [
+    { name: 'Retail Banking', badge: 'POPULAR', description: 'Account-based rewards with product cross-sell and financial wellness' },
+    { name: 'Credit Card Program', badge: 'ADVANCED', description: 'Spend-based rewards with category bonuses and redemption flexibility' },
+    { name: 'Wealth Management', badge: 'PREMIUM', description: 'Relationship-based benefits with asset milestones and service tiers' },
+  ],
+  'telecom': [
+    { name: 'Mobile Network Operator', badge: 'POPULAR', description: 'Usage-based rewards with plan upgrades and device financing' },
+    { name: 'Broadband Provider', badge: 'STREAMLINED', description: 'Tenure-based benefits with service add-ons and referral bonuses' },
+    { name: 'Converged Services', badge: 'COMPREHENSIVE', description: 'Multi-service bundles with household-level rewards' },
+  ],
+  'custom': [
+    { name: 'Start from Scratch', badge: 'FLEXIBLE', description: 'Build a completely custom loyalty program tailored to your unique business model' },
   ],
 };
 
@@ -94,7 +120,7 @@ export const Screen0Discovery: React.FC = () => {
                 Start from Scratch
               </Button>
             </div>
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4">
               {templates[localIndustry].map((template, index) => (
                 <Card
                   key={index}
@@ -103,21 +129,17 @@ export const Screen0Discovery: React.FC = () => {
                   onClick={() => handleTemplateSelect(template)}
                   className="p-5"
                 >
-                  <div className="flex items-start justify-between mb-2">
-                    <h3 className="font-semibold text-gray-900">{template.name}</h3>
-                    <span className="px-2 py-1 bg-secondary text-white rounded text-xs font-semibold">
-                      {template.badge}
-                    </span>
-                  </div>
-                  <p className="text-sm text-gray-600 mb-4">
-                    {template.patterns} pre-configured intelligence patterns
-                  </p>
-                  <div className="flex gap-4 pt-4 border-t border-gray-200 text-xs text-gray-500">
-                    <div>
-                      <strong className="text-gray-900">{template.implementations}</strong> live
-                    </div>
-                    <div>
-                      <strong className="text-gray-900">{template.timeline}</strong> to deploy
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-3 mb-2">
+                        <h3 className="font-semibold text-gray-900 text-lg">{template.name}</h3>
+                        <span className="px-2 py-1 bg-secondary text-white rounded text-xs font-semibold">
+                          {template.badge}
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        {template.description}
+                      </p>
                     </div>
                   </div>
                 </Card>
