@@ -9,7 +9,6 @@ import { Screen0Discovery } from './components/screens/Screen0Discovery';
 import { Screen1Organization } from './components/screens/Screen1Organization';
 import { Screen2Value } from './components/screens/Screen2Value';
 import { Screen3Segmentation } from './components/screens/Screen3Segmentation';
-import { Screen4Earning } from './components/screens/Screen4Earning';
 import { Screen5Redemption } from './components/screens/Screen5Redemption';
 import { Screen6Campaigns } from './components/screens/Screen6Campaigns';
 import { Screen7Queues } from './components/screens/Screen7Queues';
@@ -24,7 +23,6 @@ const screens = [
   Screen1Organization,
   Screen2Value,
   Screen3Segmentation,
-  Screen4Earning,
   Screen5Redemption,
   Screen6Campaigns,
   Screen7Queues,
