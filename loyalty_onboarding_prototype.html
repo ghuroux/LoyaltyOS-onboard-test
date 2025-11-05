@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StratOS Loyalty - Enterprise Onboarding</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1E3A8A;
+            --primary-light: #3B82F6;
+            --secondary: #10B981;
+            --accent: #F59E0B;
+            --surface: #FFFFFF;
+            --background: #F9FAFB;
+            --text-primary: #111827;
+            --text-secondary: #6B7280;
+            --border: #E5E7EB;
+            --error: #EF4444;
+            --success: #10B981;
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-md: 0 4px 6px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            color: var(--text-primary);
+        }
+
+        .container {
+            max-width: 1400px;
+            width: 100%;
+            background: var(--background);
+            border-radius: 16px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            min-height: 800px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header */
+        .header {
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 24px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .logo-subtitle {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        /* Progress Bar */
+        .progress-container {
+            background: var(--surface);
+            padding: 20px 40px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .progress-steps {
+            display: flex;
+            justify-content: space-between;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .progress-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            flex: 1;
+        }
+
+        .progress-step:not(:last-child)::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            width: 100%;
+            height: 2px;
+            background: var(--border);
+            z-index: 0;
+        }
+
+        .progress-step.active::after {
+            background: var(--secondary);
+        }
+
+        .progress-circle {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            z-index: 1;
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active .progress-circle {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: white;
+        }
+
+        .progress-step.completed .progress-circle {
+            background: var(--secondary);
+            border-color: var(--secondary);
+            color: white;
+        }
+
+        .progress-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-align: center;
+        }
+
+        .progress-step.active .progress-label {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .screen {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .screen-header {
+            margin-bottom: 32px;
+        }
+
+        .screen-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .screen-subtitle {
+            font-size: 16px;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        /* Industry Cards Grid */
+        .industry-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .industry-card {
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+        }
+
+        .industry-card:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .industry-card.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%);
+        }
+
+        .industry-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+        }
+
+        .industry-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .industry-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        /* Template Selection */
+        .template-section {
+            margin-top: 40px;
+            padding: 24px;
+            background: var(--surface);
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .template-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .template-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .template-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 16px;
+        }
+
+        .template-card {
+            padding: 20px;
+            background: var(--background);
+            border: 2px solid var(--border);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .template-card:hover {
+            border-color: var(--primary-light);
+            background: var(--surface);
+        }
+
+        .template-card.selected {
+            border-color: var(--primary);
+            background: var(--surface);
+        }
+
+        .template-name {
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .template-badge {
+            padding: 2px 8px;
+            background: var(--secondary);
+            color: white;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .template-stats {
+            display: flex;
+            gap: 16px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .template-stat {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .template-stat strong {
+            color: var(--text-primary);
+        }
+
+        /* Entity Builder */
+        .hierarchy-builder {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .hierarchy-tree {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .hierarchy-level {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: var(--background);
+            border-radius: 8px;
+            border: 1px dashed var(--border);
+        }
+
+        .hierarchy-level.active {
+            border-style: solid;
+            border-color: var(--primary-light);
+            background: var(--surface);
+        }
+
+        .level-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--primary-light);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .level-details {
+            flex: 1;
+        }
+
+        .level-name {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .level-desc {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .level-toggle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Attributes Panel */
+        .attributes-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .attribute-group {
+            margin-bottom: 24px;
+        }
+
+        .attribute-group-title {
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .attribute-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 12px;
+        }
+
+        .attribute-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: var(--background);
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .attribute-checkbox {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary);
+        }
+
+        .intelligence-alert {
+            margin-top: 16px;
+            padding: 12px;
+            background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(251, 191, 36, 0.1) 100%);
+            border: 1px solid var(--accent);
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .intelligence-icon {
+            color: var(--accent);
+            margin-right: 8px;
+        }
+
+        /* Value Configuration */
+        .value-type-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .value-type-card {
+            padding: 20px;
+            background: var(--surface);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .value-type-card:hover {
+            border-color: var(--primary-light);
+            transform: translateY(-2px);
+        }
+
+        .value-type-card.selected {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(30, 58, 138, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%);
+        }
+
+        .value-type-icon {
+            font-size: 24px;
+            margin-bottom: 12px;
+        }
+
+        .value-type-name {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .value-type-desc {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .config-form {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.2s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: var(--background);
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+
+        /* Navigation Footer */
+        .footer {
+            background: var(--surface);
+            border-top: 1px solid var(--border);
+            padding: 24px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-info {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        .footer-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .btn-secondary {
+            background: var(--background);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--border);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Toggle Switch */
+        .toggle-switch {
+            position: relative;
+            width: 50px;
+            height: 26px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border);
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .toggle-slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(24px);
+        }
+
+        /* Tab Navigation */
+        .tab-navigation {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 0;
+        }
+
+        .tab-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 20px;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.2s ease;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .tab-item:hover {
+            color: var(--primary);
+            background: var(--background);
+        }
+
+        .tab-item.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+            background: var(--surface);
+        }
+
+        .tab-icon {
+            font-size: 18px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+
+        /* Level Name Input */
+        .level-name-input {
+            border: none;
+            background: transparent;
+            font-weight: 600;
+            font-size: 14px;
+            padding: 4px 8px;
+            margin: -4px -8px;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+            width: calc(100% + 16px);
+        }
+
+        .level-name-input:hover {
+            background: var(--background);
+        }
+
+        .level-name-input:focus {
+            background: var(--surface);
+            border: 1px solid var(--primary);
+            outline: none;
+        }
+
+        /* KPI Dashboard */
+        .kpi-dashboard {
+            margin-top: 24px;
+            padding: 24px;
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.05) 0%, rgba(59, 130, 246, 0.05) 100%);
+            border: 1px solid rgba(147, 51, 234, 0.2);
+            border-radius: 12px;
+        }
+
+        .kpi-count {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 20px;
+        }
+
+        .kpi-stat {
+            flex: 1;
+            text-align: center;
+            padding: 16px;
+            background: var(--surface);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .kpi-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .kpi-label {
+            font-size: 12px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .kpi-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .kpi-tag {
+            padding: 6px 12px;
+            background: var(--surface);
+            border: 1px solid var(--primary-light);
+            border-radius: 16px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--primary);
+        }
+
+        /* Attribute Items Enhanced */
+        .attribute-badge {
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: auto;
+        }
+
+        .attribute-badge.required {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .kpi-indicator {
+            margin-left: auto;
+            padding: 2px 8px;
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--secondary);
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .attribute-type {
+            margin-left: auto;
+            padding: 2px 8px;
+            background: var(--background);
+            color: var(--text-secondary);
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        /* API Config Panel */
+        .api-config-panel {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .code-preview pre {
+            font-family: 'SF Mono', Monaco, 'Courier New', monospace;
+            line-height: 1.5;
+        }
+
+        /* Entity Config */
+        .entity-selector {
+            background: var(--surface);
+            padding: 20px;
+            border-radius: 12px;
+            border: 1px solid var(--border);
+        }
+
+        .entity-config-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* Intelligence Features Tag */
+        .ai-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(168, 85, 247, 0.1) 100%);
+            border: 1px solid rgba(147, 51, 234, 0.3);
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #7c3aed;
+        }
+
+        /* Connector Lines */
+        .connector-line {
+            width: 2px;
+            height: 20px;
+            background: var(--border);
+            margin-left: 36px;
+            margin-top: -8px;
+            margin-bottom: -8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                <div class="logo-icon">S</div>
+                <div>
+                    <div class="logo-text">StratOS Loyalty</div>
+                    <div class="logo-subtitle">Enterprise Intelligence Platform</div>
+                </div>
+            </div>
+            <div style="display: flex; align-items: center; gap: 16px;">
+                <span style="font-size: 14px; color: var(--text-secondary);">Implementation: DEMO-2025</span>
+                <span style="padding: 4px 12px; background: var(--secondary); color: white; border-radius: 4px; font-size: 12px; font-weight: 600;">CONFIGURATION MODE</span>
+            </div>
+        </div>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-steps">
+                <div class="progress-step active" id="step-0">
+                    <div class="progress-circle">1</div>
+                    <div class="progress-label">Discovery</div>
+                </div>
+                <div class="progress-step" id="step-1">
+                    <div class="progress-circle">2</div>
+                    <div class="progress-label">Structure</div>
+                </div>
+                <div class="progress-step" id="step-2">
+                    <div class="progress-circle">3</div>
+                    <div class="progress-label">Value</div>
+                </div>
+                <div class="progress-step" id="step-3">
+                    <div class="progress-circle">4</div>
+                    <div class="progress-label">Mechanics</div>
+                </div>
+                <div class="progress-step" id="step-4">
+                    <div class="progress-circle">5</div>
+                    <div class="progress-label">Intelligence</div>
+                </div>
+                <div class="progress-step" id="step-5">
+                    <div class="progress-circle">6</div>
+                    <div class="progress-label">Deploy</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <!-- Screen 0: Business Discovery -->
+            <div class="screen active" id="screen-0">
+                <div class="screen-header">
+                    <h1 class="screen-title">Let's build your intelligence platform</h1>
+                    <p class="screen-subtitle">Select your industry to get started with pre-configured patterns and proven intelligence models</p>
+                </div>
+
+                <div class="industry-grid">
+                    <div class="industry-card" onclick="selectIndustry(this, 'retail-franchise')">
+                        <div class="industry-icon">🏪</div>
+                        <div class="industry-name">Retail Franchise</div>
+                        <div class="industry-desc">Multi-location, franchise model</div>
+                    </div>
+                    <div class="industry-card" onclick="selectIndustry(this, 'retail-chain')">
+                        <div class="industry-icon">🛍️</div>
+                        <div class="industry-name">Retail Chain</div>
+                        <div class="industry-desc">Company-owned locations</div>
+                    </div>
+                    <div class="industry-card" onclick="selectIndustry(this, 'online-retail')">
+                        <div class="industry-icon">💻</div>
+                        <div class="industry-name">Online Retail</div>
+                        <div class="industry-desc">E-commerce focused</div>
+                    </div>
+                    <div class="industry-card" onclick="selectIndustry(this, 'hospitality')">
+                        <div class="industry-icon">🏨</div>
+                        <div class="industry-name">Hospitality</div>
+                        <div class="industry-desc">Hotels, QSR, Restaurants</div>
+                    </div>
+                    <div class="industry-card" onclick="selectIndustry(this, 'airlines')">
+                        <div class="industry-icon">✈️</div>
+                        <div class="industry-name">Airlines</div>
+                        <div class="industry-desc">Routes & partners</div>
+                    </div>
+                    <div class="industry-card" onclick="selectIndustry(this, 'banking')">
+                        <div class="industry-icon">🏦</div>
+                        <div class="industry-name">Banking</div>
+                        <div class="industry-desc">Products & accounts</div>
+                    </div>
+                    <div class="industry-card" onclick="selectIndustry(this, 'telecom')">
+                        <div class="industry-icon">📱</div>
+                        <div class="industry-name">Telecom</div>
+                        <div class="industry-desc">Subscribers & plans</div>
+                    </div>
+                    <div class="industry-card" onclick="selectIndustry(this, 'custom')">
+                        <div class="industry-icon">⚙️</div>
+                        <div class="industry-name">Custom</div>
+                        <div class="industry-desc">Build from scratch</div>
+                    </div>
+                </div>
+
+                <div class="template-section" id="template-section" style="display: none;">
+                    <div class="template-header">
+                        <div class="template-title">
+                            <span>📚 Available Templates for</span>
+                            <span id="selected-industry-name" style="color: var(--primary);"></span>
+                        </div>
+                        <button class="btn btn-secondary" onclick="startFromScratch()">Start from Scratch</button>
+                    </div>
+                    <div class="template-grid" id="template-grid">
+                        <!-- Templates will be populated dynamically -->
+                    </div>
+                </div>
+
+                <div class="template-section" style="margin-top: 20px;">
+                    <div class="template-header">
+                        <div class="template-title">🎯 Define Your Success Metrics</div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px;">
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="attribute-checkbox" checked>
+                            <label>Increase Customer Lifetime Value</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="attribute-checkbox" checked>
+                            <label>Reduce Operational Decision Time</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="attribute-checkbox">
+                            <label>Improve Campaign ROI</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="attribute-checkbox">
+                            <label>Reduce Customer Churn</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="attribute-checkbox">
+                            <label>Increase Transaction Frequency</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="attribute-checkbox">
+                            <label>Optimize Inventory Turnover</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screen 1: Organization Structure -->
+            <div class="screen" id="screen-1">
+                <div class="screen-header">
+                    <h1 class="screen-title">Define Your Organization Structure</h1>
+                    <p class="screen-subtitle">Map your entities and their attributes to enable intelligence gathering and analytics</p>
+                </div>
+
+                <!-- Tab Navigation -->
+                <div class="tab-navigation">
+                    <div class="tab-item active" onclick="switchTab('org-structure')">
+                        <span class="tab-icon">🏢</span>
+                        <span>Organization Structure</span>
+                    </div>
+                    <div class="tab-item" onclick="switchTab('customer-structure')">
+                        <span class="tab-icon">👤</span>
+                        <span>Customer Structure</span>
+                    </div>
+                    <div class="tab-item" onclick="switchTab('entity-config')">
+                        <span class="tab-icon">⚙️</span>
+                        <span>Entity Configuration</span>
+                    </div>
+                    <div class="tab-item" id="api-tab" style="display: none;" onclick="switchTab('api-config')">
+                        <span class="tab-icon">🔧</span>
+                        <span>API Configuration</span>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Organization Structure -->
+                <div class="tab-content active" id="tab-org-structure">
+                    <div class="hierarchy-builder">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <div>
+                                <h3 style="margin-bottom: 8px;">Organization Hierarchy</h3>
+                                <p style="font-size: 14px; color: var(--text-secondary);">
+                                    Based on your Retail Franchise selection. Customize names to match your organization.
+                                </p>
+                            </div>
+                            <button class="btn btn-secondary" onclick="showApiTab()" style="padding: 6px 12px; font-size: 12px;">
+                                🔧 Developer View
+                            </button>
+                        </div>
+                        
+                        <div class="hierarchy-tree">
+                            <div class="hierarchy-level active">
+                                <div class="level-icon">🏢</div>
+                                <div class="level-details">
+                                    <input type="text" class="level-name-input" value="Franchisor HQ" onchange="updateEntityName(this, 'corporate')">
+                                    <div class="level-desc">Top-level organization entity</div>
+                                </div>
+                                <div class="level-toggle">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked disabled>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="connector-line"></div>
+                            
+                            <div class="hierarchy-level">
+                                <div class="level-icon">🤝</div>
+                                <div class="level-details">
+                                    <input type="text" class="level-name-input" value="Master Franchisee" onchange="updateEntityName(this, 'master')">
+                                    <div class="level-desc">Multi-unit franchise operators</div>
+                                </div>
+                                <div class="level-toggle">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" onchange="toggleLevel(this, 'master')">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="connector-line"></div>
+                            
+                            <div class="hierarchy-level active">
+                                <div class="level-icon">👔</div>
+                                <div class="level-details">
+                                    <input type="text" class="level-name-input" value="Franchisee" onchange="updateEntityName(this, 'franchisee')">
+                                    <div class="level-desc">Individual franchise owners</div>
+                                </div>
+                                <div class="level-toggle">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked onchange="toggleLevel(this, 'franchisee')">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="connector-line"></div>
+                            
+                            <div class="hierarchy-level active">
+                                <div class="level-icon">🏪</div>
+                                <div class="level-details">
+                                    <input type="text" class="level-name-input" value="Store Location" onchange="updateEntityName(this, 'store')">
+                                    <div class="level-desc">Physical store locations</div>
+                                </div>
+                                <div class="level-toggle">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked onchange="toggleLevel(this, 'store')">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="connector-line"></div>
+                            
+                            <div class="hierarchy-level">
+                                <div class="level-icon">👥</div>
+                                <div class="level-details">
+                                    <input type="text" class="level-name-input" value="Department" onchange="updateEntityName(this, 'department')">
+                                    <div class="level-desc">Store departments or teams</div>
+                                </div>
+                                <div class="level-toggle">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" onchange="toggleLevel(this, 'department')">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-secondary" style="margin-top: 16px;">+ Add Custom Level</button>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Customer Structure -->
+                <div class="tab-content" id="tab-customer-structure">
+                    <div class="hierarchy-builder">
+                        <h3 style="margin-bottom: 8px;">Customer Hierarchy</h3>
+                        <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">
+                            Define customer relationships for pooling and family features
+                        </p>
+                        
+                        <div class="hierarchy-tree">
+                            <div class="hierarchy-level active">
+                                <div class="level-icon">👤</div>
+                                <div class="level-details">
+                                    <input type="text" class="level-name-input" value="Primary Member">
+                                    <div class="level-desc">Account holder</div>
+                                </div>
+                                <div class="level-toggle">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" checked disabled>
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="connector-line"></div>
+                            
+                            <div class="hierarchy-level">
+                                <div class="level-icon">👨‍👩‍👧‍👦</div>
+                                <div class="level-details">
+                                    <input type="text" class="level-name-input" value="Family Members">
+                                    <div class="level-desc">Linked family accounts</div>
+                                </div>
+                                <div class="level-toggle">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" onchange="toggleLevel(this, 'family')">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                            
+                            <div class="connector-line"></div>
+                            
+                            <div class="hierarchy-level">
+                                <div class="level-icon">🏢</div>
+                                <div class="level-details">
+                                    <input type="text" class="level-name-input" value="Corporate Account">
+                                    <div class="level-desc">B2B parent account</div>
+                                </div>
+                                <div class="level-toggle">
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" onchange="toggleLevel(this, 'corporate')">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="config-form" style="margin-top: 24px;">
+                            <h4 style="margin-bottom: 12px;">Family Pooling Rules</h4>
+                            <div class="checkbox-group">
+                                <input type="checkbox" class="attribute-checkbox" id="enable-pooling">
+                                <label>Enable value pooling between family members</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" class="attribute-checkbox">
+                                <label>Primary member can manage all linked accounts</label>
+                            </div>
+                            <div class="checkbox-group">
+                                <input type="checkbox" class="attribute-checkbox">
+                                <label>Require approval for family link requests</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Entity Configuration -->
+                <div class="tab-content" id="tab-entity-config">
+                    <div class="entity-config-container">
+                        <div class="entity-selector">
+                            <label style="font-weight: 600; margin-bottom: 8px; display: block;">Select Entity to Configure:</label>
+                            <select class="form-input" onchange="selectEntityConfig(this.value)">
+                                <option value="franchisee">Franchisee</option>
+                                <option value="store" selected>Store Location</option>
+                                <option value="customer">Customer</option>
+                            </select>
+                        </div>
+
+                        <div class="attributes-panel" style="margin-top: 24px;">
+                            <div class="attribute-group">
+                                <div class="attribute-group-title">
+                                    <span>🏪 Store Location Attributes</span>
+                                    <span class="ai-tag">🤖 Intelligence Ready</span>
+                                </div>
+                                
+                                <div style="margin-bottom: 16px;">
+                                    <h4 style="margin-bottom: 8px; font-size: 14px;">Standard Attributes</h4>
+                                    <div class="attribute-list">
+                                        <div class="attribute-item">
+                                            <input type="checkbox" class="attribute-checkbox" checked disabled>
+                                            <label>Store ID</label>
+                                            <span class="attribute-badge required">Required</span>
+                                        </div>
+                                        <div class="attribute-item">
+                                            <input type="checkbox" class="attribute-checkbox" checked disabled>
+                                            <label>Store Name</label>
+                                            <span class="attribute-badge required">Required</span>
+                                        </div>
+                                        <div class="attribute-item">
+                                            <input type="checkbox" class="attribute-checkbox" checked onchange="updateKPIs()">
+                                            <label>Address & Location</label>
+                                            <span class="kpi-indicator">+2 KPIs</span>
+                                        </div>
+                                        <div class="attribute-item">
+                                            <input type="checkbox" class="attribute-checkbox" checked onchange="updateKPIs()">
+                                            <label>Square Footage</label>
+                                            <span class="kpi-indicator">+3 KPIs</span>
+                                        </div>
+                                        <div class="attribute-item">
+                                            <input type="checkbox" class="attribute-checkbox" checked onchange="updateKPIs()">
+                                            <label>Operating Hours</label>
+                                            <span class="kpi-indicator">+2 KPIs</span>
+                                        </div>
+                                        <div class="attribute-item">
+                                            <input type="checkbox" class="attribute-checkbox" onchange="updateKPIs()">
+                                            <label>Store Format/Type</label>
+                                            <span class="kpi-indicator">+1 KPI</span>
+                                        </div>
+                                        <div class="attribute-item">
+                                            <input type="checkbox" class="attribute-checkbox" onchange="updateKPIs()">
+                                            <label>Seating Capacity</label>
+                                            <span class="kpi-indicator">+2 KPIs</span>
+                                        </div>
+                                        <div class="attribute-item">
+                                            <input type="checkbox" class="attribute-checkbox" onchange="updateKPIs()">
+                                            <label>Staff Count</label>
+                                            <span class="kpi-indicator">+3 KPIs</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style="margin-bottom: 16px;">
+                                    <h4 style="margin-bottom: 8px; font-size: 14px;">Custom Attributes</h4>
+                                    <div class="attribute-list" id="custom-attributes">
+                                        <div class="attribute-item">
+                                            <input type="checkbox" class="attribute-checkbox" checked>
+                                            <label>Drive-Through Available</label>
+                                            <span class="attribute-type">Boolean</span>
+                                        </div>
+                                        <div class="attribute-item">
+                                            <input type="checkbox" class="attribute-checkbox">
+                                            <label>Delivery Radius</label>
+                                            <span class="attribute-type">Number</span>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-secondary" style="margin-top: 12px;">+ Add Custom Attribute</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="kpi-dashboard">
+                            <h3 style="margin-bottom: 12px;">📊 Available Intelligence & KPIs</h3>
+                            <div class="kpi-count">
+                                <div class="kpi-stat">
+                                    <div class="kpi-number" id="total-kpis">24</div>
+                                    <div class="kpi-label">Total KPIs</div>
+                                </div>
+                                <div class="kpi-stat">
+                                    <div class="kpi-number" id="analytics-count">12</div>
+                                    <div class="kpi-label">Analytics</div>
+                                </div>
+                                <div class="kpi-stat">
+                                    <div class="kpi-number" id="ai-features">8</div>
+                                    <div class="kpi-label">AI Features</div>
+                                </div>
+                            </div>
+                            <div class="kpi-list">
+                                <h4 style="margin-bottom: 8px; font-size: 14px;">Enabled KPIs:</h4>
+                                <div class="kpi-tags">
+                                    <span class="kpi-tag">Sales per Square Foot</span>
+                                    <span class="kpi-tag">Store Comparison</span>
+                                    <span class="kpi-tag">Peak Hour Analysis</span>
+                                    <span class="kpi-tag">Location Clustering</span>
+                                    <span class="kpi-tag">Staff Productivity</span>
+                                    <span class="kpi-tag">Capacity Utilization</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: API Configuration (Hidden by default) -->
+                <div class="tab-content" id="tab-api-config">
+                    <div class="api-config-panel">
+                        <h3 style="margin-bottom: 16px;">API Field Mapping</h3>
+                        <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 24px;">
+                            Configure how entities are referenced in API calls and integrations
+                        </p>
+
+                        <div class="api-mapping-table">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr style="border-bottom: 2px solid var(--border);">
+                                        <th style="padding: 12px; text-align: left;">Display Name</th>
+                                        <th style="padding: 12px; text-align: left;">API Reference</th>
+                                        <th style="padding: 12px; text-align: left;">ID Pattern</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="border-bottom: 1px solid var(--border);">
+                                        <td style="padding: 12px;">Franchisor HQ</td>
+                                        <td style="padding: 12px;">
+                                            <input type="text" class="form-input" value="corporate" style="width: 150px;">
+                                        </td>
+                                        <td style="padding: 12px;">
+                                            <input type="text" class="form-input" value="CORP_{uuid}" style="width: 150px;">
+                                        </td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border);">
+                                        <td style="padding: 12px;">Franchisee</td>
+                                        <td style="padding: 12px;">
+                                            <input type="text" class="form-input" value="franchisee" style="width: 150px;">
+                                        </td>
+                                        <td style="padding: 12px;">
+                                            <input type="text" class="form-input" value="FR_{sequential}" style="width: 150px;">
+                                        </td>
+                                    </tr>
+                                    <tr style="border-bottom: 1px solid var(--border);">
+                                        <td style="padding: 12px;">Store Location</td>
+                                        <td style="padding: 12px;">
+                                            <input type="text" class="form-input" value="store" style="width: 150px;">
+                                        </td>
+                                        <td style="padding: 12px;">
+                                            <input type="text" class="form-input" value="STR_{sequential}" style="width: 150px;">
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="code-preview" style="margin-top: 24px;">
+                            <h4 style="margin-bottom: 12px;">Example API Payload:</h4>
+                            <pre style="background: var(--text-primary); color: white; padding: 16px; border-radius: 8px; font-size: 12px; overflow-x: auto;">
+{
+  "transaction": {
+    "id": "TXN_20250105_001234",
+    "store": "STR_045",
+    "franchisee": "FR_012",
+    "customer": "CUST_789456",
+    "amount": 125.50,
+    "points_earned": 125
+  }
+}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Screen 2: Value Mechanisms -->
+            <div class="screen" id="screen-2">
+                <div class="screen-header">
+                    <h1 class="screen-title">Configure Your Value Mechanisms</h1>
+                    <p class="screen-subtitle">Define how value is earned, stored, and redeemed in your loyalty program</p>
+                </div>
+
+                <div class="value-type-grid">
+                    <div class="value-type-card selected" onclick="selectValueType(this, 'points')">
+                        <div class="value-type-icon">⭐</div>
+                        <div class="value-type-name">Points-Based</div>
+                        <div class="value-type-desc">Traditional points accumulation with flexible redemption options</div>
+                    </div>
+                    <div class="value-type-card" onclick="selectValueType(this, 'cashback')">
+                        <div class="value-type-icon">💰</div>
+                        <div class="value-type-name">Cashback Wallet</div>
+                        <div class="value-type-desc">Direct monetary value stored in customer wallets</div>
+                    </div>
+                    <div class="value-type-card" onclick="selectValueType(this, 'credits')">
+                        <div class="value-type-icon">🎫</div>
+                        <div class="value-type-name">Credits/Vouchers</div>
+                        <div class="value-type-desc">Fixed-value credits or voucher-based rewards</div>
+                    </div>
+                    <div class="value-type-card" onclick="selectValueType(this, 'hybrid')">
+                        <div class="value-type-icon">🔄</div>
+                        <div class="value-type-name">Hybrid Model</div>
+                        <div class="value-type-desc">Combine multiple value types for maximum flexibility</div>
+                    </div>
+                </div>
+
+                <div class="config-form">
+                    <h3 style="margin-bottom: 20px;">Points Configuration</h3>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Point Value</label>
+                            <div style="display: flex; gap: 8px; align-items: center;">
+                                <span>1 point =</span>
+                                <input type="text" class="form-input" style="width: 80px;" value="0.01">
+                                <select class="form-input" style="width: 100px;">
+                                    <option>USD</option>
+                                    <option>EUR</option>
+                                    <option>GBP</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Point Expiry</label>
+                            <select class="form-input">
+                                <option>Never expire</option>
+                                <option>After 12 months</option>
+                                <option>After 24 months</option>
+                                <option>Annual reset</option>
+                                <option>Custom</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Minimum Redemption</label>
+                            <input type="text" class="form-input" value="100" placeholder="Minimum points to redeem">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Maximum Balance</label>
+                            <input type="text" class="form-input" placeholder="No limit">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Advanced Options</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="attribute-checkbox" checked>
+                            <label>Allow fractional points</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="attribute-checkbox">
+                            <label>Enable family pooling</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="attribute-checkbox">
+                            <label>Allow point transfers between members</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="attribute-checkbox">
+                            <label>Enable point purchase</label>
+                        </div>
+                        <div class="checkbox-group">
+                            <input type="checkbox" class="attribute-checkbox">
+                            <label>Different earn vs burn rates</label>
+                        </div>
+                    </div>
+
+                    <div class="intelligence-alert">
+                        <span class="intelligence-icon">🤖</span>
+                        <strong>AI Optimization:</strong> The system will analyze redemption patterns and automatically suggest optimal point values and expiry rules to maximize engagement while managing liability.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <div class="footer-info">
+                <span id="footer-status">Step 1 of 12 • Business Discovery</span>
+            </div>
+            <div class="footer-actions">
+                <button class="btn btn-secondary" onclick="previousScreen()" id="btn-back" style="display: none;">Back</button>
+                <button class="btn btn-primary" onclick="nextScreen()" id="btn-next">Continue to Structure</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentScreen = 0;
+        let selectedIndustry = null;
+        let selectedTemplate = null;
+        let currentTab = 'org-structure';
+        let apiViewEnabled = false;
+        let kpiCount = {
+            total: 24,
+            analytics: 12,
+            ai: 8
+        };
+
+        const templates = {
+            'retail-franchise': [
+                {
+                    name: 'Quick Service Restaurant',
+                    badge: 'POPULAR',
+                    implementations: 47,
+                    timeline: '30 days',
+                    patterns: 52
+                },
+                {
+                    name: 'Multi-Brand Franchise',
+                    badge: 'ADVANCED',
+                    implementations: 23,
+                    timeline: '45 days',
+                    patterns: 68
+                }
+            ],
+            'retail-chain': [
+                {
+                    name: 'Fashion Retail Chain',
+                    badge: 'PROVEN',
+                    implementations: 35,
+                    timeline: '30 days',
+                    patterns: 44
+                },
+                {
+                    name: 'Grocery Chain',
+                    badge: 'COMPLEX',
+                    implementations: 18,
+                    timeline: '60 days',
+                    patterns: 73
+                }
+            ],
+            'hospitality': [
+                {
+                    name: 'Hotel Loyalty Program',
+                    badge: 'PREMIUM',
+                    implementations: 29,
+                    timeline: '45 days',
+                    patterns: 61
+                },
+                {
+                    name: 'Restaurant Group',
+                    badge: 'FLEXIBLE',
+                    implementations: 41,
+                    timeline: '30 days',
+                    patterns: 49
+                }
+            ]
+        };
+
+        const kpiMapping = {
+            'Square Footage': { kpis: 3, analytics: 2, ai: 1 },
+            'Operating Hours': { kpis: 2, analytics: 1, ai: 1 },
+            'Store Format/Type': { kpis: 1, analytics: 1, ai: 0 },
+            'Seating Capacity': { kpis: 2, analytics: 1, ai: 1 },
+            'Staff Count': { kpis: 3, analytics: 2, ai: 1 },
+            'Address & Location': { kpis: 2, analytics: 1, ai: 1 }
+        };
+
+        function selectIndustry(card, industry) {
+            // Remove previous selection
+            document.querySelectorAll('.industry-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            selectedIndustry = industry;
+            
+            // Show templates section
+            document.getElementById('template-section').style.display = 'block';
+            document.getElementById('selected-industry-name').textContent = card.querySelector('.industry-name').textContent;
+            
+            // Populate templates
+            const templateGrid = document.getElementById('template-grid');
+            templateGrid.innerHTML = '';
+            
+            if (templates[industry]) {
+                templates[industry].forEach(template => {
+                    const templateCard = document.createElement('div');
+                    templateCard.className = 'template-card';
+                    templateCard.innerHTML = `
+                        <div class="template-name">
+                            ${template.name}
+                            <span class="template-badge">${template.badge}</span>
+                        </div>
+                        <div style="font-size: 14px; color: var(--text-secondary); margin: 8px 0;">
+                            ${template.patterns} pre-configured intelligence patterns
+                        </div>
+                        <div class="template-stats">
+                            <div class="template-stat">
+                                <strong>${template.implementations}</strong> live
+                            </div>
+                            <div class="template-stat">
+                                <strong>${template.timeline}</strong> to deploy
+                            </div>
+                        </div>
+                    `;
+                    templateCard.onclick = () => selectTemplate(templateCard, template);
+                    templateGrid.appendChild(templateCard);
+                });
+            }
+        }
+
+        function selectTemplate(card, template) {
+            document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+            selectedTemplate = template;
+        }
+
+        function startFromScratch() {
+            selectedTemplate = null;
+            document.querySelectorAll('.template-card').forEach(c => c.classList.remove('selected'));
+        }
+
+        function selectValueType(card, type) {
+            document.querySelectorAll('.value-type-card').forEach(c => c.classList.remove('selected'));
+            card.classList.add('selected');
+        }
+
+        function toggleLevel(checkbox, levelType) {
+            const level = checkbox.closest('.hierarchy-level');
+            if (checkbox.checked) {
+                level.classList.add('active');
+            } else {
+                level.classList.remove('active');
+            }
+        }
+
+        function switchTab(tabName) {
+            // Update tab navigation
+            document.querySelectorAll('.tab-item').forEach(tab => tab.classList.remove('active'));
+            event.target.closest('.tab-item').classList.add('active');
+            
+            // Switch content
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+            
+            currentTab = tabName;
+        }
+
+        function showApiTab() {
+            const apiTab = document.getElementById('api-tab');
+            if (!apiViewEnabled) {
+                apiTab.style.display = 'flex';
+                apiViewEnabled = true;
+                // Auto-switch to API tab
+                apiTab.click();
+                apiTab.querySelector('span:last-child').click();
+            }
+        }
+
+        function updateEntityName(input, entityType) {
+            // Update the display name
+            const newName = input.value;
+            // In real implementation, this would update the data model
+            console.log(`Updated ${entityType} name to: ${newName}`);
+        }
+
+        function selectEntityConfig(entityType) {
+            // Update the displayed entity configuration
+            // This would dynamically load different attribute sets
+            console.log(`Loading configuration for: ${entityType}`);
+        }
+
+        function updateKPIs() {
+            // Get all checked attributes
+            const checkedBoxes = document.querySelectorAll('#tab-entity-config .attribute-checkbox:checked');
+            let totalKpis = 10; // Base KPIs
+            let totalAnalytics = 5; // Base analytics
+            let totalAI = 3; // Base AI features
+            
+            checkedBoxes.forEach(checkbox => {
+                const label = checkbox.nextElementSibling.textContent;
+                if (kpiMapping[label]) {
+                    totalKpis += kpiMapping[label].kpis;
+                    totalAnalytics += kpiMapping[label].analytics;
+                    totalAI += kpiMapping[label].ai;
+                }
+            });
+            
+            // Update the dashboard
+            document.getElementById('total-kpis').textContent = totalKpis;
+            document.getElementById('analytics-count').textContent = totalAnalytics;
+            document.getElementById('ai-features').textContent = totalAI;
+            
+            // Update KPI tags
+            updateKPITags();
+        }
+
+        function updateKPITags() {
+            const kpiTagsContainer = document.querySelector('.kpi-tags');
+            const checkedBoxes = document.querySelectorAll('#tab-entity-config .attribute-checkbox:checked');
+            
+            let kpis = ['Customer Lifetime Value', 'Store Performance Index'];
+            
+            checkedBoxes.forEach(checkbox => {
+                const label = checkbox.nextElementSibling.textContent;
+                if (label === 'Square Footage') {
+                    kpis.push('Sales per Square Foot');
+                    kpis.push('Space Utilization');
+                }
+                if (label === 'Operating Hours') {
+                    kpis.push('Peak Hour Analysis');
+                    kpis.push('Off-Peak Optimization');
+                }
+                if (label === 'Staff Count') {
+                    kpis.push('Staff Productivity');
+                    kpis.push('Labor Cost Ratio');
+                }
+                if (label === 'Seating Capacity') {
+                    kpis.push('Capacity Utilization');
+                    kpis.push('Turnover Rate');
+                }
+            });
+            
+            kpiTagsContainer.innerHTML = kpis.map(kpi => 
+                `<span class="kpi-tag">${kpi}</span>`
+            ).join('');
+        }
+
+        function toggleSquareFeet(checkbox) {
+            updateKPIs();
+        }
+
+        function updateProgress() {
+            // Update progress steps
+            document.querySelectorAll('.progress-step').forEach((step, index) => {
+                step.classList.remove('active', 'completed');
+                if (index < currentScreen) {
+                    step.classList.add('completed');
+                } else if (index === currentScreen) {
+                    step.classList.add('active');
+                }
+            });
+
+            // Update footer
+            const footerTexts = [
+                'Step 1 of 12 • Business Discovery',
+                'Step 2 of 12 • Organization Structure',
+                'Step 3 of 12 • Value Mechanisms',
+                'Step 4 of 12 • Customer Segmentation',
+                'Step 5 of 12 • Earning Rules',
+                'Step 6 of 12 • Campaign Framework'
+            ];
+            document.getElementById('footer-status').textContent = footerTexts[currentScreen] || footerTexts[0];
+
+            // Update buttons
+            document.getElementById('btn-back').style.display = currentScreen > 0 ? 'inline-block' : 'none';
+            
+            const nextBtn = document.getElementById('btn-next');
+            if (currentScreen === 0) {
+                nextBtn.textContent = 'Continue to Structure';
+            } else if (currentScreen === 1) {
+                nextBtn.textContent = 'Continue to Value Setup';
+            } else if (currentScreen === 2) {
+                nextBtn.textContent = 'Continue to Segmentation';
+            }
+        }
+
+        function nextScreen() {
+            if (currentScreen < 2) {
+                document.getElementById(`screen-${currentScreen}`).classList.remove('active');
+                currentScreen++;
+                document.getElementById(`screen-${currentScreen}`).classList.add('active');
+                updateProgress();
+                window.scrollTo(0, 0);
+                
+                // Reset to first tab when entering screen 1
+                if (currentScreen === 1) {
+                    document.querySelectorAll('.tab-item')[0].click();
+                }
+            }
+        }
+
+        function previousScreen() {
+            if (currentScreen > 0) {
+                document.getElementById(`screen-${currentScreen}`).classList.remove('active');
+                currentScreen--;
+                document.getElementById(`screen-${currentScreen}`).classList.add('active');
+                updateProgress();
+                window.scrollTo(0, 0);
+            }
+        }
+
+        // Initialize
+        updateProgress();
+    </script>
+</body>
+</html>
