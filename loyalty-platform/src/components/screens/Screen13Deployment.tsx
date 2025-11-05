@@ -9,7 +9,7 @@ const deploymentOptions = [
   { id: 'big-bang', icon: '💥', name: 'Big Bang', desc: 'Launch everywhere at once' },
 ];
 
-export const Screen12Deployment: React.FC = () => {
+export const Screen13Deployment: React.FC = () => {
   const { deploymentStrategy } = useOnboardingStore();
 
   return (
