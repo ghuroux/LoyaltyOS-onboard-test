@@ -65,6 +65,36 @@ export const Screen1Organization: React.FC = () => {
     return [...orgEntities, ...custEntities];
   }, [organizationHierarchy, customerHierarchy]);
 
+  // Get standard attributes from initial entity attribute sets
+  const standardAttributeKeys = useMemo(() => {
+    // Map entity IDs to their standard attribute keys
+    const entityStandardAttrs: { [key: string]: string[] } = {
+      'corporate': ['Corporate ID', 'Corporate Name', 'Address & Location', 'Region', 'Number of Locations', 'Support Center', 'Years in Operation'],
+      'master': ['Master Franchisee ID', 'Master Franchisee Name', 'Address & Location', 'Territory Size', 'Number of Locations', 'Years in Operation'],
+      'franchisee': ['Franchisee ID', 'Franchisee Name', 'Address & Location', 'Number of Locations', 'Years in Operation'],
+      'store': ['Store ID', 'Store Name', 'Address & Location', 'Square Footage', 'Operating Hours', 'Store Format/Type', 'Seating Capacity', 'Staff Count', 'Drive-Thru', 'Parking Spaces'],
+      'department': ['Department ID', 'Department Name', 'Staff Count', 'Square Footage', 'Operating Hours'],
+      'primary': ['Member ID', 'First Name', 'Last Name', 'Email', 'Phone Number', 'Date of Birth', 'Address & Location', 'Age Group', 'Income Bracket', 'Household Size', 'Communication Preferences', 'Device Type', 'Social Media Presence'],
+      'family': ['Family Member ID', 'First Name', 'Last Name', 'Relationship', 'Date of Birth', 'Age Group'],
+      'corporate_account': ['Corporate Account ID', 'Company Name', 'Address & Location', 'Industry', 'Number of Employees', 'Annual Spend'],
+    };
+    return entityStandardAttrs[selectedEntity] || [];
+  }, [selectedEntity]);
+
+  // Get required attributes (first 2 for each entity)
+  const requiredAttributeKeys = useMemo(() => {
+    return standardAttributeKeys.slice(0, 2);
+  }, [standardAttributeKeys]);
+
+  // Split attributes into standard and custom
+  const standardAttributes = useMemo(() => {
+    return Object.entries(entityAttributes).filter(([key]) => standardAttributeKeys.includes(key));
+  }, [entityAttributes, standardAttributeKeys]);
+
+  const customAttributes = useMemo(() => {
+    return Object.entries(entityAttributes).filter(([key]) => !standardAttributeKeys.includes(key));
+  }, [entityAttributes, standardAttributeKeys]);
+
   // Calculate enabled KPIs dynamically
   const enabledKPIs = useMemo(() => {
     const kpis: string[] = ['Store Comparison', 'Peak Hour Analysis'];
@@ -335,7 +365,7 @@ export const Screen1Organization: React.FC = () => {
                 <div className="mb-6">
                   <h4 className="font-semibold mb-3 text-sm">Standard Attributes</h4>
                   <div className="grid grid-cols-2 gap-3">
-                    {Object.entries(entityAttributes).map(([key, value]) => (
+                    {standardAttributes.map(([key, value]) => (
                       <label
                         key={key}
                         className="flex items-center justify-between gap-2 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer"
@@ -345,12 +375,12 @@ export const Screen1Organization: React.FC = () => {
                             type="checkbox"
                             checked={value.enabled}
                             onChange={(e) => updateEntityAttribute(key, e.target.checked)}
-                            disabled={key === 'Store ID' || key === 'Store Name'}
+                            disabled={requiredAttributeKeys.includes(key)}
                             className="w-4 h-4 text-primary rounded"
                           />
                           <span className="text-sm text-gray-700">{key}</span>
                         </div>
-                        {(key === 'Store ID' || key === 'Store Name') && (
+                        {requiredAttributeKeys.includes(key) && (
                           <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs font-semibold">
                             Required
                           </span>
@@ -365,12 +395,11 @@ export const Screen1Organization: React.FC = () => {
                   </div>
                 </div>
 
-                <div>
-                  <h4 className="font-semibold mb-3 text-sm">Custom Attributes</h4>
-                  <div className="grid grid-cols-2 gap-3 mb-3">
-                    {Object.entries(entityAttributes)
-                      .filter(([key]) => !['Store ID', 'Store Name', 'Address & Location', 'Square Footage', 'Operating Hours', 'Store Format/Type', 'Seating Capacity', 'Staff Count'].includes(key))
-                      .map(([key, value]) => (
+                {customAttributes.length > 0 && (
+                  <div>
+                    <h4 className="font-semibold mb-3 text-sm">Custom Attributes</h4>
+                    <div className="grid grid-cols-2 gap-3 mb-3">
+                      {customAttributes.map(([key, value]) => (
                         <label
                           key={key}
                           className="flex items-center justify-between gap-2 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer"
@@ -389,7 +418,11 @@ export const Screen1Organization: React.FC = () => {
                           </span>
                         </label>
                       ))}
+                    </div>
                   </div>
+                )}
+
+                <div className="mt-4">
                   <Button variant="secondary" size="sm" onClick={() => setShowAddAttributeModal(true)}>
                     + Add Custom Attribute
                   </Button>
