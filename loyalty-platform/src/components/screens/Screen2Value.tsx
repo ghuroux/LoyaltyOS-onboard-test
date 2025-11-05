@@ -34,7 +34,7 @@ const getDefaultEarningRules = (): EarningRules => ({
   behavioralBonuses: {
     frequencyBonus: { enabled: false, visits: 3, points: 50 },
     thresholdBonus: { enabled: false, spend: 100, points: 100 },
-    birthdayMultiplier: { enabled: false, multiplier: 2 },
+    birthday: { enabled: false, rewardType: 'multiplier', multiplier: 2, points: 500, voucherType: 'value', voucherValue: 10 },
     firstPurchase: { enabled: false, points: 500 },
   },
 });
@@ -43,9 +43,20 @@ interface EarningRulesEditorProps {
   rules: EarningRules;
   onUpdate: (rules: Partial<EarningRules>) => void;
   currency: string;
+  valueType: string;
 }
 
-const EarningRulesEditor: React.FC<EarningRulesEditorProps> = ({ rules, onUpdate, currency }) => {
+const EarningRulesEditor: React.FC<EarningRulesEditorProps> = ({ rules, onUpdate, currency, valueType }) => {
+  // Get value type label
+  const getValueLabel = () => {
+    switch (valueType) {
+      case 'cashback': return 'cashback';
+      case 'credits': return 'credits';
+      default: return 'points';
+    }
+  };
+
+  const valueLabel = getValueLabel();
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [categoryMultiplier, setCategoryMultiplier] = useState(1);
@@ -84,7 +95,7 @@ const EarningRulesEditor: React.FC<EarningRulesEditorProps> = ({ rules, onUpdate
             })}
             className="px-3 py-2 border border-gray-300 rounded-lg w-24"
           />
-          <span className="text-gray-600">points per</span>
+          <span className="text-gray-600">{valueLabel} per</span>
           <input
             type="number"
             value={rules.baseRate.spend}
@@ -251,44 +262,160 @@ const EarningRulesEditor: React.FC<EarningRulesEditorProps> = ({ rules, onUpdate
             )}
           </div>
 
-          {/* Birthday Multiplier */}
+          {/* Birthday Reward */}
           <div className="p-4 bg-gray-50 rounded-lg">
             <label className="flex items-center gap-2 mb-3">
               <input
                 type="checkbox"
-                checked={rules.behavioralBonuses.birthdayMultiplier?.enabled || false}
+                checked={rules.behavioralBonuses.birthday?.enabled || false}
                 onChange={(e) => onUpdate({
                   behavioralBonuses: {
                     ...rules.behavioralBonuses,
-                    birthdayMultiplier: {
-                      ...rules.behavioralBonuses.birthdayMultiplier,
+                    birthday: {
+                      ...rules.behavioralBonuses.birthday,
                       enabled: e.target.checked,
-                      multiplier: rules.behavioralBonuses.birthdayMultiplier?.multiplier || 2,
+                      rewardType: rules.behavioralBonuses.birthday?.rewardType || 'multiplier',
+                      multiplier: rules.behavioralBonuses.birthday?.multiplier || 2,
+                      points: rules.behavioralBonuses.birthday?.points || 500,
+                      voucherType: rules.behavioralBonuses.birthday?.voucherType || 'value',
+                      voucherValue: rules.behavioralBonuses.birthday?.voucherValue || 10,
                     },
                   },
                 })}
                 className="w-4 h-4 text-primary rounded"
               />
-              <span className="font-medium text-gray-900">Birthday Month Multiplier</span>
+              <span className="font-medium text-gray-900">Birthday Reward</span>
             </label>
-            {rules.behavioralBonuses.birthdayMultiplier?.enabled && (
-              <div className="flex items-center gap-3 ml-6">
-                <input
-                  type="number"
-                  step="0.5"
-                  value={rules.behavioralBonuses.birthdayMultiplier.multiplier}
-                  onChange={(e) => onUpdate({
-                    behavioralBonuses: {
-                      ...rules.behavioralBonuses,
-                      birthdayMultiplier: {
-                        ...rules.behavioralBonuses.birthdayMultiplier!,
-                        multiplier: parseFloat(e.target.value),
+            {rules.behavioralBonuses.birthday?.enabled && (
+              <div className="ml-6 space-y-3">
+                <div className="flex items-center gap-3">
+                  <label className="text-sm text-gray-600 min-w-[80px]">Reward Type:</label>
+                  <select
+                    value={rules.behavioralBonuses.birthday.rewardType}
+                    onChange={(e) => onUpdate({
+                      behavioralBonuses: {
+                        ...rules.behavioralBonuses,
+                        birthday: {
+                          ...rules.behavioralBonuses.birthday!,
+                          rewardType: e.target.value as 'multiplier' | 'points' | 'voucher',
+                        },
                       },
-                    },
-                  })}
-                  className="px-3 py-2 border border-gray-300 rounded-lg w-24"
-                />
-                <span className="text-sm text-gray-600">x multiplier during birthday month</span>
+                    })}
+                    className="px-3 py-2 border border-gray-300 rounded-lg"
+                  >
+                    <option value="multiplier">Multiplier</option>
+                    <option value="points">{valueLabel.charAt(0).toUpperCase() + valueLabel.slice(1)} Issue</option>
+                    <option value="voucher">Voucher Issue</option>
+                  </select>
+                </div>
+
+                {rules.behavioralBonuses.birthday.rewardType === 'multiplier' && (
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="number"
+                      step="0.5"
+                      value={rules.behavioralBonuses.birthday.multiplier || 2}
+                      onChange={(e) => onUpdate({
+                        behavioralBonuses: {
+                          ...rules.behavioralBonuses,
+                          birthday: {
+                            ...rules.behavioralBonuses.birthday!,
+                            multiplier: parseFloat(e.target.value),
+                          },
+                        },
+                      })}
+                      className="px-3 py-2 border border-gray-300 rounded-lg w-24"
+                    />
+                    <span className="text-sm text-gray-600">x multiplier during birthday month</span>
+                  </div>
+                )}
+
+                {rules.behavioralBonuses.birthday.rewardType === 'points' && (
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-gray-600">Reward</span>
+                    <input
+                      type="number"
+                      value={rules.behavioralBonuses.birthday.points || 500}
+                      onChange={(e) => onUpdate({
+                        behavioralBonuses: {
+                          ...rules.behavioralBonuses,
+                          birthday: {
+                            ...rules.behavioralBonuses.birthday!,
+                            points: parseInt(e.target.value),
+                          },
+                        },
+                      })}
+                      className="px-3 py-2 border border-gray-300 rounded-lg w-24"
+                    />
+                    <span className="text-sm text-gray-600">{valueLabel} on birthday</span>
+                  </div>
+                )}
+
+                {rules.behavioralBonuses.birthday.rewardType === 'voucher' && (
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-3">
+                      <label className="text-sm text-gray-600 min-w-[80px]">Voucher Type:</label>
+                      <select
+                        value={rules.behavioralBonuses.birthday.voucherType || 'value'}
+                        onChange={(e) => onUpdate({
+                          behavioralBonuses: {
+                            ...rules.behavioralBonuses,
+                            birthday: {
+                              ...rules.behavioralBonuses.birthday!,
+                              voucherType: e.target.value as 'sku' | 'value',
+                            },
+                          },
+                        })}
+                        className="px-3 py-2 border border-gray-300 rounded-lg"
+                      >
+                        <option value="value">Value-based</option>
+                        <option value="sku">SKU/PLU-based</option>
+                      </select>
+                    </div>
+
+                    {rules.behavioralBonuses.birthday.voucherType === 'sku' && (
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm text-gray-600 min-w-[80px]">SKU/PLU:</span>
+                        <input
+                          type="text"
+                          value={rules.behavioralBonuses.birthday.voucherSku || ''}
+                          onChange={(e) => onUpdate({
+                            behavioralBonuses: {
+                              ...rules.behavioralBonuses,
+                              birthday: {
+                                ...rules.behavioralBonuses.birthday!,
+                                voucherSku: e.target.value,
+                              },
+                            },
+                          })}
+                          placeholder="e.g., BDAY-FREE-001"
+                          className="px-3 py-2 border border-gray-300 rounded-lg flex-1"
+                        />
+                      </div>
+                    )}
+
+                    {rules.behavioralBonuses.birthday.voucherType === 'value' && (
+                      <div className="flex items-center gap-3">
+                        <span className="text-sm text-gray-600 min-w-[80px]">Value:</span>
+                        <input
+                          type="number"
+                          value={rules.behavioralBonuses.birthday.voucherValue || 10}
+                          onChange={(e) => onUpdate({
+                            behavioralBonuses: {
+                              ...rules.behavioralBonuses,
+                              birthday: {
+                                ...rules.behavioralBonuses.birthday!,
+                                voucherValue: parseFloat(e.target.value),
+                              },
+                            },
+                          })}
+                          className="px-3 py-2 border border-gray-300 rounded-lg w-24"
+                        />
+                        <span className="text-sm text-gray-600">{currency}</span>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -394,6 +521,17 @@ export const Screen2Value: React.FC = () => {
     removeTier,
     updateEarningRules,
   } = useOnboardingStore();
+
+  // Get value type label
+  const getValueLabel = () => {
+    switch (valueType) {
+      case 'cashback': return 'cashback';
+      case 'credits': return 'credits';
+      default: return 'points';
+    }
+  };
+
+  const valueLabel = getValueLabel();
 
   // Modal states
   const [showTierModal, setShowTierModal] = useState(false);
@@ -834,7 +972,7 @@ export const Screen2Value: React.FC = () => {
                         <div className="flex-1">
                           <div className="font-semibold text-gray-900">{tier.name}</div>
                           <div className="text-sm text-gray-600">
-                            {tier.threshold.toLocaleString()} points threshold • {tier.earningRules.baseRate.points} point{tier.earningRules.baseRate.points !== 1 ? 's' : ''} per ${tier.earningRules.baseRate.spend}
+                            {tier.threshold.toLocaleString()} {valueLabel} threshold • {tier.earningRules.baseRate.points} {valueLabel} per ${tier.earningRules.baseRate.spend}
                           </div>
                         </div>
                         <div className="flex gap-2">
@@ -867,6 +1005,7 @@ export const Screen2Value: React.FC = () => {
                             rules={tier.earningRules}
                             onUpdate={(rulesUpdate) => handleUpdateTierEarningRules(tier.id, rulesUpdate)}
                             currency={valueConfig.currency || 'USD'}
+                            valueType={valueType}
                           />
                         </div>
                       )}
@@ -892,6 +1031,7 @@ export const Screen2Value: React.FC = () => {
               rules={earningRules}
               onUpdate={updateEarningRules}
               currency={valueConfig.currency || 'USD'}
+              valueType={valueType}
             />
           </Card>
         )}

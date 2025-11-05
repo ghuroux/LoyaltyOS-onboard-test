@@ -54,7 +54,15 @@ export interface EarningRules {
   behavioralBonuses: {
     frequencyBonus?: { enabled: boolean; visits: number; points: number };
     thresholdBonus?: { enabled: boolean; spend: number; points: number };
-    birthdayMultiplier?: { enabled: boolean; multiplier: number };
+    birthday?: {
+      enabled: boolean;
+      rewardType: 'multiplier' | 'points' | 'voucher';
+      multiplier?: number;
+      points?: number;
+      voucherType?: 'sku' | 'value';
+      voucherSku?: string;
+      voucherValue?: number;
+    };
     firstPurchase?: { enabled: boolean; points: number };
   };
 }
@@ -185,12 +193,108 @@ const initialQueues: Queue[] = [
 ];
 
 const kpiMappings: { [key: string]: KPIMapping } = {
+  // Store-specific
   'Square Footage': { kpis: 3, analytics: 2, ai: 1 },
   'Operating Hours': { kpis: 2, analytics: 1, ai: 1 },
   'Store Format/Type': { kpis: 1, analytics: 1, ai: 0 },
   'Seating Capacity': { kpis: 2, analytics: 1, ai: 1 },
   'Staff Count': { kpis: 3, analytics: 2, ai: 1 },
   'Address & Location': { kpis: 2, analytics: 1, ai: 1 },
+  'Drive-Thru': { kpis: 2, analytics: 1, ai: 1 },
+  'Parking Spaces': { kpis: 1, analytics: 1, ai: 0 },
+
+  // Corporate/Organization specific
+  'Region': { kpis: 3, analytics: 2, ai: 1 },
+  'Number of Locations': { kpis: 3, analytics: 2, ai: 2 },
+  'Territory Size': { kpis: 2, analytics: 1, ai: 1 },
+  'Support Center': { kpis: 1, analytics: 1, ai: 0 },
+  'Years in Operation': { kpis: 2, analytics: 1, ai: 1 },
+
+  // Customer specific
+  'Age Group': { kpis: 2, analytics: 2, ai: 1 },
+  'Income Bracket': { kpis: 2, analytics: 2, ai: 1 },
+  'Household Size': { kpis: 1, analytics: 1, ai: 1 },
+  'Communication Preferences': { kpis: 1, analytics: 1, ai: 0 },
+  'Device Type': { kpis: 1, analytics: 1, ai: 1 },
+  'Social Media Presence': { kpis: 1, analytics: 1, ai: 1 },
+};
+
+// Entity-specific attribute sets
+const entityAttributeSets: { [key: string]: AttributeConfig } = {
+  'corporate': {
+    'Corporate ID': { enabled: true },
+    'Corporate Name': { enabled: true },
+    'Address & Location': { enabled: true, kpiMapping: kpiMappings['Address & Location'] },
+    'Region': { enabled: true, kpiMapping: kpiMappings['Region'] },
+    'Number of Locations': { enabled: true, kpiMapping: kpiMappings['Number of Locations'] },
+    'Support Center': { enabled: false, kpiMapping: kpiMappings['Support Center'] },
+    'Years in Operation': { enabled: false, kpiMapping: kpiMappings['Years in Operation'] },
+  },
+  'master': {
+    'Master Franchisee ID': { enabled: true },
+    'Master Franchisee Name': { enabled: true },
+    'Address & Location': { enabled: true, kpiMapping: kpiMappings['Address & Location'] },
+    'Territory Size': { enabled: true, kpiMapping: kpiMappings['Territory Size'] },
+    'Number of Locations': { enabled: true, kpiMapping: kpiMappings['Number of Locations'] },
+    'Years in Operation': { enabled: false, kpiMapping: kpiMappings['Years in Operation'] },
+  },
+  'franchisee': {
+    'Franchisee ID': { enabled: true },
+    'Franchisee Name': { enabled: true },
+    'Address & Location': { enabled: true, kpiMapping: kpiMappings['Address & Location'] },
+    'Number of Locations': { enabled: true, kpiMapping: kpiMappings['Number of Locations'] },
+    'Years in Operation': { enabled: false, kpiMapping: kpiMappings['Years in Operation'] },
+  },
+  'store': {
+    'Store ID': { enabled: true },
+    'Store Name': { enabled: true },
+    'Address & Location': { enabled: true, kpiMapping: kpiMappings['Address & Location'] },
+    'Square Footage': { enabled: true, kpiMapping: kpiMappings['Square Footage'] },
+    'Operating Hours': { enabled: true, kpiMapping: kpiMappings['Operating Hours'] },
+    'Store Format/Type': { enabled: false, kpiMapping: kpiMappings['Store Format/Type'] },
+    'Seating Capacity': { enabled: false, kpiMapping: kpiMappings['Seating Capacity'] },
+    'Staff Count': { enabled: false, kpiMapping: kpiMappings['Staff Count'] },
+    'Drive-Thru': { enabled: false, kpiMapping: kpiMappings['Drive-Thru'] },
+    'Parking Spaces': { enabled: false, kpiMapping: kpiMappings['Parking Spaces'] },
+  },
+  'department': {
+    'Department ID': { enabled: true },
+    'Department Name': { enabled: true },
+    'Staff Count': { enabled: true, kpiMapping: kpiMappings['Staff Count'] },
+    'Square Footage': { enabled: false, kpiMapping: kpiMappings['Square Footage'] },
+    'Operating Hours': { enabled: false, kpiMapping: kpiMappings['Operating Hours'] },
+  },
+  'primary': {
+    'Member ID': { enabled: true },
+    'First Name': { enabled: true },
+    'Last Name': { enabled: true },
+    'Email': { enabled: true },
+    'Phone Number': { enabled: true },
+    'Date of Birth': { enabled: true },
+    'Address & Location': { enabled: true, kpiMapping: kpiMappings['Address & Location'] },
+    'Age Group': { enabled: false, kpiMapping: kpiMappings['Age Group'] },
+    'Income Bracket': { enabled: false, kpiMapping: kpiMappings['Income Bracket'] },
+    'Household Size': { enabled: false, kpiMapping: kpiMappings['Household Size'] },
+    'Communication Preferences': { enabled: false, kpiMapping: kpiMappings['Communication Preferences'] },
+    'Device Type': { enabled: false, kpiMapping: kpiMappings['Device Type'] },
+    'Social Media Presence': { enabled: false, kpiMapping: kpiMappings['Social Media Presence'] },
+  },
+  'family': {
+    'Family Member ID': { enabled: true },
+    'First Name': { enabled: true },
+    'Last Name': { enabled: true },
+    'Relationship': { enabled: true },
+    'Date of Birth': { enabled: false },
+    'Age Group': { enabled: false, kpiMapping: kpiMappings['Age Group'] },
+  },
+  'corporate_account': {
+    'Corporate Account ID': { enabled: true },
+    'Company Name': { enabled: true },
+    'Address & Location': { enabled: true, kpiMapping: kpiMappings['Address & Location'] },
+    'Industry': { enabled: true },
+    'Number of Employees': { enabled: true, kpiMapping: kpiMappings['Number of Locations'] },
+    'Annual Spend': { enabled: false },
+  },
 };
 
 export const useOnboardingStore = create<OnboardingState>((set, get) => ({
@@ -200,16 +304,7 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
   organizationHierarchy: initialOrgHierarchy,
   customerHierarchy: initialCustomerHierarchy,
   selectedEntity: 'store',
-  entityAttributes: {
-    'Store ID': { enabled: true },
-    'Store Name': { enabled: true },
-    'Address & Location': { enabled: true, kpiMapping: kpiMappings['Address & Location'] },
-    'Square Footage': { enabled: true, kpiMapping: kpiMappings['Square Footage'] },
-    'Operating Hours': { enabled: true, kpiMapping: kpiMappings['Operating Hours'] },
-    'Store Format/Type': { enabled: false, kpiMapping: kpiMappings['Store Format/Type'] },
-    'Seating Capacity': { enabled: false, kpiMapping: kpiMappings['Seating Capacity'] },
-    'Staff Count': { enabled: false, kpiMapping: kpiMappings['Staff Count'] },
-  },
+  entityAttributes: entityAttributeSets['store'],
   kpiCounts: { total: 17, analytics: 9, ai: 6 },
   valueType: 'points',
   valueConfig: {
@@ -233,7 +328,7 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
     behavioralBonuses: {
       frequencyBonus: { enabled: false, visits: 3, points: 50 },
       thresholdBonus: { enabled: false, spend: 100, points: 100 },
-      birthdayMultiplier: { enabled: false, multiplier: 2 },
+      birthday: { enabled: false, rewardType: 'multiplier', multiplier: 2, points: 500, voucherType: 'value', voucherValue: 10 },
       firstPurchase: { enabled: false, points: 500 },
     },
   },
@@ -298,7 +393,13 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
     return { customerHierarchy: [...state.customerHierarchy, newType] };
   }),
 
-  setSelectedEntity: (entity) => set({ selectedEntity: entity }),
+  setSelectedEntity: (entity) => {
+    set({
+      selectedEntity: entity,
+      entityAttributes: entityAttributeSets[entity] || entityAttributeSets['store']
+    });
+    get().recalculateKPIs();
+  },
 
   updateEntityAttribute: (attribute, enabled) => {
     set((state) => ({
