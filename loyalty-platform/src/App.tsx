@@ -27,13 +27,13 @@ const screens = [
   Screen5Redemption,
   Screen3Segmentation,
   Screen4Automations,
+  Screen12SafeguardsAutomation,
   Screen6Campaigns,
   Screen7Queues,
   Screen8Data,
   Screen9Integrations,
   Screen10Analytics,
   Screen11FlowBuilder,
-  Screen12SafeguardsAutomation,
   Screen13Deployment,
 ];
 
