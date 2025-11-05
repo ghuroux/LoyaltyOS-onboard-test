@@ -151,6 +151,23 @@ export interface ValueConfig {
   differentBurnRate?: boolean;
 }
 
+export interface RFMThresholds {
+  recency: { high: number; low: number }; // days since last purchase
+  frequency: { high: number; low: number }; // number of purchases
+  monetary: { high: number; low: number }; // total spend amount
+}
+
+export interface Segment {
+  id: string;
+  name: string;
+  description: string;
+  enabled: boolean;
+  color: string;
+  rfmScore?: string; // e.g., "555", "111"
+  criteria?: any; // For custom rules
+  estimatedSize?: number;
+}
+
 interface OnboardingState {
   currentScreen: number;
   selectedIndustry: string | null;
@@ -167,7 +184,10 @@ interface OnboardingState {
   valueType: string;
   valueConfig: ValueConfig;
   useTiers: boolean;
-  segmentationApproach: string;
+  segmentationMethod: 'rfm' | 'demographic' | 'custom';
+  rfmThresholds: RFMThresholds;
+  segments: Segment[];
+  enableMLSubsegments: boolean;
   tiers: Tier[];
   earningRules: EarningRules;
   redemptionRules: any;
@@ -197,7 +217,10 @@ interface OnboardingState {
   updateTier: (id: string, updates: Partial<Tier>) => void;
   removeTier: (id: string) => void;
   updateEarningRules: (rules: Partial<EarningRules>) => void;
-  setSegmentationApproach: (approach: string) => void;
+  setSegmentationMethod: (method: 'rfm' | 'demographic' | 'custom') => void;
+  updateRFMThresholds: (thresholds: Partial<RFMThresholds>) => void;
+  updateSegment: (id: string, updates: Partial<Segment>) => void;
+  setEnableMLSubsegments: (enabled: boolean) => void;
   updateQueue: (id: string, updates: Partial<Queue>) => void;
   nextScreen: () => void;
   previousScreen: () => void;
@@ -215,6 +238,20 @@ const initialCustomerHierarchy: HierarchyLevel[] = [
   { id: 'primary', name: 'Primary Member', displayName: 'Primary Member', description: 'Account holder', enabled: true, required: true },
   { id: 'family', name: 'Family Members', displayName: 'Family Members', description: 'Linked family accounts', enabled: false },
   { id: 'corporate_account', name: 'Corporate Account', displayName: 'Corporate Account', description: 'B2B parent account', enabled: false },
+];
+
+const defaultRFMSegments: Segment[] = [
+  { id: 'champions', name: 'Champions', description: 'Bought recently, buy often and spend the most', enabled: true, color: 'green', rfmScore: '555' },
+  { id: 'loyal', name: 'Loyal Customers', description: 'Buy regularly with good monetary value', enabled: true, color: 'blue', rfmScore: '544' },
+  { id: 'potential_loyalist', name: 'Potential Loyalists', description: 'Recent customers with average frequency and spend', enabled: true, color: 'cyan', rfmScore: '453' },
+  { id: 'recent_customers', name: 'Recent Customers', description: 'Bought recently but not often', enabled: true, color: 'purple', rfmScore: '511' },
+  { id: 'promising', name: 'Promising', description: 'Recent shoppers with good spend but low frequency', enabled: true, color: 'indigo', rfmScore: '512' },
+  { id: 'need_attention', name: 'Need Attention', description: 'Above average recency, frequency & monetary but declining', enabled: true, color: 'yellow', rfmScore: '433' },
+  { id: 'about_to_sleep', name: 'About to Sleep', description: 'Below average recency and frequency', enabled: true, color: 'orange', rfmScore: '322' },
+  { id: 'at_risk', name: 'At Risk', description: 'Were good customers but haven\'t purchased recently', enabled: true, color: 'red', rfmScore: '244' },
+  { id: 'cannot_lose', name: 'Can\'t Lose Them', description: 'Were best customers but haven\'t returned in a while', enabled: true, color: 'rose', rfmScore: '155' },
+  { id: 'hibernating', name: 'Hibernating', description: 'Last purchase was long ago and low monetary value', enabled: true, color: 'gray', rfmScore: '211' },
+  { id: 'lost', name: 'Lost', description: 'Lowest recency, frequency & monetary scores', enabled: true, color: 'slate', rfmScore: '111' },
 ];
 
 const initialQueues: Queue[] = [
@@ -380,7 +417,14 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
     differentBurnRate: false,
   },
   useTiers: false,
-  segmentationApproach: 'hybrid',
+  segmentationMethod: 'rfm',
+  rfmThresholds: {
+    recency: { high: 30, low: 90 },
+    frequency: { high: 10, low: 3 },
+    monetary: { high: 500, low: 100 },
+  },
+  segments: defaultRFMSegments,
+  enableMLSubsegments: true,
   tiers: [],
   earningRules: {
     baseRate: { points: 1, spend: 1 },
@@ -537,7 +581,24 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
     },
   })),
 
-  setSegmentationApproach: (approach) => set({ segmentationApproach: approach }),
+  setSegmentationMethod: (method) => set({ segmentationMethod: method }),
+
+  updateRFMThresholds: (thresholds) => set((state) => ({
+    rfmThresholds: {
+      ...state.rfmThresholds,
+      recency: thresholds.recency ? { ...state.rfmThresholds.recency, ...thresholds.recency } : state.rfmThresholds.recency,
+      frequency: thresholds.frequency ? { ...state.rfmThresholds.frequency, ...thresholds.frequency } : state.rfmThresholds.frequency,
+      monetary: thresholds.monetary ? { ...state.rfmThresholds.monetary, ...thresholds.monetary } : state.rfmThresholds.monetary,
+    },
+  })),
+
+  updateSegment: (id, updates) => set((state) => ({
+    segments: state.segments.map((segment) =>
+      segment.id === id ? { ...segment, ...updates } : segment
+    ),
+  })),
+
+  setEnableMLSubsegments: (enabled) => set({ enableMLSubsegments: enabled }),
 
   updateQueue: (id, updates) => set((state) => ({
     queues: state.queues.map((queue) =>
