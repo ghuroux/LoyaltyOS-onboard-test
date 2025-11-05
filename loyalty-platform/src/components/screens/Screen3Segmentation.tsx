@@ -4,7 +4,7 @@ import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
 import { useOnboardingStore, type Segment } from '../../store/onboardingStore';
-import { Users, Zap, Sliders } from 'lucide-react';
+import { Users, Zap, Sliders, Plus } from 'lucide-react';
 
 const segmentationMethods = [
   { id: 'rfm', name: 'RFM Segmentation', desc: 'Recency, Frequency, Monetary analysis (Recommended)', icon: Users },
@@ -214,14 +214,59 @@ export const Screen3Segmentation: React.FC = () => {
         {/* Demographic Configuration */}
         {segmentationMethod === 'demographic' && (
           <Card className="p-6 mb-8">
-            <h3 className="text-xl font-semibold mb-4">Demographic Segmentation</h3>
-            <div className="p-8 bg-gray-50 rounded-lg text-center">
-              <p className="text-gray-600">
-                Demographic segmentation will use the entity attributes you configured in the Organization screen.
-              </p>
-              <p className="text-sm text-gray-500 mt-2">
-                Segments will be created based on age groups, locations, income brackets, and other demographic data.
-              </p>
+            <h3 className="text-xl font-semibold mb-4">Demographic Segmentation Configuration</h3>
+            <p className="text-sm text-gray-600 mb-6">
+              Demographic segments are based on customer attributes configured in the Organization screen.
+              Select which demographic dimensions to use for segmentation.
+            </p>
+
+            <div className="grid grid-cols-3 gap-6">
+              {/* Age Groups */}
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <label className="flex items-center gap-2 mb-3">
+                  <input type="checkbox" className="w-4 h-4 text-primary rounded" defaultChecked />
+                  <span className="font-semibold text-gray-900">Age Groups</span>
+                </label>
+                <p className="text-xs text-gray-600 mb-3">Segment by customer age ranges</p>
+                <div className="space-y-1 text-xs text-gray-500">
+                  <div>• Gen Z (18-27)</div>
+                  <div>• Millennials (28-43)</div>
+                  <div>• Gen X (44-59)</div>
+                  <div>• Boomers (60+)</div>
+                </div>
+              </div>
+
+              {/* Income Brackets */}
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <label className="flex items-center gap-2 mb-3">
+                  <input type="checkbox" className="w-4 h-4 text-primary rounded" defaultChecked />
+                  <span className="font-semibold text-gray-900">Income Brackets</span>
+                </label>
+                <p className="text-xs text-gray-600 mb-3">Segment by income levels</p>
+                <div className="space-y-1 text-xs text-gray-500">
+                  <div>• High Income</div>
+                  <div>• Middle Income</div>
+                  <div>• Budget-Conscious</div>
+                </div>
+              </div>
+
+              {/* Location Type */}
+              <div className="p-4 bg-gray-50 rounded-lg">
+                <label className="flex items-center gap-2 mb-3">
+                  <input type="checkbox" className="w-4 h-4 text-primary rounded" defaultChecked />
+                  <span className="font-semibold text-gray-900">Location Type</span>
+                </label>
+                <p className="text-xs text-gray-600 mb-3">Segment by geographic area</p>
+                <div className="space-y-1 text-xs text-gray-500">
+                  <div>• Urban Dwellers</div>
+                  <div>• Suburban Families</div>
+                  <div>• Rural Customers</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-900">
+              <strong>Note:</strong> Demographic data will be collected during customer registration and enriched through third-party data providers.
             </div>
           </Card>
         )}
@@ -230,13 +275,64 @@ export const Screen3Segmentation: React.FC = () => {
         {segmentationMethod === 'custom' && (
           <Card className="p-6 mb-8">
             <h3 className="text-xl font-semibold mb-4">Custom Rule Builder</h3>
-            <div className="p-8 bg-gray-50 rounded-lg text-center">
-              <p className="text-gray-600">
-                Custom rule builder allows you to create segments with advanced logic combining multiple criteria.
-              </p>
-              <p className="text-sm text-gray-500 mt-2">
-                This feature will be configured in a later step of the onboarding process.
-              </p>
+            <p className="text-sm text-gray-600 mb-6">
+              Build custom segments by combining multiple criteria with AND/OR logic.
+              Create sophisticated segments tailored to your specific business needs.
+            </p>
+
+            <div className="space-y-4">
+              {/* Example Rule Builder UI */}
+              <div className="p-4 border-2 border-dashed border-gray-300 rounded-lg">
+                <div className="flex items-center gap-3 mb-3">
+                  <span className="text-sm font-semibold text-gray-700">IF</span>
+                  <select className="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                    <option>Total Spend</option>
+                    <option>Purchase Frequency</option>
+                    <option>Days Since Last Purchase</option>
+                    <option>Average Order Value</option>
+                    <option>Product Category</option>
+                    <option>Age Group</option>
+                    <option>Location</option>
+                  </select>
+                  <select className="px-3 py-2 border border-gray-300 rounded-lg text-sm">
+                    <option>is greater than</option>
+                    <option>is less than</option>
+                    <option>equals</option>
+                    <option>is between</option>
+                    <option>contains</option>
+                  </select>
+                  <input
+                    type="text"
+                    placeholder="Value"
+                    className="px-3 py-2 border border-gray-300 rounded-lg text-sm w-32"
+                  />
+                </div>
+
+                <div className="flex items-center gap-3">
+                  <Button variant="secondary" size="sm" className="text-xs">
+                    + AND Condition
+                  </Button>
+                  <Button variant="secondary" size="sm" className="text-xs">
+                    + OR Condition
+                  </Button>
+                </div>
+              </div>
+
+              <div className="p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                <div className="text-sm text-purple-900">
+                  <strong>Example Custom Segment:</strong>
+                  <div className="mt-2 text-xs space-y-1">
+                    <div>• High-Value Weekend Shoppers: Total Spend &gt; $1000 AND Last Purchase on Weekend</div>
+                    <div>• Lapsed VIPs: Total Spend &gt; $5000 AND Days Since Last Purchase &gt; 90</div>
+                    <div>• Young Professionals: Age 25-35 AND Income &gt; $75k AND Urban Location</div>
+                  </div>
+                </div>
+              </div>
+
+              <Button className="w-full">
+                <Plus size={16} className="mr-2" />
+                Create New Custom Segment
+              </Button>
             </div>
           </Card>
         )}
@@ -245,42 +341,62 @@ export const Screen3Segmentation: React.FC = () => {
         <Card className="p-6 mb-8">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-semibold">Customer Segments</h3>
-            <span className="text-sm text-gray-600">{segments.filter(s => s.enabled).length} of {segments.length} enabled</span>
+            {segments.length > 0 && (
+              <span className="text-sm text-gray-600">{segments.filter(s => s.enabled).length} of {segments.length} enabled</span>
+            )}
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            {segments.map((segment) => (
-              <div
-                key={segment.id}
-                onClick={() => handleEditSegment(segment)}
-                className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
-                  segment.enabled
-                    ? 'border-gray-200 hover:border-primary bg-white'
-                    : 'border-gray-100 bg-gray-50 opacity-60'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div className={`w-4 h-4 rounded-full ${colorOptions.find(c => c.value === segment.color)?.class || 'bg-gray-400'}`}></div>
-                  <div className="flex-1">
-                    <div className="font-semibold text-gray-900">{segment.name}</div>
-                    <div className="text-xs text-gray-600">{segment.description}</div>
-                    {segment.rfmScore && (
-                      <div className="text-xs text-gray-500 mt-1">RFM Score: {segment.rfmScore}</div>
-                    )}
+          {segments.length > 0 ? (
+            <div className="grid grid-cols-2 gap-3">
+              {segments.map((segment) => (
+                <div
+                  key={segment.id}
+                  onClick={() => handleEditSegment(segment)}
+                  className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                    segment.enabled
+                      ? 'border-gray-200 hover:border-primary bg-white'
+                      : 'border-gray-100 bg-gray-50 opacity-60'
+                  }`}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className={`w-4 h-4 rounded-full ${colorOptions.find(c => c.value === segment.color)?.class || 'bg-gray-400'}`}></div>
+                    <div className="flex-1">
+                      <div className="font-semibold text-gray-900">{segment.name}</div>
+                      <div className="text-xs text-gray-600">{segment.description}</div>
+                      {segment.rfmScore && (
+                        <div className="text-xs text-gray-500 mt-1">RFM Score: {segment.rfmScore}</div>
+                      )}
+                      {segment.criteria && Object.keys(segment.criteria).length > 0 && (
+                        <div className="text-xs text-gray-500 mt-1">
+                          {Object.entries(segment.criteria).map(([key, value]) => (
+                            <span key={key} className="mr-2">{key}: {String(value)}</span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={segment.enabled}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        updateSegment(segment.id, { enabled: e.target.checked });
+                      }}
+                      className="w-4 h-4 text-primary rounded"
+                    />
                   </div>
-                  <input
-                    type="checkbox"
-                    checked={segment.enabled}
-                    onChange={(e) => {
-                      e.stopPropagation();
-                      updateSegment(segment.id, { enabled: e.target.checked });
-                    }}
-                    className="w-4 h-4 text-primary rounded"
-                  />
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          ) : (
+            <div className="p-8 bg-gray-50 rounded-lg text-center">
+              <p className="text-gray-600">No segments configured yet.</p>
+              <p className="text-sm text-gray-500 mt-2">
+                {segmentationMethod === 'custom'
+                  ? 'Use the Custom Rule Builder above to create your first segment.'
+                  : 'Select a segmentation method to see available segments.'}
+              </p>
+            </div>
+          )}
         </Card>
 
         {/* ML Subsegments */}
