@@ -25,9 +25,7 @@ export interface HierarchyLevel {
 export interface Template {
   name: string;
   badge: string;
-  implementations: number;
-  timeline: string;
-  patterns: number;
+  description: string;
 }
 
 export interface Queue {
