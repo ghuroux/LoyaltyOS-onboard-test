@@ -16,7 +16,8 @@ import { Screen8Data } from './components/screens/Screen8Data';
 import { Screen9Integrations } from './components/screens/Screen9Integrations';
 import { Screen10Analytics } from './components/screens/Screen10Analytics';
 import { Screen11FlowBuilder } from './components/screens/Screen11FlowBuilder';
-import { Screen12Deployment } from './components/screens/Screen12Deployment';
+import { Screen12SafeguardsAutomation } from './components/screens/Screen12SafeguardsAutomation';
+import { Screen13Deployment } from './components/screens/Screen13Deployment';
 
 const screens = [
   Screen0Discovery,
@@ -30,7 +31,8 @@ const screens = [
   Screen9Integrations,
   Screen10Analytics,
   Screen11FlowBuilder,
-  Screen12Deployment,
+  Screen12SafeguardsAutomation,
+  Screen13Deployment,
 ];
 
 function App() {

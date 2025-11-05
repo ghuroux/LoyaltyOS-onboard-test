@@ -168,6 +168,61 @@ export interface Segment {
   estimatedSize?: number;
 }
 
+export interface SafeguardSettings {
+  // Anti-Gaming
+  cooldownEnabled?: boolean;
+  winbackCooldown?: number;
+  birthdayCooldown?: number;
+  frequencyBonusCooldown?: number;
+  campaignCooldown?: number;
+
+  benefitCapsEnabled?: boolean;
+  maxWinbackOffers?: number;
+  maxBehavioralBonuses?: number;
+  maxAutomatedRewards?: number;
+
+  patternDetectionEnabled?: boolean;
+  patternSensitivity?: string;
+  patternAction?: string;
+  monitoredPatterns?: string[];
+
+  diminishingReturnsEnabled?: boolean;
+  diminishingWindow?: string;
+  diminishingRate?: string;
+
+  // Communication Limits
+  globalLimitsEnabled?: boolean;
+  maxCommunicationsPerDay?: number;
+  maxCommunicationsPerWeek?: number;
+  maxCommunicationsPerMonth?: number;
+
+  channelLimitsEnabled?: boolean;
+  channelLimits?: {
+    [channel: string]: {
+      daily?: number;
+      weekly?: number;
+      monthly?: number;
+    };
+  };
+
+  prioritySystemEnabled?: boolean;
+
+  quietHoursEnabled?: boolean;
+  quietHoursStart?: string;
+  quietHoursEnd?: string;
+  quietHoursTimezone?: string;
+  quietHoursExceptions?: string[];
+
+  // Override Controls
+  manualApprovalEnabled?: boolean;
+  approvalValueThreshold?: number;
+  approvalBudgetThreshold?: number;
+  approvalTypes?: string[];
+  approverRole?: string;
+  approvalTimeout?: string;
+  overrideRoles?: string[];
+}
+
 interface OnboardingState {
   currentScreen: number;
   selectedIndustry: string | null;
@@ -195,6 +250,7 @@ interface OnboardingState {
   queues: Queue[];
   integrations: any[];
   flowDesigns: any[];
+  safeguardSettings: SafeguardSettings;
   deploymentStrategy: string;
 
   // Actions
@@ -222,6 +278,7 @@ interface OnboardingState {
   updateSegment: (id: string, updates: Partial<Segment>) => void;
   setEnableMLSubsegments: (enabled: boolean) => void;
   updateQueue: (id: string, updates: Partial<Queue>) => void;
+  updateSafeguardSettings: (settings: Partial<SafeguardSettings>) => void;
   nextScreen: () => void;
   previousScreen: () => void;
 }
@@ -459,6 +516,43 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
   queues: initialQueues,
   integrations: [],
   flowDesigns: [],
+  safeguardSettings: {
+    cooldownEnabled: false,
+    winbackCooldown: 90,
+    birthdayCooldown: 365,
+    frequencyBonusCooldown: 30,
+    campaignCooldown: 14,
+    benefitCapsEnabled: false,
+    maxWinbackOffers: 3,
+    maxBehavioralBonuses: 12,
+    maxAutomatedRewards: 24,
+    patternDetectionEnabled: false,
+    patternSensitivity: 'moderate',
+    patternAction: 'flag',
+    monitoredPatterns: [],
+    diminishingReturnsEnabled: false,
+    diminishingWindow: 'quarterly',
+    diminishingRate: 'moderate',
+    globalLimitsEnabled: false,
+    maxCommunicationsPerDay: 2,
+    maxCommunicationsPerWeek: 5,
+    maxCommunicationsPerMonth: 15,
+    channelLimitsEnabled: false,
+    channelLimits: {},
+    prioritySystemEnabled: false,
+    quietHoursEnabled: false,
+    quietHoursStart: '22:00',
+    quietHoursEnd: '08:00',
+    quietHoursTimezone: 'customer',
+    quietHoursExceptions: [],
+    manualApprovalEnabled: false,
+    approvalValueThreshold: 50,
+    approvalBudgetThreshold: 1000,
+    approvalTypes: [],
+    approverRole: 'manager',
+    approvalTimeout: '24',
+    overrideRoles: [],
+  },
   deploymentStrategy: 'phased',
 
   setCurrentScreen: (screen) => set({ currentScreen: screen }),
@@ -623,8 +717,12 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
     ),
   })),
 
+  updateSafeguardSettings: (settings) => set((state) => ({
+    safeguardSettings: { ...state.safeguardSettings, ...settings },
+  })),
+
   nextScreen: () => set((state) => ({
-    currentScreen: Math.min(state.currentScreen + 1, 12),
+    currentScreen: Math.min(state.currentScreen + 1, 13),
   })),
 
   previousScreen: () => set((state) => ({
