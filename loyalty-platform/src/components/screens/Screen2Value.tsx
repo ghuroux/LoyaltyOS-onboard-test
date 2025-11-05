@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
-import { useOnboardingStore, type Tier, type EarningRules } from '../../store/onboardingStore';
+import { useOnboardingStore, type Tier, type EarningRules, type SKUTracker } from '../../store/onboardingStore';
 import { Star, DollarSign, Ticket, RefreshCw, Plus, Edit2, Trash2, ChevronDown, ChevronUp } from 'lucide-react';
 
 const valueTypes = [
@@ -37,6 +37,7 @@ const getDefaultEarningRules = (): EarningRules => ({
     purchaseFrequency: { enabled: false, purchases: 5, reward: 25 },
     periodSpend: { enabled: false, spend: 500, period: 'monthly', reward: 50 },
   },
+  skuTrackers: [],
   behavioralBonuses: {
     frequencyBonus: { enabled: false, visits: 3, points: 50 },
     thresholdBonus: { enabled: false, spend: 100, points: 100 },
@@ -71,6 +72,19 @@ const EarningRulesEditor: React.FC<EarningRulesEditorProps> = ({ rules, onUpdate
   const [selectedCategory, setSelectedCategory] = useState('');
   const [categoryMultiplier, setCategoryMultiplier] = useState(1);
 
+  // SKU Tracker modal state
+  const [showSkuModal, setShowSkuModal] = useState(false);
+  const [editingSkuTracker, setEditingSkuTracker] = useState<SKUTracker | null>(null);
+  const [skuForm, setSkuForm] = useState<Omit<SKUTracker, 'id'>>({
+    enabled: true,
+    targetSku: '',
+    targetSkuName: '',
+    purchasesRequired: 10,
+    rewardType: 'same',
+    rewardSku: '',
+    rewardSkuName: '',
+  });
+
   const handleAddCategory = () => {
     if (selectedCategory && categoryMultiplier) {
       onUpdate({
@@ -89,6 +103,74 @@ const EarningRulesEditor: React.FC<EarningRulesEditorProps> = ({ rules, onUpdate
     const newMultipliers = { ...rules.categoryMultipliers };
     delete newMultipliers[category];
     onUpdate({ categoryMultipliers: newMultipliers });
+  };
+
+  // SKU Tracker handlers
+  const handleAddSkuTracker = () => {
+    setEditingSkuTracker(null);
+    setSkuForm({
+      enabled: true,
+      targetSku: '',
+      targetSkuName: '',
+      purchasesRequired: 10,
+      rewardType: 'same',
+      rewardSku: '',
+      rewardSkuName: '',
+    });
+    setShowSkuModal(true);
+  };
+
+  const handleEditSkuTracker = (tracker: SKUTracker) => {
+    setEditingSkuTracker(tracker);
+    setSkuForm({
+      enabled: tracker.enabled,
+      targetSku: tracker.targetSku,
+      targetSkuName: tracker.targetSkuName,
+      purchasesRequired: tracker.purchasesRequired,
+      rewardType: tracker.rewardType,
+      rewardSku: tracker.rewardSku || '',
+      rewardSkuName: tracker.rewardSkuName || '',
+      tierOverrides: tracker.tierOverrides,
+    });
+    setShowSkuModal(true);
+  };
+
+  const handleSaveSkuTracker = () => {
+    if (!skuForm.targetSku || !skuForm.targetSkuName) return;
+
+    const currentTrackers = rules.skuTrackers || [];
+
+    if (editingSkuTracker) {
+      // Update existing tracker
+      const updatedTrackers = currentTrackers.map(t =>
+        t.id === editingSkuTracker.id
+          ? { ...skuForm, id: editingSkuTracker.id }
+          : t
+      );
+      onUpdate({ skuTrackers: updatedTrackers });
+    } else {
+      // Add new tracker
+      const newTracker: SKUTracker = {
+        ...skuForm,
+        id: `sku_${Date.now()}`,
+      };
+      onUpdate({ skuTrackers: [...currentTrackers, newTracker] });
+    }
+
+    setShowSkuModal(false);
+  };
+
+  const handleDeleteSkuTracker = (id: string) => {
+    const currentTrackers = rules.skuTrackers || [];
+    onUpdate({ skuTrackers: currentTrackers.filter(t => t.id !== id) });
+  };
+
+  const handleToggleSkuTracker = (id: string) => {
+    const currentTrackers = rules.skuTrackers || [];
+    const updatedTrackers = currentTrackers.map(t =>
+      t.id === id ? { ...t, enabled: !t.enabled } : t
+    );
+    onUpdate({ skuTrackers: updatedTrackers });
   };
 
   return (
@@ -680,6 +762,65 @@ const EarningRulesEditor: React.FC<EarningRulesEditorProps> = ({ rules, onUpdate
         </div>
       </div>
 
+      {/* SKU-Based Product Loyalty */}
+      <div>
+        <div className="flex justify-between items-center mb-3">
+          <div>
+            <label className="block font-semibold text-sm">Product Loyalty (Punch Cards)</label>
+            <p className="text-xs text-gray-600 mt-1">Track SKU purchases and reward customers with free products</p>
+          </div>
+          <Button onClick={handleAddSkuTracker} size="sm" variant="secondary">
+            <Plus size={16} className="mr-1" />
+            Add SKU Tracker
+          </Button>
+        </div>
+
+        {rules.skuTrackers && rules.skuTrackers.length > 0 ? (
+          <div className="space-y-2">
+            {rules.skuTrackers.map((tracker) => (
+              <div key={tracker.id} className={`flex items-center justify-between p-3 rounded-lg ${tracker.enabled ? 'bg-gray-50' : 'bg-gray-100 opacity-60'}`}>
+                <div className="flex items-center gap-3 flex-1">
+                  <input
+                    type="checkbox"
+                    checked={tracker.enabled}
+                    onChange={() => handleToggleSkuTracker(tracker.id)}
+                    className="w-4 h-4 text-primary rounded"
+                  />
+                  <div className="flex-1">
+                    <div className="text-sm font-medium text-gray-900">
+                      Buy {tracker.purchasesRequired} x {tracker.targetSkuName} ({tracker.targetSku})
+                    </div>
+                    <div className="text-xs text-gray-600">
+                      Get: {tracker.rewardType === 'same' ? `1 x ${tracker.targetSkuName} FREE` :
+                           tracker.rewardType === 'different' ? `1 x ${tracker.rewardSkuName} (${tracker.rewardSku}) FREE` :
+                           'Customer choice'}
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => handleEditSkuTracker(tracker)}
+                    className="p-2 text-gray-600 hover:text-primary transition-colors"
+                  >
+                    <Edit2 size={16} />
+                  </button>
+                  <button
+                    onClick={() => handleDeleteSkuTracker(tracker.id)}
+                    className="p-2 text-gray-600 hover:text-red-600 transition-colors"
+                  >
+                    <Trash2 size={16} />
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="p-4 bg-gray-50 rounded-lg text-sm text-gray-600 text-center">
+            No SKU trackers configured. Add a tracker to implement "Buy X, Get Y Free" promotions.
+          </div>
+        )}
+      </div>
+
       {/* Category Modal */}
       <Modal isOpen={showCategoryModal} onClose={() => setShowCategoryModal(false)} title="Add Category Multiplier">
         <div className="space-y-4">
@@ -714,6 +855,105 @@ const EarningRulesEditor: React.FC<EarningRulesEditorProps> = ({ rules, onUpdate
             </Button>
             <Button onClick={handleAddCategory} className="flex-1">
               Add Category
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* SKU Tracker Modal */}
+      <Modal isOpen={showSkuModal} onClose={() => setShowSkuModal(false)} title={editingSkuTracker ? 'Edit SKU Tracker' : 'Add SKU Tracker'}>
+        <div className="space-y-4">
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Target SKU/PLU Code</label>
+              <input
+                type="text"
+                value={skuForm.targetSku}
+                onChange={(e) => setSkuForm({ ...skuForm, targetSku: e.target.value })}
+                placeholder="e.g., COFFEE-001"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Product Name</label>
+              <input
+                type="text"
+                value={skuForm.targetSkuName}
+                onChange={(e) => setSkuForm({ ...skuForm, targetSkuName: e.target.value })}
+                placeholder="e.g., Regular Coffee"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Purchases Required</label>
+            <input
+              type="number"
+              value={skuForm.purchasesRequired}
+              onChange={(e) => setSkuForm({ ...skuForm, purchasesRequired: parseInt(e.target.value) })}
+              min="1"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Reward Type</label>
+            <select
+              value={skuForm.rewardType}
+              onChange={(e) => setSkuForm({ ...skuForm, rewardType: e.target.value as any })}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+            >
+              <option value="same">Same Product Free (Buy X, Get 1 Free)</option>
+              <option value="different">Different Product Free (Buy X, Get Y Free)</option>
+              <option value="choice">Customer Choice (Select from catalog)</option>
+            </select>
+          </div>
+
+          {skuForm.rewardType === 'different' && (
+            <div className="grid grid-cols-2 gap-4 p-3 bg-blue-50 rounded-lg">
+              <div>
+                <label className="block text-sm font-medium mb-1">Reward SKU/PLU Code</label>
+                <input
+                  type="text"
+                  value={skuForm.rewardSku || ''}
+                  onChange={(e) => setSkuForm({ ...skuForm, rewardSku: e.target.value })}
+                  placeholder="e.g., PASTRY-001"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Reward Product Name</label>
+                <input
+                  type="text"
+                  value={skuForm.rewardSkuName || ''}
+                  onChange={(e) => setSkuForm({ ...skuForm, rewardSkuName: e.target.value })}
+                  placeholder="e.g., Croissant"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+            </div>
+          )}
+
+          <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-sm">
+            <strong className="text-amber-900">Example:</strong>
+            <p className="text-amber-800 mt-1">
+              {skuForm.purchasesRequired > 0 && skuForm.targetSkuName
+                ? `Buy ${skuForm.purchasesRequired} x ${skuForm.targetSkuName} → Get ${
+                    skuForm.rewardType === 'same' ? `1 x ${skuForm.targetSkuName}` :
+                    skuForm.rewardType === 'different' && skuForm.rewardSkuName ? `1 x ${skuForm.rewardSkuName}` :
+                    'customer choice'
+                  } FREE`
+                : 'Fill in the details to see a preview'}
+            </p>
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <Button variant="secondary" onClick={() => setShowSkuModal(false)} className="flex-1">
+              Cancel
+            </Button>
+            <Button onClick={handleSaveSkuTracker} className="flex-1">
+              {editingSkuTracker ? 'Update Tracker' : 'Add Tracker'}
             </Button>
           </div>
         </div>

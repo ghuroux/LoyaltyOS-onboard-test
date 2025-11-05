@@ -48,6 +48,25 @@ export interface Tier {
   earningRules: EarningRules;
 }
 
+export interface SKUTracker {
+  id: string;
+  enabled: boolean;
+  targetSku: string;
+  targetSkuName: string;
+  purchasesRequired: number;
+  rewardType: 'same' | 'different' | 'choice';
+  rewardSku?: string;
+  rewardSkuName?: string;
+  // Tier-specific overrides
+  tierOverrides?: {
+    [tierId: string]: {
+      purchasesRequired?: number;
+      rewardSku?: string;
+      rewardSkuName?: string;
+    };
+  };
+}
+
 export interface EarningRules {
   // For continuous earning (points/cashback)
   baseRate: { points: number; spend: number };
@@ -59,6 +78,9 @@ export interface EarningRules {
     purchaseFrequency?: { enabled: boolean; purchases: number; reward: number };
     periodSpend?: { enabled: boolean; spend: number; period: 'monthly' | 'quarterly' | 'annual'; reward: number };
   };
+
+  // SKU-based product loyalty (punch cards)
+  skuTrackers?: SKUTracker[];
 
   behavioralBonuses: {
     frequencyBonus?: { enabled: boolean; visits: number; points: number };
@@ -368,6 +390,7 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
       purchaseFrequency: { enabled: false, purchases: 5, reward: 25 },
       periodSpend: { enabled: false, spend: 500, period: 'monthly', reward: 50 },
     },
+    skuTrackers: [],
     behavioralBonuses: {
       frequencyBonus: { enabled: false, visits: 3, points: 50 },
       thresholdBonus: { enabled: false, spend: 100, points: 100 },
