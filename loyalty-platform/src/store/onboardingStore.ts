@@ -168,6 +168,43 @@ export interface Segment {
   estimatedSize?: number;
 }
 
+export interface AutomationAction {
+  type: string;
+  config: any;
+}
+
+export interface Automation {
+  id: string;
+  triggerType: 'segment' | 'milestone' | 'inactivity' | 'birthday' | 'expiry' | 'threshold';
+  name: string;
+  enabled: boolean;
+  actions: AutomationAction[];
+
+  // Segment transition specific
+  fromSegment?: string;
+  toSegment?: string;
+
+  // Milestone specific
+  milestoneType?: string;
+  milestoneValue?: number;
+
+  // Inactivity specific
+  inactivityDays?: number;
+  excludeRecentContacts?: boolean;
+
+  // Birthday specific
+  birthdayTiming?: string;
+  requireOptIn?: boolean;
+
+  // Points expiry specific
+  expiryWarningDays?: number;
+  minPointsToWarn?: number;
+
+  // Tier change specific
+  tierChangeType?: string;
+  specificTier?: string;
+}
+
 export interface SafeguardSettings {
   // Anti-Gaming
   cooldownEnabled?: boolean;
@@ -243,6 +280,7 @@ interface OnboardingState {
   rfmThresholds: RFMThresholds;
   segments: Segment[];
   enableMLSubsegments: boolean;
+  automations: Automation[];
   tiers: Tier[];
   earningRules: EarningRules;
   redemptionRules: any;
@@ -277,6 +315,9 @@ interface OnboardingState {
   updateRFMThresholds: (thresholds: Partial<RFMThresholds>) => void;
   updateSegment: (id: string, updates: Partial<Segment>) => void;
   setEnableMLSubsegments: (enabled: boolean) => void;
+  addAutomation: (automation: Automation) => void;
+  updateAutomation: (id: string, updates: Partial<Automation>) => void;
+  removeAutomation: (id: string) => void;
   updateQueue: (id: string, updates: Partial<Queue>) => void;
   updateSafeguardSettings: (settings: Partial<SafeguardSettings>) => void;
   nextScreen: () => void;
@@ -494,6 +535,7 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
   },
   segments: defaultRFMSegments,
   enableMLSubsegments: true,
+  automations: [],
   tiers: [],
   earningRules: {
     baseRate: { points: 1, spend: 1 },
@@ -710,6 +752,20 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
   })),
 
   setEnableMLSubsegments: (enabled) => set({ enableMLSubsegments: enabled }),
+
+  addAutomation: (automation) => set((state) => ({
+    automations: [...state.automations, automation],
+  })),
+
+  updateAutomation: (id, updates) => set((state) => ({
+    automations: state.automations.map((automation) =>
+      automation.id === id ? { ...automation, ...updates } : automation
+    ),
+  })),
+
+  removeAutomation: (id) => set((state) => ({
+    automations: state.automations.filter((automation) => automation.id !== id),
+  })),
 
   updateQueue: (id, updates) => set((state) => ({
     queues: state.queues.map((queue) =>
