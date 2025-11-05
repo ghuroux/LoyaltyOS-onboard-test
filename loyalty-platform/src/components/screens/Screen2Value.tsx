@@ -9,7 +9,8 @@ import { Star, DollarSign, Ticket, RefreshCw, Plus, Edit2, Trash2, ChevronDown, 
 const valueTypes = [
   { id: 'points', icon: Star, name: 'Points-Based', desc: 'Traditional points accumulation with flexible redemption options' },
   { id: 'cashback', icon: DollarSign, name: 'Cashback Wallet', desc: 'Direct monetary value stored in customer wallets' },
-  { id: 'credits', icon: Ticket, name: 'Credits/Vouchers', desc: 'Fixed-value credits or voucher-based rewards' },
+  { id: 'credits', icon: Ticket, name: 'Store Credits', desc: 'Wallet-based store credit with partial redemption allowed' },
+  { id: 'vouchers', icon: Ticket, name: 'Vouchers', desc: 'Fixed-value coupons for one-time use redemption' },
   { id: 'hybrid', icon: RefreshCw, name: 'Hybrid Model', desc: 'Combine multiple value types for maximum flexibility' },
 ];
 
@@ -31,6 +32,11 @@ const categoryOptions = [
 const getDefaultEarningRules = (): EarningRules => ({
   baseRate: { points: 1, spend: 1 },
   categoryMultipliers: {},
+  thresholdEarning: {
+    spendThreshold: { enabled: false, spend: 100, reward: 10 },
+    purchaseFrequency: { enabled: false, purchases: 5, reward: 25 },
+    periodSpend: { enabled: false, spend: 500, period: 'monthly', reward: 50 },
+  },
   behavioralBonuses: {
     frequencyBonus: { enabled: false, visits: 3, points: 50 },
     thresholdBonus: { enabled: false, spend: 100, points: 100 },
@@ -52,11 +58,15 @@ const EarningRulesEditor: React.FC<EarningRulesEditorProps> = ({ rules, onUpdate
     switch (valueType) {
       case 'cashback': return 'cashback';
       case 'credits': return 'credits';
+      case 'vouchers': return 'vouchers';
       default: return 'points';
     }
   };
 
   const valueLabel = getValueLabel();
+
+  // Check if value type uses threshold-based earning (vs continuous)
+  const isThresholdBased = valueType === 'credits' || valueType === 'vouchers';
   const [showCategoryModal, setShowCategoryModal] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('');
   const [categoryMultiplier, setCategoryMultiplier] = useState(1);
@@ -83,32 +93,237 @@ const EarningRulesEditor: React.FC<EarningRulesEditorProps> = ({ rules, onUpdate
 
   return (
     <div className="space-y-6">
-      {/* Base Rate */}
-      <div>
-        <label className="block font-semibold mb-3 text-sm">Base Earning Rate</label>
-        <div className="flex items-center gap-3">
-          <input
-            type="number"
-            value={rules.baseRate.points}
-            onChange={(e) => onUpdate({
-              baseRate: { ...rules.baseRate, points: parseInt(e.target.value) }
-            })}
-            className="px-3 py-2 border border-gray-300 rounded-lg w-24"
-          />
-          <span className="text-gray-600">{valueLabel} per</span>
-          <input
-            type="number"
-            value={rules.baseRate.spend}
-            onChange={(e) => onUpdate({
-              baseRate: { ...rules.baseRate, spend: parseInt(e.target.value) }
-            })}
-            className="px-3 py-2 border border-gray-300 rounded-lg w-24"
-          />
-          <span className="text-gray-600">{currency} spent</span>
+      {/* Continuous Earning (Points/Cashback) */}
+      {!isThresholdBased && (
+        <div>
+          <label className="block font-semibold mb-3 text-sm">Base Earning Rate</label>
+          <div className="flex items-center gap-3">
+            <input
+              type="number"
+              value={rules.baseRate.points}
+              onChange={(e) => onUpdate({
+                baseRate: { ...rules.baseRate, points: parseInt(e.target.value) }
+              })}
+              className="px-3 py-2 border border-gray-300 rounded-lg w-24"
+            />
+            <span className="text-gray-600">{valueLabel} per</span>
+            <input
+              type="number"
+              value={rules.baseRate.spend}
+              onChange={(e) => onUpdate({
+                baseRate: { ...rules.baseRate, spend: parseInt(e.target.value) }
+              })}
+              className="px-3 py-2 border border-gray-300 rounded-lg w-24"
+            />
+            <span className="text-gray-600">{currency} spent</span>
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Category Multipliers */}
+      {/* Threshold-Based Earning (Credits/Vouchers) */}
+      {isThresholdBased && (
+        <div>
+          <label className="block font-semibold mb-3 text-sm">Earning Thresholds</label>
+          <div className="space-y-4">
+            {/* Spend Threshold */}
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <label className="flex items-center gap-2 mb-3">
+                <input
+                  type="checkbox"
+                  checked={rules.thresholdEarning?.spendThreshold?.enabled || false}
+                  onChange={(e) => onUpdate({
+                    thresholdEarning: {
+                      ...rules.thresholdEarning,
+                      spendThreshold: {
+                        enabled: e.target.checked,
+                        spend: rules.thresholdEarning?.spendThreshold?.spend || 100,
+                        reward: rules.thresholdEarning?.spendThreshold?.reward || 10,
+                      },
+                    },
+                  })}
+                  className="w-4 h-4 text-primary rounded"
+                />
+                <span className="font-medium text-gray-900">Spending Threshold</span>
+              </label>
+              {rules.thresholdEarning?.spendThreshold?.enabled && (
+                <div className="flex items-center gap-3 ml-6">
+                  <span className="text-sm text-gray-600">Earn</span>
+                  <input
+                    type="number"
+                    value={rules.thresholdEarning.spendThreshold.reward}
+                    onChange={(e) => onUpdate({
+                      thresholdEarning: {
+                        ...(rules.thresholdEarning || {}),
+                        spendThreshold: {
+                          ...(rules.thresholdEarning?.spendThreshold || { enabled: true, spend: 100, reward: 10 }),
+                          reward: parseFloat(e.target.value),
+                        },
+                      },
+                    })}
+                    className="px-3 py-2 border border-gray-300 rounded-lg w-24"
+                  />
+                  <span className="text-sm text-gray-600">{currency} in {valueLabel} when spending</span>
+                  <input
+                    type="number"
+                    value={rules.thresholdEarning.spendThreshold.spend}
+                    onChange={(e) => onUpdate({
+                      thresholdEarning: {
+                        ...(rules.thresholdEarning || {}),
+                        spendThreshold: {
+                          ...(rules.thresholdEarning?.spendThreshold || { enabled: true, spend: 100, reward: 10 }),
+                          spend: parseFloat(e.target.value),
+                        },
+                      },
+                    })}
+                    className="px-3 py-2 border border-gray-300 rounded-lg w-24"
+                  />
+                  <span className="text-sm text-gray-600">{currency}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Purchase Frequency */}
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <label className="flex items-center gap-2 mb-3">
+                <input
+                  type="checkbox"
+                  checked={rules.thresholdEarning?.purchaseFrequency?.enabled || false}
+                  onChange={(e) => onUpdate({
+                    thresholdEarning: {
+                      ...rules.thresholdEarning,
+                      purchaseFrequency: {
+                        enabled: e.target.checked,
+                        purchases: rules.thresholdEarning?.purchaseFrequency?.purchases || 5,
+                        reward: rules.thresholdEarning?.purchaseFrequency?.reward || 25,
+                      },
+                    },
+                  })}
+                  className="w-4 h-4 text-primary rounded"
+                />
+                <span className="font-medium text-gray-900">Purchase Frequency</span>
+              </label>
+              {rules.thresholdEarning?.purchaseFrequency?.enabled && (
+                <div className="flex items-center gap-3 ml-6">
+                  <span className="text-sm text-gray-600">Earn</span>
+                  <input
+                    type="number"
+                    value={rules.thresholdEarning.purchaseFrequency.reward}
+                    onChange={(e) => onUpdate({
+                      thresholdEarning: {
+                        ...(rules.thresholdEarning || {}),
+                        purchaseFrequency: {
+                          ...(rules.thresholdEarning?.purchaseFrequency || { enabled: true, purchases: 5, reward: 25 }),
+                          reward: parseFloat(e.target.value),
+                        },
+                      },
+                    })}
+                    className="px-3 py-2 border border-gray-300 rounded-lg w-24"
+                  />
+                  <span className="text-sm text-gray-600">{currency} in {valueLabel} after</span>
+                  <input
+                    type="number"
+                    value={rules.thresholdEarning.purchaseFrequency.purchases}
+                    onChange={(e) => onUpdate({
+                      thresholdEarning: {
+                        ...(rules.thresholdEarning || {}),
+                        purchaseFrequency: {
+                          ...(rules.thresholdEarning?.purchaseFrequency || { enabled: true, purchases: 5, reward: 25 }),
+                          purchases: parseInt(e.target.value),
+                        },
+                      },
+                    })}
+                    className="px-3 py-2 border border-gray-300 rounded-lg w-24"
+                  />
+                  <span className="text-sm text-gray-600">purchases</span>
+                </div>
+              )}
+            </div>
+
+            {/* Period-Based Spending */}
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <label className="flex items-center gap-2 mb-3">
+                <input
+                  type="checkbox"
+                  checked={rules.thresholdEarning?.periodSpend?.enabled || false}
+                  onChange={(e) => onUpdate({
+                    thresholdEarning: {
+                      ...rules.thresholdEarning,
+                      periodSpend: {
+                        enabled: e.target.checked,
+                        spend: rules.thresholdEarning?.periodSpend?.spend || 500,
+                        period: rules.thresholdEarning?.periodSpend?.period || 'monthly',
+                        reward: rules.thresholdEarning?.periodSpend?.reward || 50,
+                      },
+                    },
+                  })}
+                  className="w-4 h-4 text-primary rounded"
+                />
+                <span className="font-medium text-gray-900">Period-Based Spending</span>
+              </label>
+              {rules.thresholdEarning?.periodSpend?.enabled && (
+                <div className="space-y-2 ml-6">
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-gray-600">Earn</span>
+                    <input
+                      type="number"
+                      value={rules.thresholdEarning.periodSpend.reward}
+                      onChange={(e) => onUpdate({
+                        thresholdEarning: {
+                          ...(rules.thresholdEarning || {}),
+                          periodSpend: {
+                            ...(rules.thresholdEarning?.periodSpend || { enabled: true, spend: 500, period: 'monthly' as const, reward: 50 }),
+                            reward: parseFloat(e.target.value),
+                          },
+                        },
+                      })}
+                      className="px-3 py-2 border border-gray-300 rounded-lg w-24"
+                    />
+                    <span className="text-sm text-gray-600">{currency} in {valueLabel}</span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-gray-600 min-w-[60px]">When spending</span>
+                    <input
+                      type="number"
+                      value={rules.thresholdEarning.periodSpend.spend}
+                      onChange={(e) => onUpdate({
+                        thresholdEarning: {
+                          ...(rules.thresholdEarning || {}),
+                          periodSpend: {
+                            ...(rules.thresholdEarning?.periodSpend || { enabled: true, spend: 500, period: 'monthly' as const, reward: 50 }),
+                            spend: parseFloat(e.target.value),
+                          },
+                        },
+                      })}
+                      className="px-3 py-2 border border-gray-300 rounded-lg w-24"
+                    />
+                    <span className="text-sm text-gray-600">{currency} per</span>
+                    <select
+                      value={rules.thresholdEarning.periodSpend.period}
+                      onChange={(e) => onUpdate({
+                        thresholdEarning: {
+                          ...(rules.thresholdEarning || {}),
+                          periodSpend: {
+                            ...(rules.thresholdEarning?.periodSpend || { enabled: true, spend: 500, period: 'monthly' as const, reward: 50 }),
+                            period: e.target.value as 'monthly' | 'quarterly' | 'annual',
+                          },
+                        },
+                      })}
+                      className="px-3 py-2 border border-gray-300 rounded-lg"
+                    >
+                      <option value="monthly">Month</option>
+                      <option value="quarterly">Quarter</option>
+                      <option value="annual">Year</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Category Multipliers (Only for continuous earning) */}
+      {!isThresholdBased && (
       <div>
         <div className="flex justify-between items-center mb-3">
           <label className="block font-semibold text-sm">Category Multipliers</label>
@@ -141,6 +356,7 @@ const EarningRulesEditor: React.FC<EarningRulesEditorProps> = ({ rules, onUpdate
           </div>
         )}
       </div>
+      )}
 
       {/* Behavioral Bonuses */}
       <div>
@@ -527,6 +743,7 @@ export const Screen2Value: React.FC = () => {
     switch (valueType) {
       case 'cashback': return 'cashback';
       case 'credits': return 'credits';
+      case 'vouchers': return 'vouchers';
       default: return 'points';
     }
   };
@@ -805,17 +1022,45 @@ export const Screen2Value: React.FC = () => {
       case 'credits':
         return (
           <div className="space-y-6">
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mb-4">
+              <p className="text-sm text-blue-900">
+                <strong>Store Credits:</strong> Wallet-based rewards that accumulate and allow partial redemption. Customers can spend credits incrementally like cash.
+              </p>
+            </div>
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <label className="block font-semibold mb-2 text-sm">Credit Denominations</label>
-                <div className="flex flex-wrap gap-2">
-                  {[5, 10, 25, 50, 100].map(amount => (
-                    <label key={amount} className="flex items-center gap-2 p-2 bg-gray-50 rounded-lg">
-                      <input type="checkbox" className="w-4 h-4 text-primary rounded" defaultChecked />
-                      <span className="text-sm">${amount}</span>
-                    </label>
-                  ))}
-                </div>
+                <label className="block font-semibold mb-2 text-sm">Currency</label>
+                <select
+                  value={valueConfig.currency || 'USD'}
+                  onChange={(e) => updateValueConfig({ currency: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                >
+                  <option>USD</option>
+                  <option>EUR</option>
+                  <option>GBP</option>
+                  <option>CAD</option>
+                  <option>AUD</option>
+                </select>
+              </div>
+              <div>
+                <label className="block font-semibold mb-2 text-sm">Minimum Redemption</label>
+                <input
+                  type="number"
+                  value={valueConfig.creditMinRedemption || 5}
+                  onChange={(e) => updateValueConfig({ creditMinRedemption: parseFloat(e.target.value) })}
+                  placeholder="Minimum credit to redeem"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block font-semibold mb-2 text-sm">Maximum Balance</label>
+                <input
+                  type="number"
+                  value={valueConfig.creditMaxBalance || ''}
+                  onChange={(e) => updateValueConfig({ creditMaxBalance: e.target.value ? parseFloat(e.target.value) : null })}
+                  placeholder="No limit"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                />
               </div>
               <div>
                 <label className="block font-semibold mb-2 text-sm">Credit Expiry</label>
@@ -829,6 +1074,108 @@ export const Screen2Value: React.FC = () => {
                   <option value="12months">After 12 months</option>
                   <option value="24months">After 24 months</option>
                 </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block font-semibold mb-3 text-sm">Credit Options</label>
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 p-2">
+                  <input
+                    type="checkbox"
+                    checked={valueConfig.allowPartialRedemption !== false}
+                    onChange={(e) => updateValueConfig({ allowPartialRedemption: e.target.checked })}
+                    className="w-4 h-4 text-primary rounded"
+                  />
+                  <span className="text-sm text-gray-700">Allow partial redemption (use any amount)</span>
+                </label>
+              </div>
+            </div>
+          </div>
+        );
+
+      case 'vouchers':
+        return (
+          <div className="space-y-6">
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mb-4">
+              <p className="text-sm text-blue-900">
+                <strong>Vouchers:</strong> Fixed-denomination coupons for one-time use. Unlike credits, vouchers are redeemed entirely and don't hold a balance after use.
+              </p>
+            </div>
+            <div className="grid grid-cols-2 gap-6">
+              <div>
+                <label className="block font-semibold mb-2 text-sm">Currency</label>
+                <select
+                  value={valueConfig.currency || 'USD'}
+                  onChange={(e) => updateValueConfig({ currency: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                >
+                  <option>USD</option>
+                  <option>EUR</option>
+                  <option>GBP</option>
+                  <option>CAD</option>
+                  <option>AUD</option>
+                </select>
+              </div>
+              <div>
+                <label className="block font-semibold mb-2 text-sm">Voucher Expiry</label>
+                <select
+                  value={valueConfig.voucherExpiry || '6months'}
+                  onChange={(e) => updateValueConfig({ voucherExpiry: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                >
+                  <option value="never">Never expire</option>
+                  <option value="3months">After 3 months</option>
+                  <option value="6months">After 6 months</option>
+                  <option value="12months">After 12 months</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label className="block font-semibold mb-3 text-sm">Voucher Denominations</label>
+              <p className="text-sm text-gray-600 mb-3">Select the fixed values for vouchers that customers can earn</p>
+              <div className="flex flex-wrap gap-3">
+                {[5, 10, 25, 50, 100].map(amount => {
+                  const currentDenominations = valueConfig.voucherDenominations || [5, 10, 25];
+                  const isChecked = currentDenominations.includes(amount);
+                  return (
+                    <label
+                      key={amount}
+                      className={`flex items-center gap-2 p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                        isChecked ? 'bg-primary-50 border-primary' : 'bg-gray-50 border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        className="w-4 h-4 text-primary rounded"
+                        checked={isChecked}
+                        onChange={(e) => {
+                          const newDenominations = e.target.checked
+                            ? [...currentDenominations, amount]
+                            : currentDenominations.filter(d => d !== amount);
+                          updateValueConfig({ voucherDenominations: newDenominations.sort((a, b) => a - b) });
+                        }}
+                      />
+                      <span className="text-sm font-medium">${amount}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div>
+              <label className="block font-semibold mb-3 text-sm">Voucher Options</label>
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 p-2">
+                  <input
+                    type="checkbox"
+                    checked={valueConfig.voucherStackable || false}
+                    onChange={(e) => updateValueConfig({ voucherStackable: e.target.checked })}
+                    className="w-4 h-4 text-primary rounded"
+                  />
+                  <span className="text-sm text-gray-700">Allow multiple vouchers per transaction</span>
+                </label>
               </div>
             </div>
           </div>
@@ -887,7 +1234,7 @@ export const Screen2Value: React.FC = () => {
         </div>
 
         {/* Value Type Selection */}
-        <div className="grid grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-5 gap-4 mb-8">
           {valueTypes.map((type) => {
             const Icon = type.icon;
             return (

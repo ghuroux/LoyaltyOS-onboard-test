@@ -49,8 +49,17 @@ export interface Tier {
 }
 
 export interface EarningRules {
+  // For continuous earning (points/cashback)
   baseRate: { points: number; spend: number };
   categoryMultipliers: { [category: string]: number };
+
+  // For threshold-based earning (credits/vouchers)
+  thresholdEarning?: {
+    spendThreshold?: { enabled: boolean; spend: number; reward: number };
+    purchaseFrequency?: { enabled: boolean; purchases: number; reward: number };
+    periodSpend?: { enabled: boolean; spend: number; period: 'monthly' | 'quarterly' | 'annual'; reward: number };
+  };
+
   behavioralBonuses: {
     frequencyBonus?: { enabled: boolean; visits: number; points: number };
     thresholdBonus?: { enabled: boolean; spend: number; points: number };
@@ -79,9 +88,16 @@ export interface ValueConfig {
   cashbackPercentage?: number;
   cashbackCap?: number | null;
 
-  // Credits specific
-  creditDenominations?: number[];
+  // Credits specific (wallet-based, partial redemption)
+  creditMinRedemption?: number;
+  creditMaxBalance?: number | null;
   creditExpiry?: string;
+  allowPartialRedemption?: boolean;
+
+  // Vouchers specific (one-time use, fixed denominations)
+  voucherDenominations?: number[];
+  voucherExpiry?: string;
+  voucherStackable?: boolean;
 
   // Common options
   allowFractional?: boolean;
@@ -325,6 +341,11 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
   earningRules: {
     baseRate: { points: 1, spend: 1 },
     categoryMultipliers: {},
+    thresholdEarning: {
+      spendThreshold: { enabled: false, spend: 100, reward: 10 },
+      purchaseFrequency: { enabled: false, purchases: 5, reward: 25 },
+      periodSpend: { enabled: false, spend: 500, period: 'monthly', reward: 50 },
+    },
     behavioralBonuses: {
       frequencyBonus: { enabled: false, visits: 3, points: 50 },
       thresholdBonus: { enabled: false, spend: 100, points: 100 },
