@@ -2,11 +2,14 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { useOnboardingStore } from '../../store/onboardingStore';
+import { CampaignTemplateBuilder } from '../campaign/CampaignTemplateBuilder';
 
-type CampaignType = 'time-based' | 'long-living' | 'trigger-based';
+type CampaignType = 'time-based' | 'long-living' | 'trigger-based' | 'one-off';
 
 export const Screen6Campaigns: React.FC = () => {
   const [activeType, setActiveType] = useState<CampaignType>('time-based');
+  const [builderOpen, setBuilderOpen] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState<{ id: string; name: string; type: CampaignType } | null>(null);
   const { campaignSettings, updateCampaignSettings } = useOnboardingStore();
 
   const campaignTypes = [
@@ -30,6 +33,13 @@ export const Screen6Campaigns: React.FC = () => {
       name: 'Trigger-Based Campaigns',
       desc: 'Event-driven, always ready',
       examples: ['Weather Triggers', 'Location Events', 'Inventory Alerts', 'Social Media', 'Cart Abandonment'],
+    },
+    {
+      id: 'one-off' as CampaignType,
+      icon: '💰',
+      name: 'One-Off Issue',
+      desc: 'Immediate, ad-hoc rewards',
+      examples: ['Customer Service Recovery', 'VIP Appreciation', 'Special Recognition', 'Contest Winners'],
     },
   ];
 
@@ -110,9 +120,32 @@ export const Screen6Campaigns: React.FC = () => {
         typical: 'Favorite Item Available, Last Chance Alert, New Arrival',
       },
     ],
+    'one-off': [
+      {
+        id: 'service-recovery',
+        name: 'Service Recovery',
+        description: 'Compensate for poor experience',
+        duration: 'Immediate',
+        typical: 'Order Issue, Long Wait Time, Complaint Resolution',
+      },
+      {
+        id: 'vip-appreciation',
+        name: 'VIP Appreciation',
+        description: 'Special recognition for top customers',
+        duration: 'Immediate',
+        typical: 'Top Spender Reward, Milestone Celebration, Thank You Gift',
+      },
+      {
+        id: 'contest-winner',
+        name: 'Contest/Competition Winner',
+        description: 'Award prizes to winners',
+        duration: 'Immediate',
+        typical: 'Prize Distribution, Sweepstakes Winner, Leaderboard Reward',
+      },
+    ],
   };
 
-  const currentTemplates = starterTemplates[activeType];
+  const currentTemplates = starterTemplates[activeType] || [];
 
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-10">
@@ -123,7 +156,7 @@ export const Screen6Campaigns: React.FC = () => {
         </div>
 
         {/* Campaign Type Selection */}
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-4 gap-4 mb-8">
           {campaignTypes.map((type) => (
             <button
               key={type.id}
@@ -185,20 +218,26 @@ export const Screen6Campaigns: React.FC = () => {
                     <div className="grid grid-cols-2 gap-3 text-sm">
                       <div className="flex items-center gap-2">
                         <span className="text-gray-500">
-                          {activeType === 'trigger-based' ? 'Trigger:' : 'Duration:'}
+                          {activeType === 'trigger-based' ? 'Trigger:' : activeType === 'one-off' ? 'Timing:' : 'Duration:'}
                         </span>
                         <span className="font-medium">
-                          {activeType === 'trigger-based' ? template.trigger : template.duration}
+                          {activeType === 'trigger-based' ? (template as any).trigger : (template as any).duration}
                         </span>
                       </div>
                       <div className="flex items-center gap-2">
                         <span className="text-gray-500">Typical Use:</span>
-                        <span className="text-xs text-gray-600">{template.typical}</span>
+                        <span className="text-xs text-gray-600">{(template as any).typical}</span>
                       </div>
                     </div>
                   </div>
 
-                  <button className="ml-4 px-4 py-2 text-sm text-primary hover:bg-blue-50 rounded-lg font-medium border border-primary">
+                  <button
+                    onClick={() => {
+                      setEditingTemplate({ id: template.id, name: template.name, type: activeType });
+                      setBuilderOpen(true);
+                    }}
+                    className="ml-4 px-4 py-2 text-sm text-primary hover:bg-blue-50 rounded-lg font-medium border border-primary"
+                  >
                     Configure
                   </button>
                 </div>
@@ -371,6 +410,22 @@ export const Screen6Campaigns: React.FC = () => {
             </div>
           </div>
         </Card>
+
+        {/* Campaign Template Builder Modal */}
+        <CampaignTemplateBuilder
+          isOpen={builderOpen}
+          onClose={() => {
+            setBuilderOpen(false);
+            setEditingTemplate(null);
+          }}
+          initialType={editingTemplate?.type}
+          templateId={editingTemplate?.id}
+          templateName={editingTemplate?.name}
+          onSave={(template) => {
+            console.log('Template saved:', template);
+            // TODO: Save to store with detailed configuration
+          }}
+        />
       </div>
     </motion.div>
   );
