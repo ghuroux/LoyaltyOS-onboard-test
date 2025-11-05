@@ -12,13 +12,15 @@ const steps: Step[] = [
   { number: 3, label: 'Value' },
   { number: 4, label: 'Redemption' },
   { number: 5, label: 'Segments' },
-  { number: 6, label: 'Campaigns' },
-  { number: 7, label: 'Queues' },
-  { number: 8, label: 'Data' },
-  { number: 9, label: 'Integrations' },
-  { number: 10, label: 'Analytics' },
-  { number: 11, label: 'Flows' },
-  { number: 12, label: 'Deploy' },
+  { number: 6, label: 'Automations' },
+  { number: 7, label: 'Safeguards' },
+  { number: 8, label: 'Campaigns' },
+  { number: 9, label: 'Queues' },
+  { number: 10, label: 'Data' },
+  { number: 11, label: 'Integrations' },
+  { number: 12, label: 'Analytics' },
+  { number: 13, label: 'Flows' },
+  { number: 14, label: 'Deploy' },
 ];
 
 interface ProgressBarProps {
