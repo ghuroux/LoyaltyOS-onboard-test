@@ -1,71 +1,374 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
+import { useOnboardingStore } from '../../store/onboardingStore';
+
+type CampaignType = 'time-based' | 'long-living' | 'trigger-based';
 
 export const Screen6Campaigns: React.FC = () => {
+  const [activeType, setActiveType] = useState<CampaignType>('time-based');
+  const { campaignSettings, updateCampaignSettings } = useOnboardingStore();
+
+  const campaignTypes = [
+    {
+      id: 'time-based' as CampaignType,
+      icon: '⏰',
+      name: 'Time-Based Campaigns',
+      desc: 'Limited duration promotions',
+      examples: ['Seasonal Sales', 'Holiday Campaigns', 'Product Launches', 'Competitions', 'Flash Sales'],
+    },
+    {
+      id: 'long-living' as CampaignType,
+      icon: '♾️',
+      name: 'Long-Living Campaigns',
+      desc: 'Always-on, ongoing promotions',
+      examples: ['Welcome Series', 'Referral Programs', 'Category Promotions', 'Brand Partnerships'],
+    },
+    {
+      id: 'trigger-based' as CampaignType,
+      icon: '⚡',
+      name: 'Trigger-Based Campaigns',
+      desc: 'Event-driven, always ready',
+      examples: ['Weather Triggers', 'Location Events', 'Inventory Alerts', 'Social Media', 'Cart Abandonment'],
+    },
+  ];
+
+  const starterTemplates = {
+    'time-based': [
+      {
+        id: 'seasonal-sale',
+        name: 'Seasonal Sale',
+        description: 'Limited-time seasonal promotion',
+        duration: '30 days',
+        typical: 'Summer Sale, Holiday Campaign, Back to School',
+      },
+      {
+        id: 'flash-sale',
+        name: 'Flash Sale',
+        description: '24-48 hour high-urgency promotion',
+        duration: '24-48 hours',
+        typical: 'Weekend Flash Sale, Daily Deals, Lightning Offers',
+      },
+      {
+        id: 'competition',
+        name: 'Competition/Contest',
+        description: 'Customer competition with prizes',
+        duration: '7-30 days',
+        typical: 'Monthly Contest, Sweepstakes, Prize Draws',
+      },
+    ],
+    'long-living': [
+      {
+        id: 'welcome-series',
+        name: 'Welcome Series',
+        description: 'New customer onboarding sequence',
+        duration: 'Ongoing',
+        typical: 'First Purchase Discount, Welcome Bonus, Member Orientation',
+      },
+      {
+        id: 'referral-program',
+        name: 'Referral Program',
+        description: 'Member-get-member incentives',
+        duration: 'Ongoing',
+        typical: 'Refer a Friend, Share & Earn, Brand Ambassador',
+      },
+      {
+        id: 'category-promo',
+        name: 'Category Promotion',
+        description: 'Ongoing category-specific offers',
+        duration: 'Ongoing',
+        typical: 'Coffee Loyalty, Breakfast Specials, Premium Product Rewards',
+      },
+    ],
+    'trigger-based': [
+      {
+        id: 'weather-trigger',
+        name: 'Weather-Based Offers',
+        description: 'Promotions triggered by weather conditions',
+        trigger: 'Weather API',
+        typical: 'Hot Day → Ice Cream Discount, Rainy Day → Delivery Offer',
+      },
+      {
+        id: 'location-trigger',
+        name: 'Location/Geofence',
+        description: 'Triggered when customer near store',
+        trigger: 'GPS/Location',
+        typical: 'Nearby Alert, Store Visit Prompt, Local Offers',
+      },
+      {
+        id: 'cart-abandon',
+        name: 'Cart Abandonment',
+        description: 'Re-engage after abandoned cart',
+        trigger: '24hr after abandon',
+        typical: 'Reminder Email, Small Discount, "Complete Your Order"',
+      },
+      {
+        id: 'inventory-trigger',
+        name: 'Inventory Events',
+        description: 'Back in stock, low stock alerts',
+        trigger: 'Inventory system',
+        typical: 'Favorite Item Available, Last Chance Alert, New Arrival',
+      },
+    ],
+  };
+
+  const currentTemplates = starterTemplates[activeType];
+
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-10">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Campaign Framework & Intelligence</h1>
-          <p className="text-gray-600 text-lg">Configure campaign creation methods and automation rules</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">📢 Campaign Templates & Framework</h1>
+          <p className="text-gray-600 text-lg">Configure campaign templates for your program (create actual campaigns later)</p>
         </div>
 
-        <div className="grid grid-cols-4 gap-4 mb-6">
-          {[
-            { icon: '✏️', name: 'Manual', desc: 'Traditional campaign creation' },
-            { icon: '🎯', name: 'Outcome-Based', desc: 'AI creates campaigns to meet goals' },
-            { icon: '⚡', name: 'Queue-Triggered', desc: 'Auto-launch based on signals' },
-            { icon: '🔌', name: 'API-Driven', desc: 'External system triggers' },
-          ].map((method) => (
-            <Card key={method.name} clickable className="p-5 text-center" selected={method.name === 'Outcome-Based'}>
-              <div className="text-4xl mb-3">{method.icon}</div>
-              <h3 className="font-semibold mb-1">{method.name}</h3>
-              <p className="text-xs text-gray-600">{method.desc}</p>
-            </Card>
+        {/* Campaign Type Selection */}
+        <div className="grid grid-cols-3 gap-4 mb-8">
+          {campaignTypes.map((type) => (
+            <button
+              key={type.id}
+              onClick={() => setActiveType(type.id)}
+              className={`p-6 rounded-lg border-2 transition-all text-left ${
+                activeType === type.id
+                  ? 'border-primary bg-blue-50 shadow-md'
+                  : 'border-gray-200 bg-white hover:border-gray-300'
+              }`}
+            >
+              <div className="text-4xl mb-3">{type.icon}</div>
+              <h3 className={`font-semibold text-lg mb-2 ${activeType === type.id ? 'text-primary' : 'text-gray-900'}`}>
+                {type.name}
+              </h3>
+              <p className="text-sm text-gray-600 mb-3">{type.desc}</p>
+              <div className="text-xs text-gray-500">
+                <strong>Examples:</strong> {type.examples.slice(0, 2).join(', ')}
+              </div>
+            </button>
           ))}
         </div>
 
-        <Card className="p-6 mb-6">
-          <h3 className="text-lg font-semibold mb-4">Financial Controls</h3>
-          <div className="grid grid-cols-2 gap-4">
-            {[
-              { label: 'Margin Protection (%)', value: '15', desc: 'Minimum gross margin to maintain' },
-              { label: 'Maximum Budget per Campaign', value: '5000', desc: 'Spend cap in USD' },
-              { label: 'Minimum ROI Target', value: '3.0', desc: 'Required return multiple' },
-              { label: 'Maximum Concurrent Campaigns', value: '10', desc: 'Active campaigns limit' },
-            ].map((control) => (
-              <div key={control.label} className="p-4 bg-gray-50 rounded-lg">
-                <label className="block text-sm font-semibold mb-2">{control.label}</label>
-                <input type="text" defaultValue={control.value} className="w-full px-3 py-2 border border-gray-300 rounded-lg mb-2" />
-                <p className="text-xs text-gray-600">{control.desc}</p>
-              </div>
+        {/* Starter Templates */}
+        <div className="mb-8">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold text-gray-900">
+              Starter Templates for {campaignTypes.find((t) => t.id === activeType)?.name}
+            </h2>
+            <span className="text-sm text-gray-500">Customize these templates for your program</span>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4">
+            {currentTemplates.map((template) => (
+              <Card key={template.id} className="p-5">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-2">
+                      <label className="relative inline-flex items-center cursor-pointer">
+                        <input
+                          type="checkbox"
+                          checked={campaignSettings?.enabledTemplates?.includes(template.id) || false}
+                          onChange={(e) => {
+                            const current = campaignSettings?.enabledTemplates || [];
+                            updateCampaignSettings?.({
+                              enabledTemplates: e.target.checked
+                                ? [...current, template.id]
+                                : current.filter((id: string) => id !== template.id),
+                            });
+                          }}
+                          className="sr-only peer"
+                        />
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                      </label>
+                      <h3 className="text-lg font-semibold">{template.name}</h3>
+                      <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">Template</span>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-3">{template.description}</p>
+
+                    <div className="grid grid-cols-2 gap-3 text-sm">
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-500">
+                          {activeType === 'trigger-based' ? 'Trigger:' : 'Duration:'}
+                        </span>
+                        <span className="font-medium">
+                          {activeType === 'trigger-based' ? template.trigger : template.duration}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="text-gray-500">Typical Use:</span>
+                        <span className="text-xs text-gray-600">{template.typical}</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <button className="ml-4 px-4 py-2 text-sm text-primary hover:bg-blue-50 rounded-lg font-medium border border-primary">
+                    Configure
+                  </button>
+                </div>
+
+                {campaignSettings?.enabledTemplates?.includes(template.id) && (
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">Default Discount Type</label>
+                        <select className="w-full px-2 py-1 text-sm border border-gray-300 rounded">
+                          <option>Percentage</option>
+                          <option>Fixed Amount</option>
+                          <option>Points Multiplier</option>
+                          <option>Free Item</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">Default Discount Value</label>
+                        <input
+                          type="text"
+                          placeholder="e.g., 10%, $5, 2x"
+                          className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-1">Default Target Segment</label>
+                        <select className="w-full px-2 py-1 text-sm border border-gray-300 rounded">
+                          <option>All Customers</option>
+                          <option>Champions</option>
+                          <option>At Risk</option>
+                          <option>Lost</option>
+                          <option>Custom...</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </Card>
             ))}
+          </div>
+        </div>
+
+        {/* Program-Wide Campaign Controls */}
+        <Card className="p-6 mb-6">
+          <h3 className="text-lg font-semibold mb-4">📊 Program-Wide Campaign Controls</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <label className="block text-sm font-semibold mb-2">Maximum Budget per Campaign</label>
+              <div className="flex items-center gap-2">
+                <span className="text-gray-600">$</span>
+                <input
+                  type="number"
+                  value={campaignSettings?.maxBudgetPerCampaign || 5000}
+                  onChange={(e) => updateCampaignSettings?.({ maxBudgetPerCampaign: parseInt(e.target.value) })}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+              <p className="text-xs text-gray-600 mt-2">Maximum spend allowed per individual campaign</p>
+            </div>
+
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <label className="block text-sm font-semibold mb-2">Maximum Concurrent Campaigns</label>
+              <input
+                type="number"
+                value={campaignSettings?.maxConcurrentCampaigns || 10}
+                onChange={(e) => updateCampaignSettings?.({ maxConcurrentCampaigns: parseInt(e.target.value) })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              />
+              <p className="text-xs text-gray-600 mt-2">Number of campaigns that can run simultaneously</p>
+            </div>
+
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <label className="block text-sm font-semibold mb-2">Minimum ROI Target</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  step="0.1"
+                  value={campaignSettings?.minRoiTarget || 3.0}
+                  onChange={(e) => updateCampaignSettings?.({ minRoiTarget: parseFloat(e.target.value) })}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                />
+                <span className="text-gray-600">x</span>
+              </div>
+              <p className="text-xs text-gray-600 mt-2">Required return multiple for campaign approval</p>
+            </div>
+
+            <div className="p-4 bg-gray-50 rounded-lg">
+              <label className="block text-sm font-semibold mb-2">Margin Protection</label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="number"
+                  value={campaignSettings?.marginProtection || 15}
+                  onChange={(e) => updateCampaignSettings?.({ marginProtection: parseInt(e.target.value) })}
+                  className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                />
+                <span className="text-gray-600">%</span>
+              </div>
+              <p className="text-xs text-gray-600 mt-2">Minimum gross margin to maintain across campaigns</p>
+            </div>
           </div>
         </Card>
 
+        {/* Campaign Approval Workflow */}
         <Card className="p-6">
-          <h3 className="text-lg font-semibold mb-4">Automation Progression</h3>
-          <p className="text-sm text-gray-600 mb-4">Define how the system gradually increases automation as it learns</p>
-          <div className="space-y-4">
-            <div className="p-4 border-l-4 border-yellow-500 bg-yellow-50">
-              <div className="font-semibold mb-2">Phase 1: Manual Approval (Days 1-30)</div>
-              <p className="text-sm text-gray-600">All AI-suggested campaigns require human approval</p>
-            </div>
-            <div className="p-4 border-l-4 border-blue-500 bg-blue-50">
-              <div className="font-semibold mb-2">Phase 2: Supervised Automation (Days 31-60)</div>
-              <p className="text-sm text-gray-600">Auto-launch campaigns under $500 with 80%+ confidence</p>
-            </div>
-            <div className="p-4 border-l-4 border-green-500 bg-green-50">
-              <div className="font-semibold mb-2">Phase 3: Full Automation (Days 61+)</div>
-              <p className="text-sm text-gray-600">Auto-launch all campaigns meeting ROI and margin thresholds</p>
-            </div>
-          </div>
-          <div className="mt-4">
-            <label className="flex items-center gap-2">
-              <input type="checkbox" className="w-4 h-4 text-primary rounded" defaultChecked />
-              <span className="text-sm font-medium">Enable progressive automation</span>
+          <h3 className="text-lg font-semibold mb-4">✅ Campaign Approval Workflow</h3>
+          <p className="text-sm text-gray-600 mb-4">Define who can create and approve campaigns</p>
+
+          <div className="space-y-3">
+            <label className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+              <input
+                type="checkbox"
+                checked={campaignSettings?.requireApproval || false}
+                onChange={(e) => updateCampaignSettings?.({ requireApproval: e.target.checked })}
+                className="h-4 w-4 text-primary border-gray-300 rounded"
+              />
+              <div className="flex-1">
+                <div className="font-medium text-sm">Require approval for all campaigns</div>
+                <div className="text-xs text-gray-500">All campaigns must be approved before going live</div>
+              </div>
             </label>
+
+            {campaignSettings?.requireApproval && (
+              <div className="ml-7 space-y-3">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Approval Authority</label>
+                  <select
+                    value={campaignSettings?.approvalAuthority || 'marketing-manager'}
+                    onChange={(e) => updateCampaignSettings?.({ approvalAuthority: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  >
+                    <option value="store-manager">Store Manager</option>
+                    <option value="regional-manager">Regional Manager</option>
+                    <option value="marketing-manager">Marketing Manager</option>
+                    <option value="director">Marketing Director</option>
+                    <option value="admin">System Administrator</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Auto-Approval Threshold</label>
+                  <div className="flex items-center gap-3">
+                    <span className="text-sm text-gray-600">Campaigns under</span>
+                    <input
+                      type="number"
+                      value={campaignSettings?.autoApprovalThreshold || 1000}
+                      onChange={(e) => updateCampaignSettings?.({ autoApprovalThreshold: parseInt(e.target.value) })}
+                      className="w-32 px-3 py-2 border border-gray-300 rounded-lg"
+                    />
+                    <span className="text-sm text-gray-600">can be auto-approved</span>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </Card>
+
+        {/* Info Box */}
+        <Card className="p-6 mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200">
+          <div className="flex items-start gap-3">
+            <span className="text-2xl">💡</span>
+            <div>
+              <h3 className="font-semibold text-gray-900 mb-2">Campaign Templates vs. Active Campaigns</h3>
+              <p className="text-sm text-gray-700 mb-2">
+                During onboarding, you're setting up <strong>templates</strong> - the framework for future campaigns.
+              </p>
+              <p className="text-sm text-gray-700">
+                Once your program is live, you'll use these templates to quickly create actual campaigns with specific dates,
+                offers, and targeting. Think of templates as your campaign "starting points."
+              </p>
+            </div>
           </div>
         </Card>
       </div>

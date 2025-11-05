@@ -284,7 +284,16 @@ interface OnboardingState {
   tiers: Tier[];
   earningRules: EarningRules;
   redemptionRules: any;
-  campaignSettings: any;
+  campaignSettings: {
+    enabledTemplates?: string[];
+    maxBudgetPerCampaign?: number;
+    maxConcurrentCampaigns?: number;
+    minRoiTarget?: number;
+    marginProtection?: number;
+    requireApproval?: boolean;
+    approvalAuthority?: string;
+    autoApprovalThreshold?: number;
+  };
   queues: Queue[];
   integrations: any[];
   flowDesigns: any[];
@@ -318,6 +327,7 @@ interface OnboardingState {
   addAutomation: (automation: Automation) => void;
   updateAutomation: (id: string, updates: Partial<Automation>) => void;
   removeAutomation: (id: string) => void;
+  updateCampaignSettings: (settings: any) => void;
   updateQueue: (id: string, updates: Partial<Queue>) => void;
   updateSafeguardSettings: (settings: Partial<SafeguardSettings>) => void;
   nextScreen: () => void;
@@ -554,7 +564,16 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
     },
   },
   redemptionRules: {},
-  campaignSettings: {},
+  campaignSettings: {
+    enabledTemplates: [],
+    maxBudgetPerCampaign: 5000,
+    maxConcurrentCampaigns: 10,
+    minRoiTarget: 3.0,
+    marginProtection: 15,
+    requireApproval: false,
+    approvalAuthority: 'marketing-manager',
+    autoApprovalThreshold: 1000,
+  },
   queues: initialQueues,
   integrations: [],
   flowDesigns: [],
@@ -765,6 +784,10 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
 
   removeAutomation: (id) => set((state) => ({
     automations: state.automations.filter((automation) => automation.id !== id),
+  })),
+
+  updateCampaignSettings: (settings) => set((state) => ({
+    campaignSettings: { ...state.campaignSettings, ...settings },
   })),
 
   updateQueue: (id, updates) => set((state) => ({
