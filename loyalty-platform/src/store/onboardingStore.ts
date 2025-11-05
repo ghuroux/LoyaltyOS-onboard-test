@@ -38,6 +38,51 @@ export interface Queue {
   threshold?: number;
 }
 
+export interface Tier {
+  id: string;
+  name: string;
+  description: string;
+  threshold: number;
+  color: string;
+  benefits: string[];
+  earningRules: EarningRules;
+}
+
+export interface EarningRules {
+  baseRate: { points: number; spend: number };
+  categoryMultipliers: { [category: string]: number };
+  behavioralBonuses: {
+    frequencyBonus?: { enabled: boolean; visits: number; points: number };
+    thresholdBonus?: { enabled: boolean; spend: number; points: number };
+    birthdayMultiplier?: { enabled: boolean; multiplier: number };
+    firstPurchase?: { enabled: boolean; points: number };
+  };
+}
+
+export interface ValueConfig {
+  // Points specific
+  pointValue?: number;
+  currency?: string;
+  expiry?: string;
+  minRedemption?: number;
+  maxBalance?: number | null;
+
+  // Cashback specific
+  cashbackPercentage?: number;
+  cashbackCap?: number | null;
+
+  // Credits specific
+  creditDenominations?: number[];
+  creditExpiry?: string;
+
+  // Common options
+  allowFractional?: boolean;
+  enablePooling?: boolean;
+  allowTransfers?: boolean;
+  enablePurchase?: boolean;
+  differentBurnRate?: boolean;
+}
+
 interface OnboardingState {
   currentScreen: number;
   selectedIndustry: string | null;
@@ -52,10 +97,11 @@ interface OnboardingState {
     ai: number;
   };
   valueType: string;
-  valueConfig: any;
+  valueConfig: ValueConfig;
+  useTiers: boolean;
   segmentationApproach: string;
-  tiers: any[];
-  earningRules: any;
+  tiers: Tier[];
+  earningRules: EarningRules;
   redemptionRules: any;
   campaignSettings: any;
   queues: Queue[];
@@ -77,7 +123,12 @@ interface OnboardingState {
   addCustomAttribute: (entity: string, name: string, type: string) => void;
   recalculateKPIs: () => void;
   setValueType: (type: string) => void;
-  updateValueConfig: (config: any) => void;
+  updateValueConfig: (config: Partial<ValueConfig>) => void;
+  setUseTiers: (useTiers: boolean) => void;
+  addTier: (tier: Tier) => void;
+  updateTier: (id: string, updates: Partial<Tier>) => void;
+  removeTier: (id: string) => void;
+  updateEarningRules: (rules: Partial<EarningRules>) => void;
   setSegmentationApproach: (approach: string) => void;
   updateQueue: (id: string, updates: Partial<Queue>) => void;
   nextScreen: () => void;
@@ -161,10 +212,31 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
   },
   kpiCounts: { total: 17, analytics: 9, ai: 6 },
   valueType: 'points',
-  valueConfig: {},
+  valueConfig: {
+    pointValue: 0.01,
+    currency: 'USD',
+    expiry: 'never',
+    minRedemption: 100,
+    maxBalance: null,
+    allowFractional: true,
+    enablePooling: false,
+    allowTransfers: false,
+    enablePurchase: false,
+    differentBurnRate: false,
+  },
+  useTiers: false,
   segmentationApproach: 'hybrid',
   tiers: [],
-  earningRules: {},
+  earningRules: {
+    baseRate: { points: 1, spend: 1 },
+    categoryMultipliers: {},
+    behavioralBonuses: {
+      frequencyBonus: { enabled: false, visits: 3, points: 50 },
+      thresholdBonus: { enabled: false, spend: 100, points: 100 },
+      birthdayMultiplier: { enabled: false, multiplier: 2 },
+      firstPurchase: { enabled: false, points: 500 },
+    },
+  },
   redemptionRules: {},
   campaignSettings: {},
   queues: initialQueues,
@@ -269,6 +341,33 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
 
   updateValueConfig: (config) => set((state) => ({
     valueConfig: { ...state.valueConfig, ...config },
+  })),
+
+  setUseTiers: (useTiers) => set({ useTiers }),
+
+  addTier: (tier) => set((state) => ({
+    tiers: [...state.tiers, tier],
+  })),
+
+  updateTier: (id, updates) => set((state) => ({
+    tiers: state.tiers.map((tier) =>
+      tier.id === id ? { ...tier, ...updates } : tier
+    ),
+  })),
+
+  removeTier: (id) => set((state) => ({
+    tiers: state.tiers.filter((tier) => tier.id !== id),
+  })),
+
+  updateEarningRules: (rules) => set((state) => ({
+    earningRules: {
+      ...state.earningRules,
+      ...rules,
+      behavioralBonuses: {
+        ...state.earningRules.behavioralBonuses,
+        ...rules.behavioralBonuses,
+      },
+    },
   })),
 
   setSegmentationApproach: (approach) => set({ segmentationApproach: approach }),
