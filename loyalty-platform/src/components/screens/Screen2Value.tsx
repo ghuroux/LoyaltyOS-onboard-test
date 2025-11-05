@@ -1183,35 +1183,238 @@ export const Screen2Value: React.FC = () => {
 
       case 'hybrid':
         return (
-          <div className="space-y-4">
+          <div className="space-y-6">
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
               <p className="text-sm text-blue-900">
-                <strong>Hybrid Mode:</strong> Configure multiple value types. Customers can earn and redeem across all enabled mechanisms.
+                <strong>Hybrid Mode:</strong> Combine multiple value types for maximum flexibility. Choose a strategy below.
               </p>
             </div>
-            <div className="space-y-4">
-              <label className="flex items-center gap-3 p-4 bg-white border-2 border-gray-200 rounded-lg hover:border-primary cursor-pointer">
-                <input type="checkbox" className="w-5 h-5 text-primary rounded" defaultChecked />
-                <div className="flex-1">
-                  <div className="font-semibold text-gray-900">Enable Points</div>
-                  <div className="text-sm text-gray-600">Allow earning and spending points</div>
-                </div>
-              </label>
-              <label className="flex items-center gap-3 p-4 bg-white border-2 border-gray-200 rounded-lg hover:border-primary cursor-pointer">
-                <input type="checkbox" className="w-5 h-5 text-primary rounded" />
-                <div className="flex-1">
-                  <div className="font-semibold text-gray-900">Enable Cashback</div>
-                  <div className="text-sm text-gray-600">Direct monetary rewards</div>
-                </div>
-              </label>
-              <label className="flex items-center gap-3 p-4 bg-white border-2 border-gray-200 rounded-lg hover:border-primary cursor-pointer">
-                <input type="checkbox" className="w-5 h-5 text-primary rounded" />
-                <div className="flex-1">
-                  <div className="font-semibold text-gray-900">Enable Credits</div>
-                  <div className="text-sm text-gray-600">Voucher-based rewards</div>
-                </div>
-              </label>
+
+            {/* Strategy Selection */}
+            <div>
+              <label className="block font-semibold mb-3 text-sm">Hybrid Strategy</label>
+              <div className="grid grid-cols-3 gap-3">
+                <label
+                  className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                    valueConfig.hybridStrategy === 'dual' ? 'border-primary bg-primary-50' : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="hybridStrategy"
+                    value="dual"
+                    checked={valueConfig.hybridStrategy === 'dual'}
+                    onChange={(e) => updateValueConfig({ hybridStrategy: e.target.value as any })}
+                    className="sr-only"
+                  />
+                  <div className="font-semibold text-gray-900 mb-1">Dual Earning</div>
+                  <div className="text-xs text-gray-600">Earn two value types simultaneously</div>
+                </label>
+                <label
+                  className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                    valueConfig.hybridStrategy === 'conversion' ? 'border-primary bg-primary-50' : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="hybridStrategy"
+                    value="conversion"
+                    checked={valueConfig.hybridStrategy === 'conversion'}
+                    onChange={(e) => updateValueConfig({ hybridStrategy: e.target.value as any })}
+                    className="sr-only"
+                  />
+                  <div className="font-semibold text-gray-900 mb-1">Threshold Conversion</div>
+                  <div className="text-xs text-gray-600">Convert points to credits at milestones</div>
+                </label>
+                <label
+                  className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                    valueConfig.hybridStrategy === 'both' ? 'border-primary bg-primary-50' : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="hybridStrategy"
+                    value="both"
+                    checked={valueConfig.hybridStrategy === 'both'}
+                    onChange={(e) => updateValueConfig({ hybridStrategy: e.target.value as any })}
+                    className="sr-only"
+                  />
+                  <div className="font-semibold text-gray-900 mb-1">Both Strategies</div>
+                  <div className="text-xs text-gray-600">Dual earning + conversions</div>
+                </label>
+              </div>
             </div>
+
+            {/* Dual Earning Configuration */}
+            {(valueConfig.hybridStrategy === 'dual' || valueConfig.hybridStrategy === 'both') && (
+              <div className="p-4 bg-gray-50 rounded-lg space-y-4">
+                <h4 className="font-semibold text-gray-900">Dual Earning Configuration</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Primary Value Type</label>
+                    <select
+                      value={valueConfig.dualEarning?.primaryType || 'points'}
+                      onChange={(e) => updateValueConfig({
+                        dualEarning: {
+                          ...(valueConfig.dualEarning || { primaryRate: 1, secondaryType: 'cashback', secondaryRate: 0.5 }),
+                          primaryType: e.target.value as any,
+                        },
+                      })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                    >
+                      <option value="points">Points</option>
+                      <option value="cashback">Cashback</option>
+                      <option value="credits">Credits</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Primary Earn Rate</label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        step="0.1"
+                        value={valueConfig.dualEarning?.primaryRate || 1}
+                        onChange={(e) => updateValueConfig({
+                          dualEarning: {
+                            ...(valueConfig.dualEarning || { primaryType: 'points', secondaryType: 'cashback', secondaryRate: 0.5 }),
+                            primaryRate: parseFloat(e.target.value),
+                          },
+                        })}
+                        className="px-3 py-2 border border-gray-300 rounded-lg flex-1"
+                      />
+                      <span className="text-sm text-gray-600">per $1</span>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Secondary Value Type</label>
+                    <select
+                      value={valueConfig.dualEarning?.secondaryType || 'cashback'}
+                      onChange={(e) => updateValueConfig({
+                        dualEarning: {
+                          ...(valueConfig.dualEarning || { primaryType: 'points', primaryRate: 1, secondaryRate: 0.5 }),
+                          secondaryType: e.target.value as any,
+                        },
+                      })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                    >
+                      <option value="points">Points</option>
+                      <option value="cashback">Cashback</option>
+                      <option value="credits">Credits</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Secondary Earn Rate</label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        step="0.1"
+                        value={valueConfig.dualEarning?.secondaryRate || 0.5}
+                        onChange={(e) => updateValueConfig({
+                          dualEarning: {
+                            ...(valueConfig.dualEarning || { primaryType: 'points', primaryRate: 1, secondaryType: 'cashback' }),
+                            secondaryRate: parseFloat(e.target.value),
+                          },
+                        })}
+                        className="px-3 py-2 border border-gray-300 rounded-lg flex-1"
+                      />
+                      <span className="text-sm text-gray-600">per $1</span>
+                    </div>
+                  </div>
+                </div>
+                <p className="text-xs text-gray-600 italic">
+                  Example: Customer earns {valueConfig.dualEarning?.primaryRate || 1} {valueConfig.dualEarning?.primaryType || 'points'} + {valueConfig.dualEarning?.secondaryRate || 0.5} {valueConfig.dualEarning?.secondaryType || 'cashback'} per $1 spent
+                </p>
+              </div>
+            )}
+
+            {/* Threshold Conversion Configuration */}
+            {(valueConfig.hybridStrategy === 'conversion' || valueConfig.hybridStrategy === 'both') && (
+              <div className="p-4 bg-gray-50 rounded-lg space-y-4">
+                <h4 className="font-semibold text-gray-900">Threshold Conversion Configuration</h4>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Convert From</label>
+                    <select
+                      value={valueConfig.conversionThreshold?.fromType || 'points'}
+                      onChange={(e) => updateValueConfig({
+                        conversionThreshold: {
+                          ...(valueConfig.conversionThreshold || { fromAmount: 1000, toType: 'credits', toAmount: 10, autoConvert: false }),
+                          fromType: e.target.value as any,
+                        },
+                      })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                    >
+                      <option value="points">Points</option>
+                      <option value="cashback">Cashback</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Amount Threshold</label>
+                    <input
+                      type="number"
+                      value={valueConfig.conversionThreshold?.fromAmount || 1000}
+                      onChange={(e) => updateValueConfig({
+                        conversionThreshold: {
+                          ...(valueConfig.conversionThreshold || { fromType: 'points', toType: 'credits', toAmount: 10, autoConvert: false }),
+                          fromAmount: parseFloat(e.target.value),
+                        },
+                      })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Convert To</label>
+                    <select
+                      value={valueConfig.conversionThreshold?.toType || 'credits'}
+                      onChange={(e) => updateValueConfig({
+                        conversionThreshold: {
+                          ...(valueConfig.conversionThreshold || { fromType: 'points', fromAmount: 1000, toAmount: 10, autoConvert: false }),
+                          toType: e.target.value as any,
+                        },
+                      })}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                    >
+                      <option value="credits">Store Credits</option>
+                      <option value="vouchers">Vouchers</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Converted Amount</label>
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm text-gray-600">$</span>
+                      <input
+                        type="number"
+                        value={valueConfig.conversionThreshold?.toAmount || 10}
+                        onChange={(e) => updateValueConfig({
+                          conversionThreshold: {
+                            ...(valueConfig.conversionThreshold || { fromType: 'points', fromAmount: 1000, toType: 'credits', autoConvert: false }),
+                            toAmount: parseFloat(e.target.value),
+                          },
+                        })}
+                        className="px-3 py-2 border border-gray-300 rounded-lg flex-1"
+                      />
+                    </div>
+                  </div>
+                </div>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={valueConfig.conversionThreshold?.autoConvert || false}
+                    onChange={(e) => updateValueConfig({
+                      conversionThreshold: {
+                        ...(valueConfig.conversionThreshold || { fromType: 'points', fromAmount: 1000, toType: 'credits', toAmount: 10 }),
+                        autoConvert: e.target.checked,
+                      },
+                    })}
+                    className="w-4 h-4 text-primary rounded"
+                  />
+                  <span className="text-sm text-gray-700">Automatically convert when threshold is reached</span>
+                </label>
+                <p className="text-xs text-gray-600 italic">
+                  Example: Every {valueConfig.conversionThreshold?.fromAmount || 1000} {valueConfig.conversionThreshold?.fromType || 'points'} → ${valueConfig.conversionThreshold?.toAmount || 10} in {valueConfig.conversionThreshold?.toType || 'credits'}
+                </p>
+              </div>
+            )}
           </div>
         );
 
@@ -1268,6 +1471,44 @@ export const Screen2Value: React.FC = () => {
             <span className="text-amber-800 text-sm ml-2">
               The system will analyze redemption patterns and automatically suggest optimal configurations to maximize engagement while managing liability.
             </span>
+          </div>
+        </Card>
+
+        {/* Earning Calculation Settings */}
+        <Card className="p-6 mb-8">
+          <h3 className="text-xl font-semibold mb-6">Earning Calculation Settings</h3>
+          <div className="grid grid-cols-2 gap-6">
+            <div>
+              <label className="block font-semibold mb-2 text-sm">Calculation Method</label>
+              <p className="text-xs text-gray-600 mb-2">How to handle fractional values when calculating rewards</p>
+              <select
+                value={valueConfig.calculationMethod || 'round-down'}
+                onChange={(e) => updateValueConfig({ calculationMethod: e.target.value as any })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              >
+                <option value="round-down">Round Down (e.g., 1.9 → 1)</option>
+                <option value="round-up">Round Up (e.g., 1.1 → 2)</option>
+                <option value="round-nearest">Round to Nearest (e.g., 1.5 → 2)</option>
+                <option value="fractional">Allow Fractional Values (e.g., 1.75)</option>
+              </select>
+            </div>
+            <div>
+              <label className="block font-semibold mb-2 text-sm">Transaction Value Inclusion</label>
+              <p className="text-xs text-gray-600 mb-2">What should be included in the earning calculation</p>
+              <select
+                value={valueConfig.inclusionPolicy || 'exclude-all'}
+                onChange={(e) => updateValueConfig({ inclusionPolicy: e.target.value as any })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+              >
+                <option value="exclude-all">Base Amount Only (Exclude Tax & Tips)</option>
+                <option value="include-tax">Include Tax</option>
+                <option value="include-tips">Include Tips</option>
+                <option value="include-all">Include Everything (Tax + Tips)</option>
+              </select>
+            </div>
+          </div>
+          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-900">
+            <strong>Note:</strong> These settings apply to all earning calculations across your loyalty program.
           </div>
         </Card>
 

@@ -99,6 +99,28 @@ export interface ValueConfig {
   voucherExpiry?: string;
   voucherStackable?: boolean;
 
+  // Hybrid specific
+  hybridStrategy?: 'dual' | 'conversion' | 'both';
+  // Dual earning config
+  dualEarning?: {
+    primaryType: 'points' | 'cashback' | 'credits';
+    primaryRate: number;
+    secondaryType: 'points' | 'cashback' | 'credits';
+    secondaryRate: number;
+  };
+  // Threshold conversion config
+  conversionThreshold?: {
+    fromType: 'points' | 'cashback';
+    fromAmount: number;
+    toType: 'credits' | 'vouchers';
+    toAmount: number;
+    autoConvert: boolean;
+  };
+
+  // Calculation & Earning settings
+  calculationMethod?: 'round-down' | 'round-up' | 'round-nearest' | 'fractional';
+  inclusionPolicy?: 'exclude-all' | 'include-tax' | 'include-tips' | 'include-all';
+
   // Common options
   allowFractional?: boolean;
   enablePooling?: boolean;
