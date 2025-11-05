@@ -1,16 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { Toggle } from '../ui/Toggle';
 import { Button } from '../ui/Button';
+import { Modal } from '../ui/Modal';
 import { useOnboardingStore } from '../../store/onboardingStore';
-import { Building2, Users, Settings, Code } from 'lucide-react';
+import { Building2, Users, Settings, Code, ChevronUp, ChevronDown } from 'lucide-react';
 
 type Tab = 'org-structure' | 'customer-structure' | 'entity-config' | 'api-config';
 
 export const Screen1Organization: React.FC = () => {
   const [activeTab, setActiveTab] = useState<Tab>('org-structure');
   const [showApiTab, setShowApiTab] = useState(false);
+
+  // Modal states
+  const [showAddLevelModal, setShowAddLevelModal] = useState(false);
+  const [showAddCustomerTypeModal, setShowAddCustomerTypeModal] = useState(false);
+  const [showAddAttributeModal, setShowAddAttributeModal] = useState(false);
+
+  // Form states
+  const [newLevelName, setNewLevelName] = useState('');
+  const [newLevelDescription, setNewLevelDescription] = useState('');
+  const [newCustomerTypeName, setNewCustomerTypeName] = useState('');
+  const [newCustomerTypeDescription, setNewCustomerTypeDescription] = useState('');
+  const [newAttributeName, setNewAttributeName] = useState('');
+  const [newAttributeType, setNewAttributeType] = useState('String');
+
   const {
     organizationHierarchy,
     customerHierarchy,
@@ -18,8 +33,13 @@ export const Screen1Organization: React.FC = () => {
     entityAttributes,
     kpiCounts,
     updateHierarchyLevel,
+    addCustomHierarchyLevel,
+    reorderHierarchyLevel,
+    updateCustomerHierarchyLevel,
+    addCustomerType,
     setSelectedEntity,
     updateEntityAttribute,
+    addCustomAttribute,
   } = useOnboardingStore();
 
   const tabs = [
@@ -32,14 +52,65 @@ export const Screen1Organization: React.FC = () => {
     tabs.push({ id: 'api-config', label: 'API Configuration', icon: Code });
   }
 
-  const enabledKPIs = [
-    'Sales per Square Foot',
-    'Store Comparison',
-    'Peak Hour Analysis',
-    'Location Clustering',
-    'Staff Productivity',
-    'Capacity Utilization',
-  ];
+  // Get all enabled entities for dropdown
+  const allEnabledEntities = useMemo(() => {
+    const orgEntities = organizationHierarchy
+      .filter(level => level.enabled)
+      .map(level => ({ id: level.id, name: level.displayName, type: 'organization' }));
+
+    const custEntities = customerHierarchy
+      .filter(level => level.enabled && level.id !== 'primary') // Exclude primary as it's not an entity
+      .map(level => ({ id: level.id, name: level.displayName, type: 'customer' }));
+
+    return [...orgEntities, ...custEntities];
+  }, [organizationHierarchy, customerHierarchy]);
+
+  // Calculate enabled KPIs dynamically
+  const enabledKPIs = useMemo(() => {
+    const kpis: string[] = ['Store Comparison', 'Peak Hour Analysis'];
+
+    if (entityAttributes['Square Footage']?.enabled) {
+      kpis.push('Sales per Square Foot');
+    }
+    if (entityAttributes['Address & Location']?.enabled) {
+      kpis.push('Location Clustering');
+    }
+    if (entityAttributes['Staff Count']?.enabled) {
+      kpis.push('Staff Productivity');
+    }
+    if (entityAttributes['Seating Capacity']?.enabled) {
+      kpis.push('Capacity Utilization');
+    }
+
+    return kpis;
+  }, [entityAttributes]);
+
+  const handleAddLevel = () => {
+    if (newLevelName.trim()) {
+      addCustomHierarchyLevel(newLevelName, newLevelDescription);
+      setNewLevelName('');
+      setNewLevelDescription('');
+      setShowAddLevelModal(false);
+    }
+  };
+
+  const handleAddCustomerType = () => {
+    if (newCustomerTypeName.trim()) {
+      addCustomerType(newCustomerTypeName, newCustomerTypeDescription);
+      setNewCustomerTypeName('');
+      setNewCustomerTypeDescription('');
+      setShowAddCustomerTypeModal(false);
+    }
+  };
+
+  const handleAddAttribute = () => {
+    if (newAttributeName.trim()) {
+      addCustomAttribute(selectedEntity, newAttributeName, newAttributeType);
+      setNewAttributeName('');
+      setNewAttributeType('String');
+      setShowAddAttributeModal(false);
+    }
+  };
 
   return (
     <motion.div
@@ -108,12 +179,31 @@ export const Screen1Organization: React.FC = () => {
                       <div className={`flex items-center gap-4 p-4 rounded-lg border-2 ${
                         level.enabled ? 'border-primary-light bg-blue-50' : 'border-gray-200 bg-gray-50'
                       }`}>
-                        <div className="w-12 h-12 bg-primary-light rounded-lg flex items-center justify-center text-white text-xl">
+                        {/* Reorder buttons */}
+                        <div className="flex flex-col gap-1">
+                          <button
+                            onClick={() => reorderHierarchyLevel(level.id, 'up')}
+                            disabled={index === 0}
+                            className="p-1 text-gray-400 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed"
+                          >
+                            <ChevronUp size={16} />
+                          </button>
+                          <button
+                            onClick={() => reorderHierarchyLevel(level.id, 'down')}
+                            disabled={index === organizationHierarchy.length - 1}
+                            className="p-1 text-gray-400 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed"
+                          >
+                            <ChevronDown size={16} />
+                          </button>
+                        </div>
+
+                        <div className="w-12 h-12 bg-primary-light rounded-lg flex items-center justify-center text-white text-xl flex-shrink-0">
                           {level.id === 'corporate' && '🏢'}
                           {level.id === 'master' && '🤝'}
                           {level.id === 'franchisee' && '👔'}
                           {level.id === 'store' && '🏪'}
                           {level.id === 'department' && '👥'}
+                          {level.id.startsWith('custom') && '⚙️'}
                         </div>
                         <div className="flex-1">
                           <input
@@ -137,7 +227,7 @@ export const Screen1Organization: React.FC = () => {
                   ))}
                 </div>
 
-                <Button variant="secondary" className="mt-4">
+                <Button variant="secondary" className="mt-4" onClick={() => setShowAddLevelModal(true)}>
                   + Add Custom Level
                 </Button>
               </Card>
@@ -168,6 +258,7 @@ export const Screen1Organization: React.FC = () => {
                           {level.id === 'primary' && '👤'}
                           {level.id === 'family' && '👨‍👩‍👧‍👦'}
                           {level.id === 'corporate_account' && '🏢'}
+                          {level.id.startsWith('customer') && '👥'}
                         </div>
                         <div className="flex-1">
                           <div className="font-semibold text-gray-900">{level.displayName}</div>
@@ -175,7 +266,7 @@ export const Screen1Organization: React.FC = () => {
                         </div>
                         <Toggle
                           checked={level.enabled}
-                          onChange={(checked) => updateHierarchyLevel(level.id, { enabled: checked })}
+                          onChange={(checked) => updateCustomerHierarchyLevel(level.id, { enabled: checked })}
                           disabled={level.required}
                         />
                       </div>
@@ -186,7 +277,11 @@ export const Screen1Organization: React.FC = () => {
                   ))}
                 </div>
 
-                <Card className="p-5 bg-gray-50">
+                <Button variant="secondary" size="sm" onClick={() => setShowAddCustomerTypeModal(true)}>
+                  + Add Customer Type
+                </Button>
+
+                <Card className="p-5 bg-gray-50 mt-6">
                   <h4 className="font-semibold mb-3">Family Pooling Rules</h4>
                   <div className="space-y-2">
                     {[
@@ -221,15 +316,17 @@ export const Screen1Organization: React.FC = () => {
                   onChange={(e) => setSelectedEntity(e.target.value)}
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
                 >
-                  <option value="franchisee">Franchisee</option>
-                  <option value="store">Store Location</option>
-                  <option value="customer">Customer</option>
+                  {allEnabledEntities.map((entity) => (
+                    <option key={entity.id} value={entity.id}>
+                      {entity.name} ({entity.type})
+                    </option>
+                  ))}
                 </select>
               </Card>
 
               <Card className="p-6">
                 <div className="flex items-center gap-2 mb-6">
-                  <h3 className="text-lg font-semibold">🏪 Store Location Attributes</h3>
+                  <h3 className="text-lg font-semibold">🏪 {allEnabledEntities.find(e => e.id === selectedEntity)?.name || 'Entity'} Attributes</h3>
                   <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold border border-purple-300">
                     🤖 Intelligence Ready
                   </span>
@@ -258,7 +355,7 @@ export const Screen1Organization: React.FC = () => {
                             Required
                           </span>
                         )}
-                        {value.kpiMapping && (
+                        {value.kpiMapping && value.enabled && (
                           <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-semibold">
                             +{value.kpiMapping.kpis} KPIs
                           </span>
@@ -271,25 +368,29 @@ export const Screen1Organization: React.FC = () => {
                 <div>
                   <h4 className="font-semibold mb-3 text-sm">Custom Attributes</h4>
                   <div className="grid grid-cols-2 gap-3 mb-3">
-                    {[
-                      { name: 'Drive-Through Available', type: 'Boolean' },
-                      { name: 'Delivery Radius', type: 'Number' },
-                    ].map((attr) => (
-                      <label
-                        key={attr.name}
-                        className="flex items-center justify-between gap-2 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer"
-                      >
-                        <div className="flex items-center gap-2">
-                          <input type="checkbox" className="w-4 h-4 text-primary rounded" defaultChecked={attr.name.includes('Drive')} />
-                          <span className="text-sm text-gray-700">{attr.name}</span>
-                        </div>
-                        <span className="px-2 py-0.5 bg-gray-200 text-gray-600 rounded text-xs">
-                          {attr.type}
-                        </span>
-                      </label>
-                    ))}
+                    {Object.entries(entityAttributes)
+                      .filter(([key]) => !['Store ID', 'Store Name', 'Address & Location', 'Square Footage', 'Operating Hours', 'Store Format/Type', 'Seating Capacity', 'Staff Count'].includes(key))
+                      .map(([key, value]) => (
+                        <label
+                          key={key}
+                          className="flex items-center justify-between gap-2 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer"
+                        >
+                          <div className="flex items-center gap-2">
+                            <input
+                              type="checkbox"
+                              checked={value.enabled}
+                              onChange={(e) => updateEntityAttribute(key, e.target.checked)}
+                              className="w-4 h-4 text-primary rounded"
+                            />
+                            <span className="text-sm text-gray-700">{key}</span>
+                          </div>
+                          <span className="px-2 py-0.5 bg-gray-200 text-gray-600 rounded text-xs">
+                            Custom
+                          </span>
+                        </label>
+                      ))}
                   </div>
-                  <Button variant="secondary" size="sm">
+                  <Button variant="secondary" size="sm" onClick={() => setShowAddAttributeModal(true)}>
                     + Add Custom Attribute
                   </Button>
                 </div>
@@ -350,34 +451,41 @@ export const Screen1Organization: React.FC = () => {
                         <th className="text-left py-3 px-4 font-semibold">Display Name</th>
                         <th className="text-left py-3 px-4 font-semibold">API Reference</th>
                         <th className="text-left py-3 px-4 font-semibold">ID Pattern</th>
+                        <th className="text-left py-3 px-4 font-semibold">Type</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {[
-                        { display: 'Franchisor HQ', api: 'corporate', pattern: 'CORP_{uuid}' },
-                        { display: 'Franchisee', api: 'franchisee', pattern: 'FR_{sequential}' },
-                        { display: 'Store Location', api: 'store', pattern: 'STR_{sequential}' },
-                      ].map((row) => (
-                        <tr key={row.api} className="border-b border-gray-200">
-                          <td className="py-3 px-4">{row.display}</td>
-                          <td className="py-3 px-4">
-                            <input
-                              type="text"
-                              value={row.api}
-                              className="px-3 py-1 border border-gray-300 rounded w-36"
-                              readOnly
-                            />
-                          </td>
-                          <td className="py-3 px-4">
-                            <input
-                              type="text"
-                              value={row.pattern}
-                              className="px-3 py-1 border border-gray-300 rounded w-40"
-                              readOnly
-                            />
-                          </td>
-                        </tr>
-                      ))}
+                      {allEnabledEntities.map((entity) => {
+                        const apiRef = entity.id.replace(/_/g, '-');
+                        const idPattern = `${entity.id.substring(0, 3).toUpperCase()}_{sequential}`;
+
+                        return (
+                          <tr key={entity.id} className="border-b border-gray-200">
+                            <td className="py-3 px-4">{entity.name}</td>
+                            <td className="py-3 px-4">
+                              <input
+                                type="text"
+                                value={apiRef}
+                                className="px-3 py-1 border border-gray-300 rounded w-full"
+                                readOnly
+                              />
+                            </td>
+                            <td className="py-3 px-4">
+                              <input
+                                type="text"
+                                value={idPattern}
+                                className="px-3 py-1 border border-gray-300 rounded w-full"
+                                readOnly
+                              />
+                            </td>
+                            <td className="py-3 px-4">
+                              <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">
+                                {entity.type}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
                     </tbody>
                   </table>
                 </div>
@@ -388,8 +496,7 @@ export const Screen1Organization: React.FC = () => {
 {`{
   "transaction": {
     "id": "TXN_20250105_001234",
-    "store": "STR_045",
-    "franchisee": "FR_012",
+    "${allEnabledEntities[0]?.id || 'store'}": "${allEnabledEntities[0]?.id.substring(0, 3).toUpperCase()}_045",
     "customer": "CUST_789456",
     "amount": 125.50,
     "points_earned": 125
@@ -402,6 +509,123 @@ export const Screen1Organization: React.FC = () => {
           )}
         </AnimatePresence>
       </div>
+
+      {/* Add Custom Level Modal */}
+      <Modal
+        isOpen={showAddLevelModal}
+        onClose={() => setShowAddLevelModal(false)}
+        title="Add Custom Hierarchy Level"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-semibold mb-2">Level Name</label>
+            <input
+              type="text"
+              value={newLevelName}
+              onChange={(e) => setNewLevelName(e.target.value)}
+              placeholder="e.g., Regional Manager"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold mb-2">Description</label>
+            <textarea
+              value={newLevelDescription}
+              onChange={(e) => setNewLevelDescription(e.target.value)}
+              placeholder="Describe this hierarchy level..."
+              rows={3}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            />
+          </div>
+          <div className="flex gap-3 justify-end">
+            <Button variant="secondary" onClick={() => setShowAddLevelModal(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAddLevel} disabled={!newLevelName.trim()}>
+              Add Level
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Add Customer Type Modal */}
+      <Modal
+        isOpen={showAddCustomerTypeModal}
+        onClose={() => setShowAddCustomerTypeModal(false)}
+        title="Add Customer Type"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-semibold mb-2">Customer Type Name</label>
+            <input
+              type="text"
+              value={newCustomerTypeName}
+              onChange={(e) => setNewCustomerTypeName(e.target.value)}
+              placeholder="e.g., VIP Member, Student"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold mb-2">Description</label>
+            <textarea
+              value={newCustomerTypeDescription}
+              onChange={(e) => setNewCustomerTypeDescription(e.target.value)}
+              placeholder="Describe this customer type..."
+              rows={3}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            />
+          </div>
+          <div className="flex gap-3 justify-end">
+            <Button variant="secondary" onClick={() => setShowAddCustomerTypeModal(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAddCustomerType} disabled={!newCustomerTypeName.trim()}>
+              Add Customer Type
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
+      {/* Add Custom Attribute Modal */}
+      <Modal
+        isOpen={showAddAttributeModal}
+        onClose={() => setShowAddAttributeModal(false)}
+        title="Add Custom Attribute"
+      >
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-semibold mb-2">Attribute Name</label>
+            <input
+              type="text"
+              value={newAttributeName}
+              onChange={(e) => setNewAttributeName(e.target.value)}
+              placeholder="e.g., Drive-Through Available"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold mb-2">Data Type</label>
+            <select
+              value={newAttributeType}
+              onChange={(e) => setNewAttributeType(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            >
+              <option value="String">String (Text)</option>
+              <option value="Number">Number</option>
+              <option value="Boolean">Boolean (Yes/No)</option>
+              <option value="Date">Date</option>
+            </select>
+          </div>
+          <div className="flex gap-3 justify-end">
+            <Button variant="secondary" onClick={() => setShowAddAttributeModal(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleAddAttribute} disabled={!newAttributeName.trim()}>
+              Add Attribute
+            </Button>
+          </div>
+        </div>
+      </Modal>
     </motion.div>
   );
 };
