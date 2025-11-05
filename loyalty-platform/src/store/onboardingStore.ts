@@ -254,6 +254,18 @@ const defaultRFMSegments: Segment[] = [
   { id: 'lost', name: 'Lost', description: 'Lowest recency, frequency & monetary scores', enabled: true, color: 'slate', rfmScore: '111' },
 ];
 
+const defaultDemographicSegments: Segment[] = [
+  { id: 'gen_z', name: 'Gen Z', description: 'Born 1997-2012, digitally native, value authenticity', enabled: true, color: 'purple', criteria: { ageGroup: '18-27' } },
+  { id: 'millennials', name: 'Millennials', description: 'Born 1981-1996, tech-savvy, experience-focused', enabled: true, color: 'blue', criteria: { ageGroup: '28-43' } },
+  { id: 'gen_x', name: 'Gen X', description: 'Born 1965-1980, value quality and convenience', enabled: true, color: 'cyan', criteria: { ageGroup: '44-59' } },
+  { id: 'boomers', name: 'Baby Boomers', description: 'Born 1946-1964, brand loyal, high purchasing power', enabled: true, color: 'green', criteria: { ageGroup: '60+' } },
+  { id: 'high_income', name: 'High Income', description: 'Premium segment with high spending capacity', enabled: true, color: 'yellow', criteria: { incomeBracket: 'high' } },
+  { id: 'mid_income', name: 'Middle Income', description: 'Value-conscious but willing to spend on quality', enabled: true, color: 'orange', criteria: { incomeBracket: 'medium' } },
+  { id: 'urban', name: 'Urban Dwellers', description: 'City residents, convenience-focused, trend-aware', enabled: true, color: 'indigo', criteria: { locationType: 'urban' } },
+  { id: 'suburban', name: 'Suburban Families', description: 'Family-oriented, value bulk purchases and loyalty', enabled: true, color: 'rose', criteria: { locationType: 'suburban' } },
+  { id: 'rural', name: 'Rural Customers', description: 'Less frequent visits but higher basket sizes', enabled: true, color: 'slate', criteria: { locationType: 'rural' } },
+];
+
 const initialQueues: Queue[] = [
   {
     id: 'customer_intelligence',
@@ -581,7 +593,12 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
     },
   })),
 
-  setSegmentationMethod: (method) => set({ segmentationMethod: method }),
+  setSegmentationMethod: (method) => set({
+    segmentationMethod: method,
+    segments: method === 'rfm' ? defaultRFMSegments :
+              method === 'demographic' ? defaultDemographicSegments :
+              [] // Custom segments start empty
+  }),
 
   updateRFMThresholds: (thresholds) => set((state) => ({
     rfmThresholds: {
