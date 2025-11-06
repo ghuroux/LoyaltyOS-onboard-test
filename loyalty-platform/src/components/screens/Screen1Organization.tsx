@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
-import { ChevronDown, ChevronUp, Plus, Trash2, Check } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Trash2, Check, Edit2, X } from 'lucide-react';
 
-type FieldType = 'text' | 'number' | 'date' | 'boolean' | 'dropdown' | 'email' | 'phone';
+type FieldType = 'text' | 'textarea' | 'number' | 'date' | 'boolean' | 'dropdown' | 'email' | 'phone' | 'uuid';
 type RelationshipType = 'parent-of' | 'child-of' | 'spouse-of' | 'partner-of' | 'guardian-of' | 'sibling-of';
-type AttributeType = 'text' | 'number' | 'address' | 'gps' | 'phone' | 'email' | 'date' | 'dropdown' | 'area';
+type AttributeType = 'text' | 'textarea' | 'number' | 'address' | 'gps' | 'phone' | 'email' | 'date' | 'dropdown' | 'area' | 'uuid' | 'url';
 
 interface CustomField {
   id: string;
@@ -28,6 +28,7 @@ interface EntityAttribute {
 interface EntityLevel {
   id: string;
   name: string;
+  customLabel?: string; // User-customizable display name
   icon: string;
   level: number;
   enabled: boolean;
@@ -49,6 +50,273 @@ interface SeedUser {
 export const Screen1Organization: React.FC = () => {
   const [expandedSections, setExpandedSections] = useState<string[]>(['business-hierarchy', 'client-categories']);
 
+  // Helper to create default attributes for each entity
+  const getDefaultAttributes = (entityId: string): EntityAttribute[] => {
+    const defaults: { [key: string]: EntityAttribute[] } = {
+      'franchisor': [
+        {
+          id: 'attr_franchisor_1',
+          label: 'Company Name',
+          type: 'text',
+          required: true,
+          insights: ['Brand Recognition Analysis', 'Corporate Identity Tracking'],
+        },
+        {
+          id: 'attr_franchisor_2',
+          label: 'Headquarters Address',
+          type: 'address',
+          required: true,
+          insights: ['Geographic Performance Analysis', 'Regional Trends', 'Market Penetration'],
+        },
+        {
+          id: 'attr_franchisor_3',
+          label: 'Corporate Website',
+          type: 'url',
+          required: false,
+          insights: ['Digital Presence Tracking', 'Brand Awareness'],
+        },
+        {
+          id: 'attr_franchisor_4',
+          label: 'Tax ID / EIN',
+          type: 'text',
+          required: true,
+          insights: ['Compliance Tracking', 'Financial Reporting'],
+        },
+      ],
+      'brand': [
+        {
+          id: 'attr_brand_1',
+          label: 'Brand Name',
+          type: 'text',
+          required: true,
+          insights: ['Brand Performance Comparison', 'Market Share Analysis'],
+        },
+        {
+          id: 'attr_brand_2',
+          label: 'Brand Manager',
+          type: 'text',
+          required: false,
+          insights: ['Management Performance Tracking'],
+        },
+        {
+          id: 'attr_brand_3',
+          label: 'Launch Date',
+          type: 'date',
+          required: false,
+          insights: ['Brand Maturity Analysis', 'Lifecycle Performance', 'Growth Trajectory'],
+        },
+        {
+          id: 'attr_brand_4',
+          label: 'Target Market',
+          type: 'text',
+          required: false,
+          insights: ['Market Segmentation', 'Customer Demographics Alignment'],
+        },
+      ],
+      'master-franchise': [
+        {
+          id: 'attr_master_franchise_1',
+          label: 'Territory Name',
+          type: 'text',
+          required: true,
+          insights: ['Regional Performance Analysis', 'Territory Comparison'],
+        },
+        {
+          id: 'attr_master_franchise_2',
+          label: 'Territory Coverage Area',
+          type: 'area',
+          required: false,
+          insights: ['Revenue per Unit Area', 'Space Utilization Analysis', 'Market Density'],
+        },
+        {
+          id: 'attr_master_franchise_3',
+          label: 'License Number',
+          type: 'text',
+          required: true,
+          insights: ['Compliance Tracking', 'License Renewal Analysis'],
+        },
+        {
+          id: 'attr_master_franchise_4',
+          label: 'Contract Start Date',
+          type: 'date',
+          required: true,
+          insights: ['Contract Lifecycle Analysis', 'Renewal Timeline Tracking'],
+        },
+      ],
+      'franchisee': [
+        {
+          id: 'attr_franchisee_1',
+          label: 'Franchisee Name',
+          type: 'text',
+          required: true,
+          insights: ['Franchisee Performance Comparison', 'Owner Success Metrics'],
+        },
+        {
+          id: 'attr_franchisee_2',
+          label: 'Owner Name',
+          type: 'text',
+          required: true,
+          insights: ['Owner Performance Tracking'],
+        },
+        {
+          id: 'attr_franchisee_3',
+          label: 'License Number',
+          type: 'text',
+          required: true,
+          insights: ['Compliance Tracking', 'Multi-unit Analysis'],
+        },
+        {
+          id: 'attr_franchisee_4',
+          label: 'Contract Date',
+          type: 'date',
+          required: true,
+          insights: ['Franchise Age Analysis', 'Maturity vs Performance'],
+        },
+        {
+          id: 'attr_franchisee_5',
+          label: 'Initial Investment',
+          type: 'number',
+          required: false,
+          insights: ['ROI Analysis', 'Investment vs Revenue Comparison'],
+        },
+      ],
+      'corporate-store': [
+        {
+          id: 'attr_corporate_store_1',
+          label: 'Store Name',
+          type: 'text',
+          required: true,
+          insights: ['Store Performance Comparison', 'Brand Consistency'],
+        },
+        {
+          id: 'attr_corporate_store_2',
+          label: 'Location Address',
+          type: 'address',
+          required: true,
+          insights: ['Geographic Performance Analysis', 'Location-based Targeting', 'Delivery Zone Optimization'],
+        },
+        {
+          id: 'attr_corporate_store_3',
+          label: 'GPS Coordinates',
+          type: 'gps',
+          required: false,
+          insights: ['Heat Mapping', 'Distance Analysis', 'Proximity Analytics'],
+        },
+        {
+          id: 'attr_corporate_store_4',
+          label: 'Square Footage',
+          type: 'area',
+          required: false,
+          insights: ['Revenue per Square Foot', 'Capacity Utilization', 'Space Efficiency'],
+        },
+        {
+          id: 'attr_corporate_store_5',
+          label: 'Opening Date',
+          type: 'date',
+          required: false,
+          insights: ['Store Maturity Analysis', 'Lifecycle Performance', 'New Store Ramp-up'],
+        },
+        {
+          id: 'attr_corporate_store_6',
+          label: 'Manager Name',
+          type: 'text',
+          required: false,
+          insights: ['Manager Performance Tracking', 'Leadership Impact Analysis'],
+        },
+      ],
+      'store': [
+        {
+          id: 'attr_store_1',
+          label: 'Store Name',
+          type: 'text',
+          required: true,
+          insights: ['Store Performance Comparison', 'Brand Recognition'],
+        },
+        {
+          id: 'attr_store_2',
+          label: 'Location Address',
+          type: 'address',
+          required: true,
+          insights: ['Geographic Performance Analysis', 'Regional Trends', 'Delivery Zone Optimization'],
+        },
+        {
+          id: 'attr_store_3',
+          label: 'GPS Coordinates',
+          type: 'gps',
+          required: false,
+          insights: ['Heat Mapping', 'Distance Analysis', 'Location-based Targeting', 'Proximity Analytics'],
+        },
+        {
+          id: 'attr_store_4',
+          label: 'Square Footage',
+          type: 'area',
+          required: false,
+          insights: ['Revenue per Square Foot', 'Capacity Utilization', 'Space Efficiency', 'Occupancy Analysis'],
+        },
+        {
+          id: 'attr_store_5',
+          label: 'Opening Date',
+          type: 'date',
+          required: false,
+          insights: ['Store Maturity Analysis', 'Lifecycle Performance', 'New Store Ramp-up'],
+        },
+        {
+          id: 'attr_store_6',
+          label: 'Seating Capacity',
+          type: 'number',
+          required: false,
+          insights: ['Table Turnover Rate', 'Revenue per Seat', 'Capacity Planning'],
+        },
+        {
+          id: 'attr_store_7',
+          label: 'Operating Hours',
+          type: 'text',
+          required: false,
+          insights: ['Peak Hour Analysis', 'Staff Scheduling Optimization', 'Sales by Time of Day'],
+        },
+        {
+          id: 'attr_store_8',
+          label: 'Manager Name',
+          type: 'text',
+          required: false,
+          insights: ['Manager Performance Tracking', 'Leadership Impact Analysis'],
+        },
+      ],
+      'department': [
+        {
+          id: 'attr_department_1',
+          label: 'Department Name',
+          type: 'text',
+          required: true,
+          insights: ['Department Performance Comparison', 'Specialization Analysis'],
+        },
+        {
+          id: 'attr_department_2',
+          label: 'Department Head',
+          type: 'text',
+          required: false,
+          insights: ['Leadership Performance Tracking'],
+        },
+        {
+          id: 'attr_department_3',
+          label: 'Staff Count',
+          type: 'number',
+          required: false,
+          insights: ['Revenue per Employee', 'Productivity Metrics', 'Labor Cost Analysis'],
+        },
+        {
+          id: 'attr_department_4',
+          label: 'Monthly Budget',
+          type: 'number',
+          required: false,
+          insights: ['Budget vs Actual Analysis', 'Cost Efficiency Metrics'],
+        },
+      ],
+    };
+
+    return defaults[entityId] || [];
+  };
+
   // Business Organizational Hierarchy
   const [entityLevels, setEntityLevels] = useState<EntityLevel[]>([
     {
@@ -58,7 +326,7 @@ export const Screen1Organization: React.FC = () => {
       level: 1,
       enabled: true,
       optional: false,
-      attributes: [],
+      attributes: getDefaultAttributes('franchisor'),
       portalAccess: true,
       rbacRoles: ['Admin', 'Manager'],
       createAccounts: true,
@@ -70,7 +338,7 @@ export const Screen1Organization: React.FC = () => {
       level: 2,
       enabled: false,
       optional: true,
-      attributes: [],
+      attributes: getDefaultAttributes('brand'),
       portalAccess: true,
       rbacRoles: ['Brand Manager'],
       createAccounts: false,
@@ -82,7 +350,7 @@ export const Screen1Organization: React.FC = () => {
       level: 3,
       enabled: false,
       optional: true,
-      attributes: [],
+      attributes: getDefaultAttributes('master-franchise'),
       portalAccess: true,
       rbacRoles: ['Franchise Owner'],
       createAccounts: true,
@@ -94,7 +362,7 @@ export const Screen1Organization: React.FC = () => {
       level: 4,
       enabled: true,
       optional: false,
-      attributes: [],
+      attributes: getDefaultAttributes('franchisee'),
       portalAccess: true,
       rbacRoles: ['Franchisee Admin'],
       createAccounts: true,
@@ -106,7 +374,7 @@ export const Screen1Organization: React.FC = () => {
       level: 5,
       enabled: false,
       optional: true,
-      attributes: [],
+      attributes: getDefaultAttributes('corporate-store'),
       portalAccess: true,
       rbacRoles: ['Store Manager'],
       createAccounts: false,
@@ -118,7 +386,7 @@ export const Screen1Organization: React.FC = () => {
       level: 6,
       enabled: true,
       optional: false,
-      attributes: [],
+      attributes: getDefaultAttributes('store'),
       portalAccess: true,
       rbacRoles: ['Store Manager', 'Assistant Manager'],
       createAccounts: false,
@@ -130,7 +398,7 @@ export const Screen1Organization: React.FC = () => {
       level: 7,
       enabled: false,
       optional: true,
-      attributes: [],
+      attributes: getDefaultAttributes('department'),
       portalAccess: false,
       rbacRoles: ['Department Lead'],
       createAccounts: false,
@@ -147,6 +415,7 @@ export const Screen1Organization: React.FC = () => {
 
   const [showAddAttributeModal, setShowAddAttributeModal] = useState(false);
   const [editingEntityId, setEditingEntityId] = useState<string | null>(null);
+  const [editingEntityName, setEditingEntityName] = useState<string | null>(null);
   const [newAttribute, setNewAttribute] = useState<EntityAttribute>({
     id: '',
     label: '',
@@ -179,6 +448,15 @@ export const Screen1Organization: React.FC = () => {
     }
     if (type === 'number') {
       return ['Comparative Analysis', 'Performance Benchmarking'];
+    }
+    if (type === 'uuid') {
+      return ['Unique Entity Tracking', 'System Integration', 'Data Deduplication'];
+    }
+    if (type === 'url') {
+      return ['Digital Presence Tracking', 'Online Engagement', 'Link Analytics'];
+    }
+    if (type === 'textarea') {
+      return ['Sentiment Analysis', 'Text Mining', 'Keyword Tracking'];
     }
 
     return ['Custom Analytics', 'Trend Analysis'];
@@ -287,11 +565,12 @@ export const Screen1Organization: React.FC = () => {
 
   // Customer Profile
   const [coreFields] = useState([
+    { id: 'membershipNumber', label: 'Membership Number', required: true, insight: 'Unique customer identification, account linking, loyalty tier tracking' },
     { id: 'firstName', label: 'First Name', required: true, insight: '' },
     { id: 'lastName', label: 'Last Name', required: true, insight: '' },
-    { id: 'email', label: 'Email', required: true, insight: '' },
-    { id: 'phone', label: 'Phone', required: false, insight: '' },
-    { id: 'dob', label: 'Date of Birth', required: true, insight: 'Age-based targeting, lifecycle campaigns' },
+    { id: 'email', label: 'Email', required: true, insight: 'Communication channel, digital engagement tracking' },
+    { id: 'phone', label: 'Phone', required: false, insight: 'SMS campaigns, multi-channel engagement' },
+    { id: 'dob', label: 'Date of Birth', required: true, insight: 'Age-based targeting, lifecycle campaigns, birthday rewards' },
     {
       id: 'address',
       label: 'Detailed Address (Street, City, State, ZIP)',
@@ -425,16 +704,22 @@ export const Screen1Organization: React.FC = () => {
     const isExpanded = expandedSections.includes(id);
 
     return (
-      <Card className="mb-4">
+      <Card className="mb-6 shadow-md hover:shadow-lg transition-shadow">
         <button
           onClick={() => toggleSection(id)}
-          className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 transition-colors"
+          className="w-full flex items-center justify-between p-6 text-left hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 transition-all rounded-t-lg"
         >
-          <div className="flex items-center gap-3">
-            <span className="text-2xl">{icon}</span>
-            <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+          <div className="flex items-center gap-4">
+            <div className="text-3xl bg-gradient-to-br from-blue-500 to-purple-500 p-2 rounded-lg shadow-sm">
+              {icon}
+            </div>
+            <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+              {title}
+            </h3>
           </div>
-          {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+          <div className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
+            <ChevronDown size={24} className="text-gray-400" />
+          </div>
         </button>
 
         {isExpanded && (
@@ -461,13 +746,15 @@ export const Screen1Organization: React.FC = () => {
       className="p-10"
     >
       <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Organization & Customer Model
-          </h1>
-          <p className="text-gray-600 text-lg">
-            Define your business hierarchy, customer structure, profile fields, relationships, and system integrations
-          </p>
+        <div className="mb-10">
+          <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white rounded-2xl p-8 shadow-lg">
+            <h1 className="text-4xl font-bold mb-3">
+              Organization & Customer Model
+            </h1>
+            <p className="text-blue-50 text-lg max-w-3xl">
+              Define your business hierarchy, customer structure, profile fields, relationships, and system integrations to power your loyalty platform
+            </p>
+          </div>
         </div>
 
         {/* Section 0: Business Organizational Hierarchy */}
@@ -540,10 +827,10 @@ export const Screen1Organization: React.FC = () => {
             <div className="space-y-4">
               <h4 className="font-semibold">Entity Levels</h4>
               {entityLevels.map((entity) => (
-                <Card key={entity.id} className={`${entity.enabled ? 'border-2 border-primary' : 'opacity-60'}`}>
+                <Card key={entity.id} className={`transition-all ${entity.enabled ? 'border-2 border-blue-500 bg-gradient-to-r from-blue-50 to-purple-50 shadow-md' : 'opacity-60 hover:opacity-80'}`}>
                   <div className="p-4">
                     <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 flex-1">
                         <input
                           type="checkbox"
                           checked={entity.enabled}
@@ -552,10 +839,53 @@ export const Screen1Organization: React.FC = () => {
                           className="h-5 w-5 text-primary rounded"
                         />
                         <span className="text-2xl">{entity.icon}</span>
-                        <div>
-                          <h5 className="font-semibold text-gray-900">{entity.name}</h5>
+                        <div className="flex-1">
+                          {editingEntityName === entity.id ? (
+                            <div className="flex items-center gap-2">
+                              <input
+                                type="text"
+                                value={entity.customLabel || entity.name}
+                                onChange={(e) =>
+                                  updateEntityLevel(entity.id, { customLabel: e.target.value })
+                                }
+                                className="px-2 py-1 border border-primary rounded text-sm font-semibold"
+                                autoFocus
+                              />
+                              <button
+                                onClick={() => setEditingEntityName(null)}
+                                className="text-green-600 hover:text-green-700"
+                              >
+                                <Check size={16} />
+                              </button>
+                              <button
+                                onClick={() => {
+                                  updateEntityLevel(entity.id, { customLabel: undefined });
+                                  setEditingEntityName(null);
+                                }}
+                                className="text-red-600 hover:text-red-700"
+                              >
+                                <X size={16} />
+                              </button>
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              <h5 className="font-semibold text-gray-900">
+                                {entity.customLabel || entity.name}
+                              </h5>
+                              <button
+                                onClick={() => setEditingEntityName(entity.id)}
+                                className="text-gray-400 hover:text-gray-600 transition-colors"
+                                title="Customize entity name"
+                              >
+                                <Edit2 size={14} />
+                              </button>
+                            </div>
+                          )}
                           <p className="text-xs text-gray-600">
                             Level {entity.level} {entity.optional && '(Optional)'}
+                            {entity.customLabel && (
+                              <span className="ml-2 text-blue-600">(Custom: {entity.name})</span>
+                            )}
                           </p>
                         </div>
                       </div>
@@ -581,30 +911,30 @@ export const Screen1Organization: React.FC = () => {
                           <div className="mb-4 space-y-2">
                             <p className="text-xs font-semibold text-gray-700 mb-2">Attributes:</p>
                             {entity.attributes.map((attr) => (
-                              <div key={attr.id} className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                              <div key={attr.id} className="p-4 bg-white rounded-xl border-2 border-gray-200 hover:border-blue-300 transition-colors shadow-sm">
                                 <div className="flex items-start justify-between mb-2">
                                   <div className="flex-1">
-                                    <div className="flex items-center gap-2 mb-1">
-                                      <span className="text-sm font-medium text-gray-900">{attr.label}</span>
-                                      <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">
+                                    <div className="flex items-center gap-2 mb-2">
+                                      <span className="text-sm font-semibold text-gray-900">{attr.label}</span>
+                                      <span className="px-2.5 py-1 bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 rounded-full text-xs font-medium">
                                         {attr.type}
                                       </span>
                                       {attr.required && (
-                                        <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs">
+                                        <span className="px-2.5 py-1 bg-gradient-to-r from-red-100 to-red-200 text-red-800 rounded-full text-xs font-medium">
                                           Required
                                         </span>
                                       )}
                                     </div>
                                     {attr.insights.length > 0 && (
-                                      <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded">
-                                        <p className="text-xs font-semibold text-green-900 mb-1">
-                                          📊 Analytics Insights:
+                                      <div className="mt-3 p-3 bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-lg">
+                                        <p className="text-xs font-bold text-emerald-900 mb-2 flex items-center gap-1">
+                                          📊 Analytics Insights
                                         </p>
-                                        <div className="flex flex-wrap gap-1">
+                                        <div className="flex flex-wrap gap-1.5">
                                           {attr.insights.map((insight, idx) => (
                                             <span
                                               key={idx}
-                                              className="px-2 py-0.5 bg-green-100 text-green-800 rounded text-xs"
+                                              className="px-2.5 py-1 bg-white border border-emerald-300 text-emerald-800 rounded-full text-xs font-medium shadow-sm"
                                             >
                                               {insight}
                                             </span>
@@ -615,7 +945,8 @@ export const Screen1Organization: React.FC = () => {
                                   </div>
                                   <button
                                     onClick={() => removeAttributeFromEntity(entity.id, attr.id)}
-                                    className="text-red-600 hover:text-red-700 ml-2"
+                                    className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition-colors ml-2"
+                                    title="Remove attribute"
                                   >
                                     <Trash2 size={16} />
                                   </button>
@@ -693,7 +1024,9 @@ export const Screen1Organization: React.FC = () => {
                           <div className="flex items-center gap-2">
                             <span className="text-xl">{entity.icon}</span>
                             <div className="flex-1">
-                              <div className="font-semibold text-sm text-gray-900">{entity.name}</div>
+                              <div className="font-semibold text-sm text-gray-900">
+                                {entity.customLabel || entity.name}
+                              </div>
                               <div className="text-xs text-gray-600">
                                 {entity.attributes.length} attribute{entity.attributes.length !== 1 ? 's' : ''}
                                 {entity.portalAccess && ' • Portal'}
@@ -722,7 +1055,7 @@ export const Screen1Organization: React.FC = () => {
               <h4 className="font-semibold mb-3 text-gray-700">Consumer Accounts (B2C)</h4>
               <div className="grid grid-cols-2 gap-4">
                 {clientTypes.filter(c => c.type === 'B2C').map(client => (
-                  <Card key={client.id} className={`${client.enabled ? 'border-2 border-primary' : 'opacity-60'}`}>
+                  <Card key={client.id} className={`transition-all ${client.enabled ? 'border-2 border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 shadow-md' : 'opacity-60 hover:opacity-80'}`}>
                     <div className="p-4">
                       <div className="flex items-center gap-3 mb-3">
                         <input
@@ -748,7 +1081,7 @@ export const Screen1Organization: React.FC = () => {
               <h4 className="font-semibold mb-3 text-gray-700">Business Clients & Partners (B2B)</h4>
               <div className="space-y-3">
                 {clientTypes.filter(c => c.type === 'B2B').map(client => (
-                  <Card key={client.id} className={`${client.enabled ? 'border-2 border-primary' : 'opacity-60'}`}>
+                  <Card key={client.id} className={`transition-all ${client.enabled ? 'border-2 border-orange-500 bg-gradient-to-br from-orange-50 to-amber-50 shadow-md' : 'opacity-60 hover:opacity-80'}`}>
                     <div className="p-4">
                       <div className="flex items-center gap-3 mb-3">
                         <input
@@ -826,8 +1159,8 @@ export const Screen1Organization: React.FC = () => {
               </h4>
               <div className="grid grid-cols-2 gap-4">
                 {coreFields.map(field => (
-                  <div key={field.id} className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                    <div className="flex items-center justify-between mb-1">
+                  <div key={field.id} className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200 shadow-sm">
+                    <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <input
                           type="checkbox"
@@ -835,16 +1168,16 @@ export const Screen1Organization: React.FC = () => {
                           disabled
                           className="h-4 w-4 text-primary rounded"
                         />
-                        <span className="text-sm font-medium text-gray-900">{field.label}</span>
+                        <span className="text-sm font-semibold text-gray-900">{field.label}</span>
                       </div>
                       {field.required && (
-                        <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs font-semibold">
+                        <span className="px-2.5 py-1 bg-gradient-to-r from-red-100 to-red-200 text-red-800 rounded-full text-xs font-bold">
                           Required
                         </span>
                       )}
                     </div>
                     {field.insight && (
-                      <div className="ml-6 mt-2 p-2 bg-blue-50 border border-blue-200 rounded">
+                      <div className="ml-6 mt-2 p-2.5 bg-white border-2 border-blue-300 rounded-lg">
                         <p className="text-xs text-blue-900">
                           <strong>📊 Insights:</strong> {field.insight}
                         </p>
@@ -869,9 +1202,9 @@ export const Screen1Organization: React.FC = () => {
               </div>
 
               {customFields.length === 0 ? (
-                <div className="p-6 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 text-center">
-                  <p className="text-gray-600 text-sm mb-2">No custom fields yet</p>
-                  <p className="text-gray-500 text-xs">
+                <div className="p-8 bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl border-2 border-dashed border-gray-300 text-center">
+                  <p className="text-gray-700 text-base font-semibold mb-2">No custom fields yet</p>
+                  <p className="text-gray-600 text-sm">
                     Add custom fields to capture business-specific customer data
                   </p>
                 </div>
@@ -1252,9 +1585,9 @@ export const Screen1Organization: React.FC = () => {
 
       {/* Add Custom Field Modal */}
       {showAddFieldModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-6">
-            <h3 className="text-xl font-bold mb-4">Add Custom Field</h3>
+        <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8 border-2 border-gray-200">
+            <h3 className="text-2xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Add Custom Field</h3>
 
             <div className="space-y-4">
               <div>
@@ -1281,12 +1614,14 @@ export const Screen1Organization: React.FC = () => {
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                   >
                     <option value="text">Text (Short)</option>
+                    <option value="textarea">Text (Long / Multi-line)</option>
                     <option value="number">Number</option>
                     <option value="date">Date</option>
                     <option value="boolean">Yes/No (Boolean)</option>
                     <option value="dropdown">Dropdown (Select)</option>
                     <option value="email">Email</option>
                     <option value="phone">Phone</option>
+                    <option value="uuid">UUID (Unique Identifier)</option>
                   </select>
                 </div>
 
@@ -1341,10 +1676,10 @@ export const Screen1Organization: React.FC = () => {
 
       {/* Add Attribute to Entity Modal */}
       {showAddAttributeModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-6">
-            <h3 className="text-xl font-bold mb-4">
-              Add Attribute to {entityLevels.find((e) => e.id === editingEntityId)?.name}
+        <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8 border-2 border-gray-200">
+            <h3 className="text-2xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              Add Attribute to {entityLevels.find((e) => e.id === editingEntityId)?.customLabel || entityLevels.find((e) => e.id === editingEntityId)?.name}
             </h3>
 
             <div className="space-y-4">
@@ -1376,7 +1711,8 @@ export const Screen1Organization: React.FC = () => {
                     }
                     className="w-full px-3 py-2 border border-gray-300 rounded-lg"
                   >
-                    <option value="text">Text</option>
+                    <option value="text">Text (Short)</option>
+                    <option value="textarea">Text (Long / Multi-line)</option>
                     <option value="number">Number</option>
                     <option value="area">Area (sq ft)</option>
                     <option value="address">Full Address</option>
@@ -1385,6 +1721,8 @@ export const Screen1Organization: React.FC = () => {
                     <option value="email">Email</option>
                     <option value="date">Date</option>
                     <option value="dropdown">Dropdown</option>
+                    <option value="url">URL / Website</option>
+                    <option value="uuid">UUID (Unique Identifier)</option>
                   </select>
                 </div>
 
@@ -1403,15 +1741,15 @@ export const Screen1Organization: React.FC = () => {
 
               {/* Live Insight Preview */}
               {newAttribute.label && (
-                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                  <p className="text-sm font-semibold text-green-900 mb-2">
-                    📊 Analytics Insights This Attribute Enables:
+                <div className="p-5 bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-300 rounded-xl shadow-sm">
+                  <p className="text-sm font-bold text-emerald-900 mb-3 flex items-center gap-2">
+                    <span className="text-lg">📊</span> Analytics Insights This Attribute Enables:
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {getInsightsForAttribute(newAttribute.label, newAttribute.type).map((insight, idx) => (
                       <span
                         key={idx}
-                        className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium"
+                        className="px-3 py-1.5 bg-white border-2 border-emerald-400 text-emerald-900 rounded-full text-sm font-semibold shadow-sm"
                       >
                         ✓ {insight}
                       </span>
