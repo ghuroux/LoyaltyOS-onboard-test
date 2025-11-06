@@ -7,20 +7,20 @@ interface Step {
 }
 
 const steps: Step[] = [
-  { number: 1, label: 'Discovery' },
+  { number: 0, label: 'Dashboard' },
+  { number: 1, label: 'Basics' },
   { number: 2, label: 'Integrations' },
   { number: 3, label: 'Structure' },
-  { number: 4, label: 'Value' },
-  { number: 5, label: 'Redemption' },
-  { number: 6, label: 'Segments' },
-  { number: 7, label: 'Automations' },
-  { number: 8, label: 'Safeguards' },
-  { number: 9, label: 'Campaigns' },
-  { number: 10, label: 'Queues' },
-  { number: 11, label: 'Data' },
-  { number: 12, label: 'Analytics' },
-  { number: 13, label: 'Flows' },
-  { number: 14, label: 'Deploy' },
+  { number: 4, label: 'Points' },
+  { number: 5, label: 'Tiers' },
+  { number: 6, label: 'Earning' },
+  { number: 7, label: 'Redemption' },
+  { number: 8, label: 'Campaigns' },
+  { number: 9, label: 'Portal' },
+  { number: 10, label: 'Analytics' },
+  { number: 11, label: 'Notifications' },
+  { number: 12, label: 'Workflow' },
+  { number: 13, label: 'Deploy' },
 ];
 
 interface ProgressBarProps {
