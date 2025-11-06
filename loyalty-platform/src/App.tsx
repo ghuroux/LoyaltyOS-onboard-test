@@ -22,8 +22,8 @@ import { Screen13Deployment } from './components/screens/Screen13Deployment';
 
 const screens = [
   Screen0Discovery,
-  Screen1Organization,
   Screen2Integrations,
+  Screen1Organization,
   Screen3Value,
   Screen4Redemption,
   Screen5Segmentation,

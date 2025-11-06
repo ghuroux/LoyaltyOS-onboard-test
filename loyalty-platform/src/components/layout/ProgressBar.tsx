@@ -8,8 +8,8 @@ interface Step {
 
 const steps: Step[] = [
   { number: 1, label: 'Discovery' },
-  { number: 2, label: 'Structure' },
-  { number: 3, label: 'Integrations' },
+  { number: 2, label: 'Integrations' },
+  { number: 3, label: 'Structure' },
   { number: 4, label: 'Value' },
   { number: 5, label: 'Redemption' },
   { number: 6, label: 'Segments' },
