@@ -7,33 +7,33 @@ import { useOnboardingStore } from './store/onboardingStore';
 // Screen imports
 import { Screen0Discovery } from './components/screens/Screen0Discovery';
 import { Screen1Organization } from './components/screens/Screen1Organization';
-import { Screen2Value } from './components/screens/Screen2Value';
-import { Screen3Segmentation } from './components/screens/Screen3Segmentation';
-import { Screen4Automations } from './components/screens/Screen4Automations';
-import { Screen5Redemption } from './components/screens/Screen5Redemption';
-import { Screen6Campaigns } from './components/screens/Screen6Campaigns';
-import { Screen7Queues } from './components/screens/Screen7Queues';
-import { Screen8Data } from './components/screens/Screen8Data';
-import { Screen9Integrations } from './components/screens/Screen9Integrations';
-import { Screen10Analytics } from './components/screens/Screen10Analytics';
-import { Screen11FlowBuilder } from './components/screens/Screen11FlowBuilder';
-import { Screen12SafeguardsAutomation } from './components/screens/Screen12SafeguardsAutomation';
+import { Screen2Integrations } from './components/screens/Screen2Integrations';
+import { Screen3Value } from './components/screens/Screen3Value';
+import { Screen4Redemption } from './components/screens/Screen4Redemption';
+import { Screen5Segmentation } from './components/screens/Screen5Segmentation';
+import { Screen6Automations } from './components/screens/Screen6Automations';
+import { Screen7SafeguardsAutomation } from './components/screens/Screen7SafeguardsAutomation';
+import { Screen8Campaigns } from './components/screens/Screen8Campaigns';
+import { Screen9Queues } from './components/screens/Screen9Queues';
+import { Screen10Data } from './components/screens/Screen10Data';
+import { Screen11Analytics } from './components/screens/Screen11Analytics';
+import { Screen12FlowBuilder } from './components/screens/Screen12FlowBuilder';
 import { Screen13Deployment } from './components/screens/Screen13Deployment';
 
 const screens = [
   Screen0Discovery,
   Screen1Organization,
-  Screen2Value,
-  Screen5Redemption,
-  Screen3Segmentation,
-  Screen4Automations,
-  Screen12SafeguardsAutomation,
-  Screen6Campaigns,
-  Screen7Queues,
-  Screen8Data,
-  Screen9Integrations,
-  Screen10Analytics,
-  Screen11FlowBuilder,
+  Screen2Integrations,
+  Screen3Value,
+  Screen4Redemption,
+  Screen5Segmentation,
+  Screen6Automations,
+  Screen7SafeguardsAutomation,
+  Screen8Campaigns,
+  Screen9Queues,
+  Screen10Data,
+  Screen11Analytics,
+  Screen12FlowBuilder,
   Screen13Deployment,
 ];
 

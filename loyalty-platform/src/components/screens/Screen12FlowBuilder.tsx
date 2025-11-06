@@ -49,7 +49,7 @@ const initialEdges: Edge[] = [
   { id: 'e3-5', source: '3', target: '5', label: 'At Risk' },
 ];
 
-export const Screen11FlowBuilder: React.FC = () => {
+export const Screen12FlowBuilder: React.FC = () => {
   const [nodes, , onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 

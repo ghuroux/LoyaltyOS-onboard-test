@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { useOnboardingStore } from '../../store/onboardingStore';
 
-export const Screen5Redemption: React.FC = () => {
+export const Screen4Redemption: React.FC = () => {
   const { valueType, valueConfig, updateValueConfig } = useOnboardingStore();
 
   // Helper to get value label

@@ -5,7 +5,7 @@ import { useOnboardingStore } from '../../store/onboardingStore';
 
 type TriggerType = 'segment' | 'milestone' | 'inactivity' | 'birthday' | 'expiry' | 'threshold';
 
-export const Screen4Automations: React.FC = () => {
+export const Screen6Automations: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TriggerType>('segment');
   const { segments, automations, addAutomation, updateAutomation, removeAutomation } = useOnboardingStore();
   const [expandedAutomation, setExpandedAutomation] = useState<string | null>(null);

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { useOnboardingStore } from '../../store/onboardingStore';
 
-export const Screen12SafeguardsAutomation: React.FC = () => {
+export const Screen7SafeguardsAutomation: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'anti-gaming' | 'communication' | 'overrides'>('anti-gaming');
   const { safeguardSettings, updateSafeguardSettings } = useOnboardingStore();
 

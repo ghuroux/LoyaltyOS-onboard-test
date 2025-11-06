@@ -4,7 +4,7 @@ import { Card } from '../ui/Card';
 import { Toggle } from '../ui/Toggle';
 import { useOnboardingStore } from '../../store/onboardingStore';
 
-export const Screen7Queues: React.FC = () => {
+export const Screen9Queues: React.FC = () => {
   const { queues, updateQueue } = useOnboardingStore();
 
   return (
