@@ -30,7 +30,7 @@ export const Screen6Campaigns: React.FC = () => {
     {
       id: 'trigger-based' as CampaignType,
       icon: '⚡',
-      name: 'Trigger-Based Campaigns',
+      name: 'Event-Based Campaigns',
       desc: 'Event-driven, always ready',
       examples: ['Weather Triggers', 'Location Events', 'Inventory Alerts', 'Social Media', 'Cart Abandonment'],
     },
