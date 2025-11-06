@@ -17,7 +17,7 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
   isOpen,
   onClose,
   initialType,
-  templateId,
+  templateId: _templateId,
   templateName,
   onSave,
 }) => {

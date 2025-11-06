@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
-import { useOnboardingStore } from '../../store/onboardingStore';
 import { ChevronDown, ChevronUp, Plus, Trash2, Check } from 'lucide-react';
 
 type FieldType = 'text' | 'number' | 'date' | 'boolean' | 'dropdown' | 'email' | 'phone';
 type RelationshipType = 'parent-of' | 'child-of' | 'spouse-of' | 'partner-of' | 'guardian-of' | 'sibling-of';
+type AttributeType = 'text' | 'number' | 'address' | 'gps' | 'phone' | 'email' | 'date' | 'dropdown' | 'area';
 
 interface CustomField {
   id: string;
@@ -17,20 +17,189 @@ interface CustomField {
   options?: string[]; // For dropdown
 }
 
+interface EntityAttribute {
+  id: string;
+  label: string;
+  type: AttributeType;
+  required: boolean;
+  insights: string[]; // Array of insights this attribute enables
+}
+
+interface EntityLevel {
+  id: string;
+  name: string;
+  icon: string;
+  level: number;
+  enabled: boolean;
+  optional: boolean;
+  attributes: EntityAttribute[];
+  portalAccess: boolean;
+  rbacRoles: string[];
+  createAccounts: boolean;
+}
+
+interface SeedUser {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  role: string;
+}
+
 export const Screen1Organization: React.FC = () => {
-  const [expandedSections, setExpandedSections] = useState<string[]>(['business-model', 'customer-profile']);
+  const [expandedSections, setExpandedSections] = useState<string[]>(['business-hierarchy', 'business-model']);
+
+  // Business Organizational Hierarchy
+  const [entityLevels, setEntityLevels] = useState<EntityLevel[]>([
+    {
+      id: 'franchisor',
+      name: 'Franchisor',
+      icon: '🏢',
+      level: 1,
+      enabled: true,
+      optional: false,
+      attributes: [],
+      portalAccess: true,
+      rbacRoles: ['Admin', 'Manager'],
+      createAccounts: true,
+    },
+    {
+      id: 'brand',
+      name: 'Brand',
+      icon: '🏷️',
+      level: 2,
+      enabled: false,
+      optional: true,
+      attributes: [],
+      portalAccess: true,
+      rbacRoles: ['Brand Manager'],
+      createAccounts: false,
+    },
+    {
+      id: 'master-franchise',
+      name: 'Master Franchise',
+      icon: '🌍',
+      level: 3,
+      enabled: false,
+      optional: true,
+      attributes: [],
+      portalAccess: true,
+      rbacRoles: ['Franchise Owner'],
+      createAccounts: true,
+    },
+    {
+      id: 'franchisee',
+      name: 'Franchisee',
+      icon: '🤝',
+      level: 4,
+      enabled: true,
+      optional: false,
+      attributes: [],
+      portalAccess: true,
+      rbacRoles: ['Franchisee Admin'],
+      createAccounts: true,
+    },
+    {
+      id: 'corporate-store',
+      name: 'Corporate Store',
+      icon: '🏬',
+      level: 5,
+      enabled: false,
+      optional: true,
+      attributes: [],
+      portalAccess: true,
+      rbacRoles: ['Store Manager'],
+      createAccounts: false,
+    },
+    {
+      id: 'store',
+      name: 'Store / Restaurant',
+      icon: '🏪',
+      level: 6,
+      enabled: true,
+      optional: false,
+      attributes: [],
+      portalAccess: true,
+      rbacRoles: ['Store Manager', 'Assistant Manager'],
+      createAccounts: false,
+    },
+    {
+      id: 'department',
+      name: 'Department',
+      icon: '📦',
+      level: 7,
+      enabled: false,
+      optional: true,
+      attributes: [],
+      portalAccess: false,
+      rbacRoles: ['Department Lead'],
+      createAccounts: false,
+    },
+  ]);
+
+  const [seedUser, setSeedUser] = useState<SeedUser>({
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    role: 'System Administrator',
+  });
+
+  const [showAddAttributeModal, setShowAddAttributeModal] = useState(false);
+  const [editingEntityId, setEditingEntityId] = useState<string | null>(null);
+  const [newAttribute, setNewAttribute] = useState<EntityAttribute>({
+    id: '',
+    label: '',
+    type: 'text',
+    required: false,
+    insights: [],
+  });
+
+  // Insight mapping based on attribute type and label
+  const getInsightsForAttribute = (label: string, type: AttributeType): string[] => {
+    const insights: { [key: string]: string[] } = {
+      'Square Footage': ['Revenue per Square Foot', 'Capacity Utilization', 'Space Efficiency', 'Occupancy Analysis'],
+      'Address': ['Geographic Performance Analysis', 'Regional Trends', 'Delivery Zone Optimization', 'Market Penetration'],
+      'GPS Coordinates': ['Heat Mapping', 'Distance Analysis', 'Location-based Targeting', 'Proximity Analytics'],
+      'Operating Hours': ['Peak Hour Analysis', 'Staff Scheduling Optimization', 'Sales by Time of Day'],
+      'Staff Count': ['Revenue per Employee', 'Productivity Metrics', 'Labor Cost Analysis'],
+      'Seating Capacity': ['Table Turnover Rate', 'Revenue per Seat', 'Capacity Planning'],
+      'Opening Date': ['Store Maturity Analysis', 'Lifecycle Performance', 'New Store Ramp-up'],
+    };
+
+    // Check for exact match
+    if (insights[label]) return insights[label];
+
+    // Type-based insights
+    if (type === 'area' || label.toLowerCase().includes('sq ft') || label.toLowerCase().includes('square')) {
+      return ['Revenue per Unit Area', 'Space Utilization Analysis'];
+    }
+    if (type === 'address' || type === 'gps') {
+      return ['Geographic Performance', 'Location Analytics'];
+    }
+    if (type === 'number') {
+      return ['Comparative Analysis', 'Performance Benchmarking'];
+    }
+
+    return ['Custom Analytics', 'Trend Analysis'];
+  };
 
   // Business Model
   const [businessModel, setBusinessModel] = useState<'individual' | 'household' | 'business'>('household');
 
   // Customer Profile
   const [coreFields] = useState([
-    { id: 'firstName', label: 'First Name', required: true },
-    { id: 'lastName', label: 'Last Name', required: true },
-    { id: 'email', label: 'Email', required: true },
-    { id: 'phone', label: 'Phone', required: false },
-    { id: 'dob', label: 'Date of Birth', required: true },
-    { id: 'address', label: 'Address', required: false },
+    { id: 'firstName', label: 'First Name', required: true, insight: '' },
+    { id: 'lastName', label: 'Last Name', required: true, insight: '' },
+    { id: 'email', label: 'Email', required: true, insight: '' },
+    { id: 'phone', label: 'Phone', required: false, insight: '' },
+    { id: 'dob', label: 'Date of Birth', required: true, insight: 'Age-based targeting, lifecycle campaigns' },
+    {
+      id: 'address',
+      label: 'Detailed Address (Street, City, State, ZIP)',
+      required: false,
+      insight: 'Geographic analysis, location-based campaigns, delivery optimization'
+    },
   ]);
 
   const [customFields, setCustomFields] = useState<CustomField[]>([]);
@@ -74,6 +243,61 @@ export const Screen1Organization: React.FC = () => {
   const toggleSection = (section: string) => {
     setExpandedSections(prev =>
       prev.includes(section) ? prev.filter(s => s !== section) : [...prev, section]
+    );
+  };
+
+  const toggleEntityLevel = (entityId: string) => {
+    setEntityLevels(prev =>
+      prev.map(entity =>
+        entity.id === entityId ? { ...entity, enabled: !entity.enabled } : entity
+      )
+    );
+  };
+
+  const updateEntityLevel = (entityId: string, updates: Partial<EntityLevel>) => {
+    setEntityLevels(prev =>
+      prev.map(entity =>
+        entity.id === entityId ? { ...entity, ...updates } : entity
+      )
+    );
+  };
+
+  const addAttributeToEntity = () => {
+    if (newAttribute.label.trim() && editingEntityId) {
+      const insights = getInsightsForAttribute(newAttribute.label, newAttribute.type);
+      const attribute: EntityAttribute = {
+        ...newAttribute,
+        id: `attr_${Date.now()}`,
+        insights,
+      };
+
+      setEntityLevels(prev =>
+        prev.map(entity =>
+          entity.id === editingEntityId
+            ? { ...entity, attributes: [...entity.attributes, attribute] }
+            : entity
+        )
+      );
+
+      setNewAttribute({
+        id: '',
+        label: '',
+        type: 'text',
+        required: false,
+        insights: [],
+      });
+      setShowAddAttributeModal(false);
+      setEditingEntityId(null);
+    }
+  };
+
+  const removeAttributeFromEntity = (entityId: string, attributeId: string) => {
+    setEntityLevels(prev =>
+      prev.map(entity =>
+        entity.id === entityId
+          ? { ...entity, attributes: entity.attributes.filter(a => a.id !== attributeId) }
+          : entity
+      )
     );
   };
 
@@ -144,9 +368,249 @@ export const Screen1Organization: React.FC = () => {
             Organization & Customer Model
           </h1>
           <p className="text-gray-600 text-lg">
-            Define your customer structure, profile fields, relationships, and system integrations
+            Define your business hierarchy, customer structure, profile fields, relationships, and system integrations
           </p>
         </div>
+
+        {/* Section 0: Business Organizational Hierarchy */}
+        <Section id="business-hierarchy" title="Business Organizational Hierarchy" icon="🌳">
+          <div className="space-y-6">
+            <p className="text-sm text-gray-600">
+              Define your organizational structure from franchisor to store level. Each level can have custom attributes
+              that enable powerful analytics insights.
+            </p>
+
+            {/* Seed User for Franchisor */}
+            <div className="p-5 bg-blue-50 border-2 border-blue-200 rounded-lg">
+              <h4 className="font-semibold mb-3 text-blue-900 flex items-center gap-2">
+                <span>👤</span> Seed User (Franchisor Level)
+              </h4>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">First Name *</label>
+                  <input
+                    type="text"
+                    value={seedUser.firstName}
+                    onChange={(e) => setSeedUser({ ...seedUser, firstName: e.target.value })}
+                    placeholder="John"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Last Name *</label>
+                  <input
+                    type="text"
+                    value={seedUser.lastName}
+                    onChange={(e) => setSeedUser({ ...seedUser, lastName: e.target.value })}
+                    placeholder="Smith"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Email *</label>
+                  <input
+                    type="email"
+                    value={seedUser.email}
+                    onChange={(e) => setSeedUser({ ...seedUser, email: e.target.value })}
+                    placeholder="john.smith@company.com"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Phone *</label>
+                  <input
+                    type="tel"
+                    value={seedUser.phone}
+                    onChange={(e) => setSeedUser({ ...seedUser, phone: e.target.value })}
+                    placeholder="+1-555-0123"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="block text-xs font-semibold text-gray-700 mb-1">Role</label>
+                  <input
+                    type="text"
+                    value={seedUser.role}
+                    onChange={(e) => setSeedUser({ ...seedUser, role: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Entity Levels */}
+            <div className="space-y-4">
+              <h4 className="font-semibold">Entity Levels</h4>
+              {entityLevels.map((entity) => (
+                <Card key={entity.id} className={`${entity.enabled ? 'border-2 border-primary' : 'opacity-60'}`}>
+                  <div className="p-4">
+                    <div className="flex items-center justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="checkbox"
+                          checked={entity.enabled}
+                          onChange={() => toggleEntityLevel(entity.id)}
+                          disabled={!entity.optional}
+                          className="h-5 w-5 text-primary rounded"
+                        />
+                        <span className="text-2xl">{entity.icon}</span>
+                        <div>
+                          <h5 className="font-semibold text-gray-900">{entity.name}</h5>
+                          <p className="text-xs text-gray-600">
+                            Level {entity.level} {entity.optional && '(Optional)'}
+                          </p>
+                        </div>
+                      </div>
+                      {entity.enabled && (
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => {
+                            setEditingEntityId(entity.id);
+                            setShowAddAttributeModal(true);
+                          }}
+                        >
+                          <Plus size={14} className="mr-1" />
+                          Add Attribute
+                        </Button>
+                      )}
+                    </div>
+
+                    {entity.enabled && (
+                      <>
+                        {/* Attributes */}
+                        {entity.attributes.length > 0 && (
+                          <div className="mb-4 space-y-2">
+                            <p className="text-xs font-semibold text-gray-700 mb-2">Attributes:</p>
+                            {entity.attributes.map((attr) => (
+                              <div key={attr.id} className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                                <div className="flex items-start justify-between mb-2">
+                                  <div className="flex-1">
+                                    <div className="flex items-center gap-2 mb-1">
+                                      <span className="text-sm font-medium text-gray-900">{attr.label}</span>
+                                      <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded text-xs">
+                                        {attr.type}
+                                      </span>
+                                      {attr.required && (
+                                        <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs">
+                                          Required
+                                        </span>
+                                      )}
+                                    </div>
+                                    {attr.insights.length > 0 && (
+                                      <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded">
+                                        <p className="text-xs font-semibold text-green-900 mb-1">
+                                          📊 Analytics Insights:
+                                        </p>
+                                        <div className="flex flex-wrap gap-1">
+                                          {attr.insights.map((insight, idx) => (
+                                            <span
+                                              key={idx}
+                                              className="px-2 py-0.5 bg-green-100 text-green-800 rounded text-xs"
+                                            >
+                                              {insight}
+                                            </span>
+                                          ))}
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                  <button
+                                    onClick={() => removeAttributeFromEntity(entity.id, attr.id)}
+                                    className="text-red-600 hover:text-red-700 ml-2"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Configuration */}
+                        <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-200">
+                          <div>
+                            <label className="flex items-center gap-2 text-sm">
+                              <input
+                                type="checkbox"
+                                checked={entity.portalAccess}
+                                onChange={(e) =>
+                                  updateEntityLevel(entity.id, { portalAccess: e.target.checked })
+                                }
+                                className="h-4 w-4 text-primary rounded"
+                              />
+                              <span className="text-gray-700">Portal Access</span>
+                            </label>
+                          </div>
+                          <div>
+                            <label className="flex items-center gap-2 text-sm">
+                              <input
+                                type="checkbox"
+                                checked={entity.createAccounts}
+                                onChange={(e) =>
+                                  updateEntityLevel(entity.id, { createAccounts: e.target.checked })
+                                }
+                                className="h-4 w-4 text-primary rounded"
+                              />
+                              <span className="text-gray-700">Create Accounts</span>
+                            </label>
+                          </div>
+                          <div>
+                            <label className="block text-xs text-gray-600 mb-1">RBAC Roles:</label>
+                            <input
+                              type="text"
+                              value={entity.rbacRoles.join(', ')}
+                              onChange={(e) =>
+                                updateEntityLevel(entity.id, {
+                                  rbacRoles: e.target.value.split(',').map((r) => r.trim()),
+                                })
+                              }
+                              placeholder="Admin, Manager"
+                              className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                            />
+                          </div>
+                        </div>
+                      </>
+                    )}
+                  </div>
+                </Card>
+              ))}
+            </div>
+
+            {/* Visual Hierarchy Preview */}
+            <div className="p-5 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg">
+              <h4 className="font-semibold mb-4 text-gray-900">Hierarchy Visualization</h4>
+              <div className="flex flex-col items-center space-y-3">
+                {entityLevels
+                  .filter((e) => e.enabled)
+                  .map((entity, idx) => (
+                    <div key={entity.id} className="w-full max-w-md">
+                      <div className="flex items-center gap-2">
+                        {idx > 0 && (
+                          <div className="w-8 flex justify-center">
+                            <div className="h-8 w-0.5 bg-gray-300"></div>
+                          </div>
+                        )}
+                        <div className="flex-1 p-3 bg-white border-2 border-gray-300 rounded-lg shadow-sm">
+                          <div className="flex items-center gap-2">
+                            <span className="text-xl">{entity.icon}</span>
+                            <div className="flex-1">
+                              <div className="font-semibold text-sm text-gray-900">{entity.name}</div>
+                              <div className="text-xs text-gray-600">
+                                {entity.attributes.length} attribute{entity.attributes.length !== 1 ? 's' : ''}
+                                {entity.portalAccess && ' • Portal'}
+                                {entity.createAccounts && ' • Accounts'}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+              </div>
+            </div>
+          </div>
+        </Section>
 
         {/* Section 1: Business Model */}
         <Section id="business-model" title="Business Model" icon="🏢">
@@ -215,7 +679,7 @@ export const Screen1Organization: React.FC = () => {
               <div className="grid grid-cols-2 gap-4">
                 {coreFields.map(field => (
                   <div key={field.id} className="p-3 bg-gray-50 rounded-lg border border-gray-200">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between mb-1">
                       <div className="flex items-center gap-2">
                         <input
                           type="checkbox"
@@ -231,6 +695,13 @@ export const Screen1Organization: React.FC = () => {
                         </span>
                       )}
                     </div>
+                    {field.insight && (
+                      <div className="ml-6 mt-2 p-2 bg-blue-50 border border-blue-200 rounded">
+                        <p className="text-xs text-blue-900">
+                          <strong>📊 Insights:</strong> {field.insight}
+                        </p>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
@@ -494,6 +965,45 @@ export const Screen1Organization: React.FC = () => {
         {/* Section 5: Data Model Preview */}
         <Section id="data-preview" title="Data Model Preview" icon="📊">
           <div className="space-y-6">
+            {/* Business Hierarchy Data Structure */}
+            <div className="p-6 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg">
+              <h4 className="font-semibold mb-4 text-gray-900">Business Organizational Hierarchy</h4>
+              <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
+{`{
+  "organizationId": "ORG_123456",
+  "seedUser": {
+    "firstName": "${seedUser.firstName || 'John'}",
+    "lastName": "${seedUser.lastName || 'Smith'}",
+    "email": "${seedUser.email || 'john.smith@company.com'}",
+    "phone": "${seedUser.phone || '+1-555-0123'}",
+    "role": "${seedUser.role}"
+  },
+  "hierarchy": {${entityLevels.filter(e => e.enabled).map((entity, idx) => `
+    "${entity.id}": {
+      "name": "${entity.name}",
+      "level": ${entity.level},
+      "portalAccess": ${entity.portalAccess},
+      "createAccounts": ${entity.createAccounts},
+      "rbacRoles": [${entity.rbacRoles.map(r => `"${r}"`).join(', ')}],${entity.attributes.length > 0 ? `
+      "attributes": {${entity.attributes.map(attr => `
+        "${attr.id}": {
+          "label": "${attr.label}",
+          "type": "${attr.type}",
+          "required": ${attr.required},
+          "analyticsInsights": [${attr.insights.map(i => `"${i}"`).join(', ')}]
+        }`).join(',')}
+      },` : ''}
+      "exampleData": {
+        "id": "ENTITY_${idx + 1}",
+        "name": "Example ${entity.name}"${entity.attributes.map(attr => `,
+        "${attr.id}": "..."`).join('')}
+      }
+    }`).join(',')}
+  }
+}`}
+              </pre>
+            </div>
+
             <div className="p-6 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg">
               <h4 className="font-semibold mb-4 text-gray-900">Customer Data Structure</h4>
               <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
@@ -654,6 +1164,151 @@ export const Screen1Organization: React.FC = () => {
               </Button>
               <Button onClick={addCustomField} disabled={!newField.label.trim()}>
                 Add Field
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Attribute to Entity Modal */}
+      {showAddAttributeModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-6">
+            <h3 className="text-xl font-bold mb-4">
+              Add Attribute to {entityLevels.find((e) => e.id === editingEntityId)?.name}
+            </h3>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Attribute Name *
+                </label>
+                <input
+                  type="text"
+                  value={newAttribute.label}
+                  onChange={(e) => {
+                    const label = e.target.value;
+                    setNewAttribute({ ...newAttribute, label });
+                  }}
+                  placeholder="e.g., Square Footage, Address, GPS Coordinates"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Attribute Type
+                  </label>
+                  <select
+                    value={newAttribute.type}
+                    onChange={(e) =>
+                      setNewAttribute({ ...newAttribute, type: e.target.value as AttributeType })
+                    }
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  >
+                    <option value="text">Text</option>
+                    <option value="number">Number</option>
+                    <option value="area">Area (sq ft)</option>
+                    <option value="address">Full Address</option>
+                    <option value="gps">GPS Coordinates</option>
+                    <option value="phone">Phone</option>
+                    <option value="email">Email</option>
+                    <option value="date">Date</option>
+                    <option value="dropdown">Dropdown</option>
+                  </select>
+                </div>
+
+                <div className="flex items-end">
+                  <label className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={newAttribute.required}
+                      onChange={(e) => setNewAttribute({ ...newAttribute, required: e.target.checked })}
+                      className="h-4 w-4 text-primary rounded"
+                    />
+                    <span className="text-sm text-gray-700">Required field</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Live Insight Preview */}
+              {newAttribute.label && (
+                <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                  <p className="text-sm font-semibold text-green-900 mb-2">
+                    📊 Analytics Insights This Attribute Enables:
+                  </p>
+                  <div className="flex flex-wrap gap-2">
+                    {getInsightsForAttribute(newAttribute.label, newAttribute.type).map((insight, idx) => (
+                      <span
+                        key={idx}
+                        className="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium"
+                      >
+                        ✓ {insight}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Common Attribute Suggestions */}
+              <div className="p-3 bg-gray-50 rounded-lg">
+                <p className="text-xs font-semibold text-gray-700 mb-2">Common Attributes:</p>
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    'Square Footage',
+                    'Address',
+                    'GPS Coordinates',
+                    'Operating Hours',
+                    'Staff Count',
+                    'Seating Capacity',
+                    'Opening Date',
+                  ].map((suggestion) => (
+                    <button
+                      key={suggestion}
+                      onClick={() => {
+                        const type: AttributeType =
+                          suggestion === 'Square Footage'
+                            ? 'area'
+                            : suggestion === 'Address'
+                            ? 'address'
+                            : suggestion === 'GPS Coordinates'
+                            ? 'gps'
+                            : suggestion.includes('Date')
+                            ? 'date'
+                            : suggestion.includes('Count') || suggestion.includes('Capacity')
+                            ? 'number'
+                            : 'text';
+                        setNewAttribute({ ...newAttribute, label: suggestion, type });
+                      }}
+                      className="px-2 py-1 bg-white border border-gray-300 rounded text-xs hover:bg-gray-100 transition-colors"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="flex gap-3 justify-end mt-6">
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setShowAddAttributeModal(false);
+                  setEditingEntityId(null);
+                  setNewAttribute({
+                    id: '',
+                    label: '',
+                    type: 'text',
+                    required: false,
+                    insights: [],
+                  });
+                }}
+              >
+                Cancel
+              </Button>
+              <Button onClick={addAttributeToEntity} disabled={!newAttribute.label.trim()}>
+                Add Attribute
               </Button>
             </div>
           </div>
