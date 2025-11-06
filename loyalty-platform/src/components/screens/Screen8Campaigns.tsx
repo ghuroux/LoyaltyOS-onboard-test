@@ -6,7 +6,7 @@ import { CampaignTemplateBuilder } from '../campaign/CampaignTemplateBuilder';
 
 type CampaignType = 'time-based' | 'long-living' | 'trigger-based' | 'one-off';
 
-export const Screen6Campaigns: React.FC = () => {
+export const Screen8Campaigns: React.FC = () => {
   const [activeType, setActiveType] = useState<CampaignType>('time-based');
   const [builderOpen, setBuilderOpen] = useState(false);
   const [editingTemplate, setEditingTemplate] = useState<{ id: string; name: string; type: CampaignType } | null>(null);

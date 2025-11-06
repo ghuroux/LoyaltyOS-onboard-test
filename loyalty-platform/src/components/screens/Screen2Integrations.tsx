@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 
-export const Screen9Integrations: React.FC = () => {
+export const Screen2Integrations: React.FC = () => {
   const integrations = [
     { category: 'POS Systems', items: ['Square', 'Toast', 'Clover', 'Lightspeed'] },
     { category: 'Payment Gateways', items: ['Stripe', 'PayPal', 'Braintree', 'Adyen'] },

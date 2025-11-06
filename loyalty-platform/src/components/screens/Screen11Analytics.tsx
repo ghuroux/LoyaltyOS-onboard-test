@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 
-export const Screen10Analytics: React.FC = () => {
+export const Screen11Analytics: React.FC = () => {
   const kpiCategories = [
     {
       category: 'Customer Metrics',
