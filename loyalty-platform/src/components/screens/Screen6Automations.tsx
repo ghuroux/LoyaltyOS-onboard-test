@@ -293,25 +293,61 @@ export const Screen6Automations: React.FC = () => {
                           {isEnabled && (
                             <div className="mt-2 space-y-2">
                               {actionOption.hasTemplate && (
-                                <div>
-                                  <label className="block text-xs text-gray-600 mb-1">Template:</label>
-                                  <input
-                                    type="text"
-                                    value={action?.config?.template || ''}
-                                    onChange={(e) => {
-                                      const currentActions = automation.actions || [];
-                                      updateAutomation?.(automation.id, {
-                                        actions: currentActions.map((a: any) =>
-                                          a.type === actionOption.id
-                                            ? { ...a, config: { ...a.config, template: e.target.value } }
-                                            : a
-                                        )
-                                      });
-                                    }}
-                                    placeholder={`e.g., ${actionOption.id === 'email' ? 'Win-back Offer' : 'Welcome Message'}`}
-                                    className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
-                                  />
-                                </div>
+                                <>
+                                  <div>
+                                    <label className="block text-xs text-gray-600 mb-1">Service:</label>
+                                    <select
+                                      value={action?.config?.service || 'default'}
+                                      onChange={(e) => {
+                                        const currentActions = automation.actions || [];
+                                        updateAutomation?.(automation.id, {
+                                          actions: currentActions.map((a: any) =>
+                                            a.type === actionOption.id
+                                              ? { ...a, config: { ...a.config, service: e.target.value } }
+                                              : a
+                                          )
+                                        });
+                                      }}
+                                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded bg-white"
+                                    >
+                                      {actionOption.id === 'email' && (
+                                        <>
+                                          <option value="sendgrid">SendGrid</option>
+                                          <option value="salesforce">Salesforce Marketing Cloud</option>
+                                          <option value="mailchimp">Mailchimp</option>
+                                          <option value="custom">Custom Integration</option>
+                                        </>
+                                      )}
+                                      {actionOption.id === 'sms' && (
+                                        <>
+                                          <option value="twilio">Twilio</option>
+                                          <option value="plivo">Plivo</option>
+                                          <option value="messagebird">MessageBird</option>
+                                          <option value="custom">Custom Integration</option>
+                                        </>
+                                      )}
+                                    </select>
+                                  </div>
+                                  <div>
+                                    <label className="block text-xs text-gray-600 mb-1">Template:</label>
+                                    <input
+                                      type="text"
+                                      value={action?.config?.template || ''}
+                                      onChange={(e) => {
+                                        const currentActions = automation.actions || [];
+                                        updateAutomation?.(automation.id, {
+                                          actions: currentActions.map((a: any) =>
+                                            a.type === actionOption.id
+                                              ? { ...a, config: { ...a.config, template: e.target.value } }
+                                              : a
+                                          )
+                                        });
+                                      }}
+                                      placeholder={`e.g., ${actionOption.id === 'email' ? 'Win-back Offer' : 'Welcome Message'}`}
+                                      className="w-full px-2 py-1 text-sm border border-gray-300 rounded"
+                                    />
+                                  </div>
+                                </>
                               )}
 
                               {actionOption.hasAmount && (
