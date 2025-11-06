@@ -39,6 +39,16 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
     appliesTo: 'entire-purchase',
     specificCategories: [] as string[],
     specificSkus: '',
+    // BOGO specific
+    bogoTriggerProduct: '',
+    bogoTriggerQuantity: 1,
+    bogoFreeProduct: 'same',
+    bogoFreeQuantity: 1,
+    bogoFreeSkus: '',
+    // Bundle specific
+    bundleItems: [] as { sku: string; name: string }[],
+    bundlePrice: 0,
+    bundleOriginalPrice: 0,
     // WHERE - Redemption
     redemptionLocation: 'all-locations',
     redemptionStores: [] as string[],
@@ -378,6 +388,7 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
                     { id: 'free-item', label: 'Free Item', icon: '🎁' },
                     { id: 'credit', label: 'Store Credit', icon: '💰' },
                     { id: 'multiplier', label: 'Points Multiplier', icon: '✖️' },
+                    { id: 'bundle', label: 'Bundle Offer', icon: '📦' },
                   ].map((type) => (
                     <button
                       key={type.id}
@@ -406,21 +417,207 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
                       >
                         <option value="percentage">Percentage</option>
                         <option value="fixed">Fixed Amount</option>
-                        <option value="bogo">Buy One Get One</option>
+                        <option value="bogo">Buy One Get One (BOGO)</option>
                       </select>
                     </div>
-                    <div>
-                      <label className="block text-xs text-gray-600 mb-2">Value</label>
-                      <div className="flex items-center gap-2">
-                        {templateData.discountType === 'percentage' && <span className="text-gray-600">%</span>}
-                        {templateData.discountType === 'fixed' && <span className="text-gray-600">$</span>}
-                        <input
-                          type="number"
-                          value={templateData.discountValue}
-                          onChange={(e) => updateTemplate({ discountValue: parseInt(e.target.value) })}
-                          className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
-                        />
+                    {templateData.discountType !== 'bogo' && (
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-2">Value</label>
+                        <div className="flex items-center gap-2">
+                          {templateData.discountType === 'percentage' && <span className="text-gray-600">%</span>}
+                          {templateData.discountType === 'fixed' && <span className="text-gray-600">$</span>}
+                          <input
+                            type="number"
+                            value={templateData.discountValue}
+                            onChange={(e) => updateTemplate({ discountValue: parseInt(e.target.value) })}
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                          />
+                        </div>
                       </div>
+                    )}
+                  </div>
+
+                  {/* BOGO Configuration */}
+                  {templateData.discountType === 'bogo' && (
+                    <div className="mt-4 p-4 bg-blue-50 rounded-lg space-y-4">
+                      <h4 className="font-semibold text-sm">BOGO Configuration</h4>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs text-gray-600 mb-2">Buy (Trigger Product)</label>
+                          <input
+                            type="text"
+                            value={templateData.bogoTriggerProduct}
+                            onChange={(e) => updateTemplate({ bogoTriggerProduct: e.target.value })}
+                            placeholder="e.g., Any Coffee, SKU-123"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-600 mb-2">Quantity</label>
+                          <input
+                            type="number"
+                            value={templateData.bogoTriggerQuantity}
+                            onChange={(e) => updateTemplate({ bogoTriggerQuantity: parseInt(e.target.value) })}
+                            min="1"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <label className="block text-xs text-gray-600 mb-2">Get (Free Product)</label>
+                          <select
+                            value={templateData.bogoFreeProduct}
+                            onChange={(e) => updateTemplate({ bogoFreeProduct: e.target.value })}
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                          >
+                            <option value="same">Same Product (Buy 1 Get 1)</option>
+                            <option value="different">Different Product</option>
+                            <option value="equal-lesser">Equal or Lesser Value</option>
+                          </select>
+                        </div>
+                        <div>
+                          <label className="block text-xs text-gray-600 mb-2">Free Quantity</label>
+                          <input
+                            type="number"
+                            value={templateData.bogoFreeQuantity}
+                            onChange={(e) => updateTemplate({ bogoFreeQuantity: parseInt(e.target.value) })}
+                            min="1"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                          />
+                        </div>
+                      </div>
+
+                      {templateData.bogoFreeProduct === 'different' && (
+                        <div>
+                          <label className="block text-xs text-gray-600 mb-2">Specific Free Products (SKUs)</label>
+                          <input
+                            type="text"
+                            value={templateData.bogoFreeSkus}
+                            onChange={(e) => updateTemplate({ bogoFreeSkus: e.target.value })}
+                            placeholder="SKU-456, SKU-789 (or Category: Sides, Drinks)"
+                            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                          />
+                        </div>
+                      )}
+
+                      <div className="p-3 bg-white border border-blue-200 rounded text-xs text-gray-700">
+                        <strong>Example:</strong> Buy {templateData.bogoTriggerQuantity} {templateData.bogoTriggerProduct || "coffee"},
+                        get {templateData.bogoFreeQuantity} {templateData.bogoFreeProduct === 'same' ? 'of the same' :
+                        templateData.bogoFreeProduct === 'different' ? 'different item' : 'equal or lesser value item'} free
+                      </div>
+                    </div>
+                  )}
+                </Card>
+              )}
+
+              {/* Bundle Offer Configuration */}
+              {templateData.rewardType === 'bundle' && (
+                <Card className="p-4">
+                  <label className="block text-sm font-semibold text-gray-700 mb-3">Bundle Configuration</label>
+
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-2">Bundle Name</label>
+                      <input
+                        type="text"
+                        placeholder="e.g., Family Meal Deal, Coffee & Pastry Combo"
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-2">Bundle Price</label>
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-600">$</span>
+                          <input
+                            type="number"
+                            step="0.01"
+                            value={templateData.bundlePrice}
+                            onChange={(e) => updateTemplate({ bundlePrice: parseFloat(e.target.value) })}
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-xs text-gray-600 mb-2">Original Price (Optional)</label>
+                        <div className="flex items-center gap-2">
+                          <span className="text-gray-600">$</span>
+                          <input
+                            type="number"
+                            step="0.01"
+                            value={templateData.bundleOriginalPrice}
+                            onChange={(e) => updateTemplate({ bundleOriginalPrice: parseFloat(e.target.value) })}
+                            placeholder="To show savings"
+                            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg"
+                          />
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs text-gray-600 mb-2">Items in Bundle</label>
+                      <div className="space-y-2">
+                        {templateData.bundleItems.map((item, idx) => (
+                          <div key={idx} className="flex items-center gap-2">
+                            <input
+                              type="text"
+                              value={item.sku}
+                              placeholder="SKU or Category"
+                              className="w-1/3 px-3 py-2 border border-gray-300 rounded text-sm"
+                              onChange={(e) => {
+                                const items = [...templateData.bundleItems];
+                                items[idx].sku = e.target.value;
+                                updateTemplate({ bundleItems: items });
+                              }}
+                            />
+                            <input
+                              type="text"
+                              value={item.name}
+                              placeholder="Item Name"
+                              className="flex-1 px-3 py-2 border border-gray-300 rounded text-sm"
+                              onChange={(e) => {
+                                const items = [...templateData.bundleItems];
+                                items[idx].name = e.target.value;
+                                updateTemplate({ bundleItems: items });
+                              }}
+                            />
+                            <button
+                              onClick={() => {
+                                const items = templateData.bundleItems.filter((_, i) => i !== idx);
+                                updateTemplate({ bundleItems: items });
+                              }}
+                              className="px-3 py-2 text-red-600 hover:bg-red-50 rounded"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ))}
+                        <button
+                          onClick={() => {
+                            updateTemplate({
+                              bundleItems: [...templateData.bundleItems, { sku: '', name: '' }]
+                            });
+                          }}
+                          className="w-full px-3 py-2 border-2 border-dashed border-gray-300 rounded text-sm text-gray-600 hover:border-primary hover:text-primary"
+                        >
+                          + Add Item to Bundle
+                        </button>
+                      </div>
+                    </div>
+
+                    {templateData.bundleOriginalPrice > 0 && templateData.bundlePrice > 0 && (
+                      <div className="p-3 bg-green-50 border border-green-200 rounded text-sm text-gray-700">
+                        <strong>Savings:</strong> ${(templateData.bundleOriginalPrice - templateData.bundlePrice).toFixed(2)}
+                        ({Math.round(((templateData.bundleOriginalPrice - templateData.bundlePrice) / templateData.bundleOriginalPrice) * 100)}% off)
+                      </div>
+                    )}
+
+                    <div className="p-3 bg-blue-50 border border-blue-200 rounded text-xs text-gray-700">
+                      <strong>Example:</strong> "Family Meal Deal" - Burger + Fries + 2 Drinks for $15.99 (Save $4.00)
                     </div>
                   </div>
                 </Card>
