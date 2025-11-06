@@ -25,6 +25,13 @@ interface EntityAttribute {
   insights: string[]; // Array of insights this attribute enables
 }
 
+interface EntityState {
+  id: string;
+  label: string;
+  isTerminal: boolean; // Cannot transition from terminal states
+  color: string;
+}
+
 interface EntityLevel {
   id: string;
   name: string;
@@ -37,6 +44,9 @@ interface EntityLevel {
   portalAccess: boolean;
   rbacRoles: string[];
   createAccounts: boolean;
+  // State management for runtime
+  stateManagementEnabled: boolean;
+  states: EntityState[];
 }
 
 interface SeedUser {
@@ -330,6 +340,11 @@ export const Screen1Organization: React.FC = () => {
       portalAccess: true,
       rbacRoles: ['Admin', 'Manager'],
       createAccounts: true,
+      stateManagementEnabled: false,
+      states: [
+        { id: 'active', label: 'Active', isTerminal: false, color: 'green' },
+        { id: 'archived', label: 'Archived', isTerminal: true, color: 'gray' },
+      ],
     },
     {
       id: 'brand',
@@ -342,6 +357,11 @@ export const Screen1Organization: React.FC = () => {
       portalAccess: true,
       rbacRoles: ['Brand Manager'],
       createAccounts: false,
+      stateManagementEnabled: false,
+      states: [
+        { id: 'active', label: 'Active', isTerminal: false, color: 'green' },
+        { id: 'archived', label: 'Archived', isTerminal: true, color: 'gray' },
+      ],
     },
     {
       id: 'master-franchise',
@@ -354,6 +374,11 @@ export const Screen1Organization: React.FC = () => {
       portalAccess: true,
       rbacRoles: ['Franchise Owner'],
       createAccounts: true,
+      stateManagementEnabled: false,
+      states: [
+        { id: 'active', label: 'Active', isTerminal: false, color: 'green' },
+        { id: 'archived', label: 'Archived', isTerminal: true, color: 'gray' },
+      ],
     },
     {
       id: 'franchisee',
@@ -366,6 +391,11 @@ export const Screen1Organization: React.FC = () => {
       portalAccess: true,
       rbacRoles: ['Franchisee Admin'],
       createAccounts: true,
+      stateManagementEnabled: false,
+      states: [
+        { id: 'active', label: 'Active', isTerminal: false, color: 'green' },
+        { id: 'archived', label: 'Archived', isTerminal: true, color: 'gray' },
+      ],
     },
     {
       id: 'corporate-store',
@@ -378,6 +408,14 @@ export const Screen1Organization: React.FC = () => {
       portalAccess: true,
       rbacRoles: ['Store Manager'],
       createAccounts: false,
+      stateManagementEnabled: false,
+      states: [
+        { id: 'active', label: 'Active', isTerminal: false, color: 'green' },
+        { id: 'temporarily_closed', label: 'Temporarily Closed', isTerminal: false, color: 'yellow' },
+        { id: 'under_renovation', label: 'Under Renovation', isTerminal: false, color: 'blue' },
+        { id: 'permanently_closed', label: 'Permanently Closed', isTerminal: true, color: 'red' },
+        { id: 'archived', label: 'Archived', isTerminal: true, color: 'gray' },
+      ],
     },
     {
       id: 'store',
@@ -390,6 +428,14 @@ export const Screen1Organization: React.FC = () => {
       portalAccess: true,
       rbacRoles: ['Store Manager', 'Assistant Manager'],
       createAccounts: false,
+      stateManagementEnabled: true,
+      states: [
+        { id: 'active', label: 'Active', isTerminal: false, color: 'green' },
+        { id: 'temporarily_closed', label: 'Temporarily Closed', isTerminal: false, color: 'yellow' },
+        { id: 'under_renovation', label: 'Under Renovation', isTerminal: false, color: 'blue' },
+        { id: 'permanently_closed', label: 'Permanently Closed', isTerminal: true, color: 'red' },
+        { id: 'archived', label: 'Archived', isTerminal: true, color: 'gray' },
+      ],
     },
     {
       id: 'department',
@@ -402,6 +448,11 @@ export const Screen1Organization: React.FC = () => {
       portalAccess: false,
       rbacRoles: ['Department Lead'],
       createAccounts: false,
+      stateManagementEnabled: false,
+      states: [
+        { id: 'active', label: 'Active', isTerminal: false, color: 'green' },
+        { id: 'archived', label: 'Archived', isTerminal: true, color: 'gray' },
+      ],
     },
   ]);
 
@@ -416,6 +467,9 @@ export const Screen1Organization: React.FC = () => {
   const [showAddAttributeModal, setShowAddAttributeModal] = useState(false);
   const [editingEntityId, setEditingEntityId] = useState<string | null>(null);
   const [editingEntityName, setEditingEntityName] = useState<string | null>(null);
+  const [editingAttributeId, setEditingAttributeId] = useState<string | null>(null);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [newAttribute, setNewAttribute] = useState<EntityAttribute>({
     id: '',
     label: '',
@@ -460,6 +514,69 @@ export const Screen1Organization: React.FC = () => {
     }
 
     return ['Custom Analytics', 'Trend Analysis'];
+  };
+
+  // Entity Model Templates
+  interface EntityTemplate {
+    id: string;
+    name: string;
+    description: string;
+    icon: string;
+    industry: string;
+    enabledEntities: string[]; // IDs of entities to enable
+  }
+
+  const entityTemplates: EntityTemplate[] = [
+    {
+      id: 'single-restaurant',
+      name: 'Single Restaurant',
+      description: 'Simple setup for a standalone restaurant or café',
+      icon: '🍽️',
+      industry: 'Food & Beverage',
+      enabledEntities: ['franchisor', 'store'],
+    },
+    {
+      id: 'coffee-chain',
+      name: 'Coffee Chain',
+      description: 'Multi-location coffee shop franchise',
+      icon: '☕',
+      industry: 'Food & Beverage',
+      enabledEntities: ['franchisor', 'franchisee', 'store'],
+    },
+    {
+      id: 'hotel-group',
+      name: 'Hotel Group',
+      description: 'Multi-brand hotel or hospitality group',
+      icon: '🏨',
+      industry: 'Hospitality',
+      enabledEntities: ['franchisor', 'brand', 'corporate-store', 'store'],
+    },
+    {
+      id: 'retail-franchise',
+      name: 'Retail Franchise',
+      description: 'Retail chain with franchise and corporate stores',
+      icon: '🏬',
+      industry: 'Retail',
+      enabledEntities: ['franchisor', 'master-franchise', 'franchisee', 'corporate-store', 'store', 'department'],
+    },
+    {
+      id: 'enterprise-complex',
+      name: 'Enterprise (Complex)',
+      description: 'Full hierarchy with all entity levels',
+      icon: '🏢',
+      industry: 'Multi-Industry',
+      enabledEntities: ['franchisor', 'brand', 'master-franchise', 'franchisee', 'corporate-store', 'store', 'department'],
+    },
+  ];
+
+  const applyTemplate = (template: EntityTemplate) => {
+    setEntityLevels(prev =>
+      prev.map(entity => ({
+        ...entity,
+        enabled: template.enabledEntities.includes(entity.id),
+      }))
+    );
+    setShowTemplateModal(false);
   };
 
   // Customer & Partner Categories
@@ -639,22 +756,64 @@ export const Screen1Organization: React.FC = () => {
     );
   };
 
-  const addAttributeToEntity = () => {
+  const openAddAttributeModal = (entityId: string) => {
+    setEditingEntityId(entityId);
+    setIsEditMode(false);
+    setEditingAttributeId(null);
+    setNewAttribute({
+      id: '',
+      label: '',
+      type: 'text',
+      required: false,
+      insights: [],
+    });
+    setShowAddAttributeModal(true);
+  };
+
+  const openEditAttributeModal = (entityId: string, attribute: EntityAttribute) => {
+    setEditingEntityId(entityId);
+    setEditingAttributeId(attribute.id);
+    setIsEditMode(true);
+    setNewAttribute(attribute);
+    setShowAddAttributeModal(true);
+  };
+
+  const saveAttribute = () => {
     if (newAttribute.label.trim() && editingEntityId) {
       const insights = getInsightsForAttribute(newAttribute.label, newAttribute.type);
-      const attribute: EntityAttribute = {
-        ...newAttribute,
-        id: `attr_${Date.now()}`,
-        insights,
-      };
 
-      setEntityLevels(prev =>
-        prev.map(entity =>
-          entity.id === editingEntityId
-            ? { ...entity, attributes: [...entity.attributes, attribute] }
-            : entity
-        )
-      );
+      if (isEditMode && editingAttributeId) {
+        // Update existing attribute
+        setEntityLevels(prev =>
+          prev.map(entity =>
+            entity.id === editingEntityId
+              ? {
+                  ...entity,
+                  attributes: entity.attributes.map(attr =>
+                    attr.id === editingAttributeId
+                      ? { ...newAttribute, insights }
+                      : attr
+                  ),
+                }
+              : entity
+          )
+        );
+      } else {
+        // Add new attribute
+        const attribute: EntityAttribute = {
+          ...newAttribute,
+          id: `attr_${Date.now()}`,
+          insights,
+        };
+
+        setEntityLevels(prev =>
+          prev.map(entity =>
+            entity.id === editingEntityId
+              ? { ...entity, attributes: [...entity.attributes, attribute] }
+              : entity
+          )
+        );
+      }
 
       setNewAttribute({
         id: '',
@@ -665,6 +824,8 @@ export const Screen1Organization: React.FC = () => {
       });
       setShowAddAttributeModal(false);
       setEditingEntityId(null);
+      setEditingAttributeId(null);
+      setIsEditMode(false);
     }
   };
 
@@ -757,13 +918,126 @@ export const Screen1Organization: React.FC = () => {
           </div>
         </div>
 
+        {/* Configuration Health Score */}
+        <Card className="mb-8 border-2 border-blue-300 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+          <div className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                <span className="text-2xl">📊</span>
+                Configuration Health
+              </h2>
+              <div className="flex items-center gap-3">
+                <div className="text-right">
+                  <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                    {Math.round((
+                      (entityLevels.filter(e => e.enabled).length / entityLevels.length) * 30 +
+                      (clientTypes.filter(c => c.enabled).length / clientTypes.length) * 30 +
+                      (coreFields.length / coreFields.length) * 40
+                    ))}%
+                  </div>
+                  <div className="text-xs text-gray-600">Complete</div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4">
+              {/* Business Hierarchy Status */}
+              <div className="p-4 bg-white rounded-lg border-2 border-gray-200">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-semibold text-gray-700">Business Hierarchy</span>
+                  {entityLevels.filter(e => e.enabled).every(e => e.attributes.length > 0) ? (
+                    <span className="text-green-600 text-lg">✓</span>
+                  ) : (
+                    <span className="text-yellow-600 text-lg">⚠</span>
+                  )}
+                </div>
+                <div className="text-xs text-gray-600 space-y-1">
+                  <div>• {entityLevels.filter(e => e.enabled).length} entities enabled</div>
+                  <div>• {entityLevels.filter(e => e.enabled).reduce((sum, e) => sum + e.attributes.length, 0)} total attributes</div>
+                  {entityLevels.filter(e => e.enabled && e.attributes.length === 0).length > 0 && (
+                    <div className="text-yellow-700">⚠ {entityLevels.filter(e => e.enabled && e.attributes.length === 0).length} entities without attributes</div>
+                  )}
+                </div>
+              </div>
+
+              {/* Customer Categories Status */}
+              <div className="p-4 bg-white rounded-lg border-2 border-gray-200">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-semibold text-gray-700">Customer Categories</span>
+                  {clientTypes.filter(c => c.enabled).length > 0 ? (
+                    <span className="text-green-600 text-lg">✓</span>
+                  ) : (
+                    <span className="text-red-600 text-lg">✗</span>
+                  )}
+                </div>
+                <div className="text-xs text-gray-600 space-y-1">
+                  <div>• {clientTypes.filter(c => c.enabled && c.type === 'B2C').length} B2C types enabled</div>
+                  <div>• {clientTypes.filter(c => c.enabled && c.type === 'B2B').length} B2B types enabled</div>
+                  {householdEnabled && !enableRelationships && (
+                    <div className="text-yellow-700">⚠ Household enabled but relationships disabled</div>
+                  )}
+                </div>
+              </div>
+
+              {/* Customer Profile Status */}
+              <div className="p-4 bg-white rounded-lg border-2 border-gray-200">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-semibold text-gray-700">Customer Profile</span>
+                  <span className="text-green-600 text-lg">✓</span>
+                </div>
+                <div className="text-xs text-gray-600 space-y-1">
+                  <div>• {coreFields.length} core fields</div>
+                  <div>• {customFields.length} custom fields</div>
+                  {householdEnabled && enableRelationships && (
+                    <div className="text-blue-700">✓ Relationships configured</div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            {/* Warnings & Recommendations */}
+            {(entityLevels.filter(e => e.enabled && e.attributes.length === 0).length > 0 ||
+              (householdEnabled && !enableRelationships) ||
+              clientTypes.filter(c => c.enabled).length === 0) && (
+              <div className="mt-4 p-4 bg-yellow-50 border-2 border-yellow-300 rounded-lg">
+                <h4 className="font-semibold text-yellow-900 mb-2 flex items-center gap-2">
+                  <span>⚠</span> Recommendations
+                </h4>
+                <ul className="text-sm text-yellow-800 space-y-1 list-disc list-inside">
+                  {entityLevels.filter(e => e.enabled && e.attributes.length === 0).map(entity => (
+                    <li key={entity.id}>
+                      Add attributes to {entity.customLabel || entity.name} to enable analytics
+                    </li>
+                  ))}
+                  {householdEnabled && !enableRelationships && (
+                    <li>Enable relationship management for household accounts</li>
+                  )}
+                  {clientTypes.filter(c => c.enabled).length === 0 && (
+                    <li>Enable at least one customer category to proceed</li>
+                  )}
+                </ul>
+              </div>
+            )}
+          </div>
+        </Card>
+
         {/* Section 0: Business Organizational Hierarchy */}
         <Section id="business-hierarchy" title="Business Organizational Hierarchy" icon="🌳">
           <div className="space-y-6">
-            <p className="text-sm text-gray-600">
-              Define your organizational structure from franchisor to store level. Each level can have custom attributes
-              that enable powerful analytics insights.
-            </p>
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-gray-600">
+                Define your organizational structure from franchisor to store level. Each level can have custom attributes
+                that enable powerful analytics insights.
+              </p>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setShowTemplateModal(true)}
+              >
+                <span className="mr-2">📋</span>
+                Load from Template
+              </Button>
+            </div>
 
             {/* Seed User for Franchisor */}
             <div className="p-5 bg-blue-50 border-2 border-blue-200 rounded-lg">
@@ -893,10 +1167,7 @@ export const Screen1Organization: React.FC = () => {
                         <Button
                           variant="secondary"
                           size="sm"
-                          onClick={() => {
-                            setEditingEntityId(entity.id);
-                            setShowAddAttributeModal(true);
-                          }}
+                          onClick={() => openAddAttributeModal(entity.id)}
                         >
                           <Plus size={14} className="mr-1" />
                           Add Attribute
@@ -943,13 +1214,22 @@ export const Screen1Organization: React.FC = () => {
                                       </div>
                                     )}
                                   </div>
-                                  <button
-                                    onClick={() => removeAttributeFromEntity(entity.id, attr.id)}
-                                    className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition-colors ml-2"
-                                    title="Remove attribute"
-                                  >
-                                    <Trash2 size={16} />
-                                  </button>
+                                  <div className="flex gap-2">
+                                    <button
+                                      onClick={() => openEditAttributeModal(entity.id, attr)}
+                                      className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-2 rounded-lg transition-colors"
+                                      title="Edit attribute"
+                                    >
+                                      <Edit2 size={16} />
+                                    </button>
+                                    <button
+                                      onClick={() => removeAttributeFromEntity(entity.id, attr.id)}
+                                      className="text-red-500 hover:text-red-700 hover:bg-red-50 p-2 rounded-lg transition-colors"
+                                      title="Remove attribute"
+                                    >
+                                      <Trash2 size={16} />
+                                    </button>
+                                  </div>
                                 </div>
                               </div>
                             ))}
@@ -998,6 +1278,65 @@ export const Screen1Organization: React.FC = () => {
                               className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
                             />
                           </div>
+                        </div>
+
+                        {/* State Management Configuration */}
+                        <div className="mt-4 pt-4 border-t border-gray-200">
+                          <label className="flex items-center gap-2 mb-3">
+                            <input
+                              type="checkbox"
+                              checked={entity.stateManagementEnabled}
+                              onChange={(e) =>
+                                updateEntityLevel(entity.id, { stateManagementEnabled: e.target.checked })
+                              }
+                              className="h-4 w-4 text-primary rounded"
+                            />
+                            <div className="flex-1">
+                              <div className="font-semibold text-sm text-gray-900">Enable State Management</div>
+                              <div className="text-xs text-gray-600">
+                                Define runtime states for this entity (e.g., active, closed, archived)
+                              </div>
+                            </div>
+                          </label>
+
+                          {entity.stateManagementEnabled && (
+                            <div className="mt-3 p-4 bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg border-2 border-purple-200">
+                              <h5 className="font-semibold text-sm mb-3 text-gray-900">Runtime States</h5>
+                              <div className="space-y-2">
+                                {entity.states.map((state) => (
+                                  <div
+                                    key={state.id}
+                                    className="flex items-center gap-3 p-2 bg-white rounded-lg border border-gray-200"
+                                  >
+                                    <div
+                                      className={`w-3 h-3 rounded-full ${
+                                        state.color === 'green'
+                                          ? 'bg-green-500'
+                                          : state.color === 'yellow'
+                                          ? 'bg-yellow-500'
+                                          : state.color === 'blue'
+                                          ? 'bg-blue-500'
+                                          : state.color === 'red'
+                                          ? 'bg-red-500'
+                                          : 'bg-gray-500'
+                                      }`}
+                                    ></div>
+                                    <span className="flex-1 text-sm font-medium text-gray-900">
+                                      {state.label}
+                                    </span>
+                                    {state.isTerminal && (
+                                      <span className="px-2 py-0.5 bg-gray-200 text-gray-700 rounded text-xs font-semibold">
+                                        Terminal
+                                      </span>
+                                    )}
+                                  </div>
+                                ))}
+                              </div>
+                              <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
+                                <strong>💡 Tip:</strong> Terminal states cannot be reversed (e.g., once permanently closed, cannot reopen)
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </>
                     )}
@@ -1674,12 +2013,12 @@ export const Screen1Organization: React.FC = () => {
         </div>
       )}
 
-      {/* Add Attribute to Entity Modal */}
+      {/* Add/Edit Attribute to Entity Modal */}
       {showAddAttributeModal && (
         <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8 border-2 border-gray-200">
             <h3 className="text-2xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-              Add Attribute to {entityLevels.find((e) => e.id === editingEntityId)?.customLabel || entityLevels.find((e) => e.id === editingEntityId)?.name}
+              {isEditMode ? 'Edit' : 'Add'} Attribute {isEditMode ? 'for' : 'to'} {entityLevels.find((e) => e.id === editingEntityId)?.customLabel || entityLevels.find((e) => e.id === editingEntityId)?.name}
             </h3>
 
             <div className="space-y-4">
@@ -1803,6 +2142,8 @@ export const Screen1Organization: React.FC = () => {
                 onClick={() => {
                   setShowAddAttributeModal(false);
                   setEditingEntityId(null);
+                  setEditingAttributeId(null);
+                  setIsEditMode(false);
                   setNewAttribute({
                     id: '',
                     label: '',
@@ -1814,8 +2155,78 @@ export const Screen1Organization: React.FC = () => {
               >
                 Cancel
               </Button>
-              <Button onClick={addAttributeToEntity} disabled={!newAttribute.label.trim()}>
-                Add Attribute
+              <Button onClick={saveAttribute} disabled={!newAttribute.label.trim()}>
+                {isEditMode ? 'Update Attribute' : 'Add Attribute'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Entity Model Template Catalog Modal */}
+      {showTemplateModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full p-8 border-2 border-gray-200 max-h-[90vh] overflow-y-auto">
+            <div className="mb-6">
+              <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                Entity Model Templates
+              </h3>
+              <p className="text-gray-600 text-sm">
+                Choose a pre-built template to quickly configure your organizational hierarchy
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mb-6">
+              {entityTemplates.map((template) => (
+                <button
+                  key={template.id}
+                  onClick={() => applyTemplate(template)}
+                  className="p-5 text-left border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all group"
+                >
+                  <div className="flex items-start gap-4">
+                    <div className="text-4xl">{template.icon}</div>
+                    <div className="flex-1">
+                      <h4 className="font-bold text-lg text-gray-900 group-hover:text-blue-700 mb-1">
+                        {template.name}
+                      </h4>
+                      <p className="text-xs text-gray-600 mb-2">{template.description}</p>
+                      <div className="flex items-center gap-2 mb-3">
+                        <span className="px-2 py-0.5 bg-purple-100 text-purple-700 rounded text-xs font-semibold">
+                          {template.industry}
+                        </span>
+                        <span className="text-xs text-gray-500">
+                          {template.enabledEntities.length} entities
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap gap-1">
+                        {template.enabledEntities.map((entityId) => {
+                          const entity = entityLevels.find((e) => e.id === entityId);
+                          return entity ? (
+                            <span
+                              key={entityId}
+                              className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs"
+                            >
+                              {entity.icon} {entity.name}
+                            </span>
+                          ) : null;
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+
+            <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-lg mb-4">
+              <p className="text-sm text-blue-900">
+                <strong>💡 Tip:</strong> Templates configure which entity levels are enabled. You can customize
+                attributes and settings after applying a template.
+              </p>
+            </div>
+
+            <div className="flex justify-end">
+              <Button variant="secondary" onClick={() => setShowTemplateModal(false)}>
+                Cancel
               </Button>
             </div>
           </div>
