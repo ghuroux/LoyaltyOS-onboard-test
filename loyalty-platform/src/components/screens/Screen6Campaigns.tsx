@@ -185,7 +185,16 @@ export const Screen6Campaigns: React.FC = () => {
             <h2 className="text-xl font-bold text-gray-900">
               Starter Templates for {campaignTypes.find((t) => t.id === activeType)?.name}
             </h2>
-            <span className="text-sm text-gray-500">Customize these templates for your program</span>
+            <button
+              onClick={() => {
+                setEditingTemplate(null);
+                setBuilderOpen(true);
+              }}
+              className="px-4 py-2 bg-primary text-white rounded-lg font-semibold hover:bg-blue-600 transition-colors flex items-center gap-2"
+            >
+              <span className="text-lg">+</span>
+              Create New Template
+            </button>
           </div>
 
           <div className="grid grid-cols-1 gap-4">
