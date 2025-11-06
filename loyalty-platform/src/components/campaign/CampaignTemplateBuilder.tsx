@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card } from '../ui/Card';
 
 type CampaignType = 'time-based' | 'long-living' | 'trigger-based' | 'one-off';
-type TemplateStep = 'type' | 'who' | 'what' | 'where' | 'when' | 'how' | 'controls' | 'review';
+type TemplateStep = 'type' | 'trigger' | 'who' | 'what' | 'where' | 'when' | 'how' | 'controls' | 'review';
 
 interface TemplateBuilderProps {
   isOpen: boolean;
@@ -25,6 +25,12 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
   const [templateData, setTemplateData] = useState({
     type: initialType || 'time-based',
     name: templateName || '',
+    // TRIGGER - What activates the offer
+    triggerCategory: 'purchase',
+    purchaseTriggerCondition: 'any',
+    purchaseTriggerSku: '',
+    purchaseTriggerCategory: '',
+    purchaseTriggerQuantity: 1,
     // WHO - Audience
     audienceType: 'segment',
     selectedSegments: [] as string[],
@@ -91,6 +97,7 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
 
   const steps: { id: TemplateStep; label: string; icon: string }[] = [
     { id: 'type', label: 'Type', icon: '📋' },
+    { id: 'trigger', label: 'Trigger', icon: '🎯' },
     { id: 'who', label: 'Who', icon: '👥' },
     { id: 'what', label: 'What', icon: '🎁' },
     { id: 'where', label: 'Where', icon: '📍' },
@@ -200,7 +207,7 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
                   {
                     id: 'trigger-based',
                     icon: '⚡',
-                    name: 'Trigger-Based Campaign',
+                    name: 'Event-Based Campaign',
                     desc: 'Event-driven campaigns based on external triggers',
                   },
                   {
@@ -239,7 +246,215 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
             </div>
           )}
 
-          {/* Step 2: WHO - Audience */}
+          {/* Step 2: TRIGGER - What Activates the Offer */}
+          {currentStep === 'trigger' && (
+            <div className="space-y-6">
+              <h3 className="text-xl font-bold mb-4">🎯 Campaign Trigger</h3>
+              <p className="text-sm text-gray-600 mb-4">
+                What action or event will activate this campaign for customers?
+              </p>
+
+              <Card className="p-4">
+                <label className="block text-sm font-semibold text-gray-700 mb-3">Trigger Type</label>
+                <div className="space-y-3">
+                  {/* Purchase-Based Trigger */}
+                  <label className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
+                    <input
+                      type="radio"
+                      name="triggerCategory"
+                      value="purchase"
+                      checked={templateData.triggerCategory === 'purchase'}
+                      onChange={(e) => updateTemplate({ triggerCategory: e.target.value })}
+                      className="mt-1"
+                    />
+                    <div className="flex-1">
+                      <div className="font-medium">🛒 Purchase-Based</div>
+                      <div className="text-sm text-gray-600">Triggered when customer purchases specific item(s)</div>
+
+                      {templateData.triggerCategory === 'purchase' && (
+                        <div className="mt-4 space-y-3">
+                          <div>
+                            <label className="block text-xs text-gray-600 mb-2">Trigger Condition</label>
+                            <select
+                              value={templateData.purchaseTriggerCondition}
+                              onChange={(e) => updateTemplate({ purchaseTriggerCondition: e.target.value })}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+                            >
+                              <option value="any">Any Purchase</option>
+                              <option value="specific-sku">Specific Product (SKU)</option>
+                              <option value="category">Product Category</option>
+                              <option value="minimum-spend">Minimum Spend Amount</option>
+                            </select>
+                          </div>
+
+                          {templateData.purchaseTriggerCondition === 'specific-sku' && (
+                            <div>
+                              <label className="block text-xs text-gray-600 mb-2">Product SKU(s)</label>
+                              <input
+                                type="text"
+                                value={templateData.purchaseTriggerSku}
+                                onChange={(e) => updateTemplate({ purchaseTriggerSku: e.target.value })}
+                                placeholder="e.g., SKU-123, SKU-456 or 'Any Coffee'"
+                                className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                              />
+                              <div className="mt-2 grid grid-cols-2 gap-2">
+                                <div>
+                                  <label className="block text-xs text-gray-600 mb-1">Quantity</label>
+                                  <input
+                                    type="number"
+                                    value={templateData.purchaseTriggerQuantity}
+                                    onChange={(e) => updateTemplate({ purchaseTriggerQuantity: parseInt(e.target.value) })}
+                                    min="1"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          )}
+
+                          {templateData.purchaseTriggerCondition === 'category' && (
+                            <div>
+                              <label className="block text-xs text-gray-600 mb-2">Category</label>
+                              <input
+                                type="text"
+                                value={templateData.purchaseTriggerCategory}
+                                onChange={(e) => updateTemplate({ purchaseTriggerCategory: e.target.value })}
+                                placeholder="e.g., Coffee, Burgers, Desserts"
+                                className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                              />
+                            </div>
+                          )}
+
+                          {templateData.purchaseTriggerCondition === 'minimum-spend' && (
+                            <div>
+                              <label className="block text-xs text-gray-600 mb-2">Minimum Amount</label>
+                              <div className="flex items-center gap-2">
+                                <span className="text-gray-600">$</span>
+                                <input
+                                  type="number"
+                                  placeholder="e.g., 25.00"
+                                  className="flex-1 px-3 py-2 border border-gray-300 rounded text-sm"
+                                />
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </label>
+
+                  {/* Cart-Based Trigger */}
+                  <label className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
+                    <input
+                      type="radio"
+                      name="triggerCategory"
+                      value="cart"
+                      checked={templateData.triggerCategory === 'cart'}
+                      onChange={(e) => updateTemplate({ triggerCategory: e.target.value })}
+                      className="mt-1"
+                    />
+                    <div className="flex-1">
+                      <div className="font-medium">🛍️ Cart-Based</div>
+                      <div className="text-sm text-gray-600">Triggered when item is added to cart (before purchase)</div>
+                      {templateData.triggerCategory === 'cart' && (
+                        <div className="mt-3">
+                          <input
+                            type="text"
+                            placeholder="SKU or category to trigger offer"
+                            className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                          />
+                        </div>
+                      )}
+                    </div>
+                  </label>
+
+                  {/* Customer Action Trigger (primarily for long-living) */}
+                  {templateData.type === 'long-living' && (
+                    <label className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
+                      <input
+                        type="radio"
+                        name="triggerCategory"
+                        value="customer-action"
+                        checked={templateData.triggerCategory === 'customer-action'}
+                        onChange={(e) => updateTemplate({ triggerCategory: e.target.value })}
+                        className="mt-1"
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium">👤 Customer Milestone</div>
+                        <div className="text-sm text-gray-600">Triggered by customer lifecycle events</div>
+                        {templateData.triggerCategory === 'customer-action' && (
+                          <div className="mt-3">
+                            <select className="w-full px-3 py-2 border border-gray-300 rounded text-sm">
+                              <option value="first-purchase">First Purchase</option>
+                              <option value="referral">Successful Referral</option>
+                              <option value="tier-upgrade">Tier Upgrade</option>
+                              <option value="birthday">Birthday Month</option>
+                            </select>
+                          </div>
+                        )}
+                      </div>
+                    </label>
+                  )}
+
+                  {/* External Event Trigger (primarily for event-based) */}
+                  {templateData.type === 'trigger-based' && (
+                    <label className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
+                      <input
+                        type="radio"
+                        name="triggerCategory"
+                        value="external-event"
+                        checked={templateData.triggerCategory === 'external-event'}
+                        onChange={(e) => updateTemplate({ triggerCategory: e.target.value })}
+                        className="mt-1"
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium">⚡ External Event</div>
+                        <div className="text-sm text-gray-600">Triggered by external systems or conditions</div>
+                        {templateData.triggerCategory === 'external-event' && (
+                          <div className="mt-3">
+                            <select className="w-full px-3 py-2 border border-gray-300 rounded text-sm">
+                              <option value="weather">Weather Condition</option>
+                              <option value="location">Location/Geofence</option>
+                              <option value="inventory">Inventory Event</option>
+                              <option value="cart-abandon">Cart Abandonment</option>
+                              <option value="social">Social Media Action</option>
+                            </select>
+                          </div>
+                        )}
+                      </div>
+                    </label>
+                  )}
+
+                  {/* Manual Trigger (for one-off) */}
+                  {templateData.type === 'one-off' && (
+                    <label className="flex items-start gap-3 p-3 bg-gray-50 rounded-lg cursor-pointer hover:bg-gray-100">
+                      <input
+                        type="radio"
+                        name="triggerCategory"
+                        value="manual"
+                        checked={templateData.triggerCategory === 'manual'}
+                        onChange={(e) => updateTemplate({ triggerCategory: e.target.value })}
+                        className="mt-1"
+                      />
+                      <div className="flex-1">
+                        <div className="font-medium">✋ Manual Issue</div>
+                        <div className="text-sm text-gray-600">Manually triggered by administrator</div>
+                      </div>
+                    </label>
+                  )}
+                </div>
+              </Card>
+
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-800">
+                  <strong>💡 Tip:</strong> The trigger determines <em>what activates</em> the campaign.
+                  The campaign type (time-based, long-living, etc.) determines <em>when and how long</em> it's available.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Step 3: WHO - Audience */}
           {currentStep === 'who' && (
             <div className="space-y-6">
               <h3 className="text-xl font-bold mb-4">👥 Define Target Audience</h3>
@@ -1285,6 +1500,19 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
                   <div className="space-y-2 text-sm">
                     <div><span className="text-gray-600">Name:</span> <strong>{templateData.name}</strong></div>
                     <div><span className="text-gray-600">Type:</span> <strong className="capitalize">{templateData.type.replace('-', ' ')}</strong></div>
+                  </div>
+                </Card>
+
+                <Card className="p-4">
+                  <h4 className="font-semibold text-sm text-gray-700 mb-3">🎯 Trigger</h4>
+                  <div className="space-y-2 text-sm">
+                    <div><span className="text-gray-600">Activation:</span> <strong className="capitalize">{templateData.triggerCategory.replace('-', ' ')}</strong></div>
+                    {templateData.triggerCategory === 'purchase' && templateData.purchaseTriggerCondition === 'specific-sku' && (
+                      <div><span className="text-gray-600">SKU:</span> <strong>{templateData.purchaseTriggerSku || 'Any'}</strong></div>
+                    )}
+                    {templateData.triggerCategory === 'purchase' && templateData.purchaseTriggerCondition === 'category' && (
+                      <div><span className="text-gray-600">Category:</span> <strong>{templateData.purchaseTriggerCategory || 'Any'}</strong></div>
+                    )}
                   </div>
                 </Card>
 
