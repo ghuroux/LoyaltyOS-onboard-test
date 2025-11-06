@@ -47,7 +47,7 @@ interface SeedUser {
 }
 
 export const Screen1Organization: React.FC = () => {
-  const [expandedSections, setExpandedSections] = useState<string[]>(['business-hierarchy', 'business-model']);
+  const [expandedSections, setExpandedSections] = useState<string[]>(['business-hierarchy', 'client-categories']);
 
   // Business Organizational Hierarchy
   const [entityLevels, setEntityLevels] = useState<EntityLevel[]>([
@@ -184,8 +184,106 @@ export const Screen1Organization: React.FC = () => {
     return ['Custom Analytics', 'Trend Analysis'];
   };
 
-  // Business Model
-  const [businessModel, setBusinessModel] = useState<'individual' | 'household' | 'business'>('household');
+  // Customer & Partner Categories
+  interface ClientType {
+    id: string;
+    name: string;
+    icon: string;
+    description: string;
+    type: 'B2C' | 'B2B';
+    enabled: boolean;
+    needsRBAC: boolean;
+    rbacRoles: string[];
+    portalAccess: boolean;
+  }
+
+  const [clientTypes, setClientTypes] = useState<ClientType[]>([
+    {
+      id: 'individual',
+      name: 'Individual Customers',
+      icon: '👤',
+      description: 'Regular loyalty members earning and redeeming rewards',
+      type: 'B2C',
+      enabled: true,
+      needsRBAC: false,
+      rbacRoles: [],
+      portalAccess: true,
+    },
+    {
+      id: 'household',
+      name: 'Household Accounts',
+      icon: '👨‍👩‍👧‍👦',
+      description: 'Family memberships with shared or pooled benefits',
+      type: 'B2C',
+      enabled: true,
+      needsRBAC: false,
+      rbacRoles: [],
+      portalAccess: true,
+    },
+    {
+      id: 'corporate',
+      name: 'Corporate Clients',
+      icon: '🏢',
+      description: 'Employee rewards programs and bulk memberships',
+      type: 'B2B',
+      enabled: false,
+      needsRBAC: true,
+      rbacRoles: ['HR Admin', 'Employee', 'Manager'],
+      portalAccess: true,
+    },
+    {
+      id: 'sponsors',
+      name: 'Sponsors',
+      icon: '🤝',
+      description: 'Brands funding campaigns, rewards, and co-marketing partners',
+      type: 'B2B',
+      enabled: false,
+      needsRBAC: true,
+      rbacRoles: ['Sponsor Admin', 'Campaign Manager', 'Analyst'],
+      portalAccess: true,
+    },
+    {
+      id: 'retail-media',
+      name: 'Retail Media Clients',
+      icon: '📺',
+      description: 'Advertisers using loyalty platform for promotions',
+      type: 'B2B',
+      enabled: false,
+      needsRBAC: true,
+      rbacRoles: ['Media Buyer', 'Creative Manager', 'Analyst'],
+      portalAccess: true,
+    },
+    {
+      id: 'coalition',
+      name: 'Coalition Partners',
+      icon: '🔗',
+      description: 'Other businesses in loyalty network for cross-brand earning/redemption',
+      type: 'B2B',
+      enabled: false,
+      needsRBAC: true,
+      rbacRoles: ['Partner Admin', 'Operations'],
+      portalAccess: true,
+    },
+  ]);
+
+  const toggleClientType = (clientId: string) => {
+    setClientTypes(prev =>
+      prev.map(client =>
+        client.id === clientId ? { ...client, enabled: !client.enabled } : client
+      )
+    );
+  };
+
+  const updateClientType = (clientId: string, updates: Partial<ClientType>) => {
+    setClientTypes(prev =>
+      prev.map(client =>
+        client.id === clientId ? { ...client, ...updates } : client
+      )
+    );
+  };
+
+  // Check if household is enabled for relationship logic
+  const householdEnabled = clientTypes.find(c => c.id === 'household')?.enabled || false;
 
   // Customer Profile
   const [coreFields] = useState([
@@ -612,58 +710,108 @@ export const Screen1Organization: React.FC = () => {
           </div>
         </Section>
 
-        {/* Section 1: Business Model */}
-        <Section id="business-model" title="Business Model" icon="🏢">
-          <div className="space-y-4">
+        {/* Section 1: Customer & Partner Categories */}
+        <Section id="client-categories" title="Customer & Partner Categories" icon="🎯">
+          <div className="space-y-6">
             <p className="text-sm text-gray-600">
-              Select the primary business model for your loyalty program
+              Enable customer types and business partners that will interact with your loyalty program
             </p>
 
-            <div className="grid grid-cols-3 gap-4">
-              <button
-                onClick={() => setBusinessModel('individual')}
-                className={`p-6 rounded-lg border-2 text-left transition-all ${
-                  businessModel === 'individual'
-                    ? 'border-primary bg-blue-50 shadow-md'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="text-4xl mb-3">👤</div>
-                <h4 className="font-semibold text-lg mb-2">Individual</h4>
-                <p className="text-sm text-gray-600">
-                  Each customer is independent with their own rewards
-                </p>
-              </button>
+            {/* B2C Types */}
+            <div>
+              <h4 className="font-semibold mb-3 text-gray-700">Consumer Accounts (B2C)</h4>
+              <div className="grid grid-cols-2 gap-4">
+                {clientTypes.filter(c => c.type === 'B2C').map(client => (
+                  <Card key={client.id} className={`${client.enabled ? 'border-2 border-primary' : 'opacity-60'}`}>
+                    <div className="p-4">
+                      <div className="flex items-center gap-3 mb-3">
+                        <input
+                          type="checkbox"
+                          checked={client.enabled}
+                          onChange={() => toggleClientType(client.id)}
+                          className="h-5 w-5 text-primary rounded"
+                        />
+                        <span className="text-3xl">{client.icon}</span>
+                        <div className="flex-1">
+                          <h5 className="font-semibold text-gray-900">{client.name}</h5>
+                          <p className="text-xs text-gray-600">{client.description}</p>
+                        </div>
+                      </div>
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
 
-              <button
-                onClick={() => setBusinessModel('household')}
-                className={`p-6 rounded-lg border-2 text-left transition-all ${
-                  businessModel === 'household'
-                    ? 'border-primary bg-blue-50 shadow-md'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="text-4xl mb-3">👨‍👩‍👧‍👦</div>
-                <h4 className="font-semibold text-lg mb-2">Household</h4>
-                <p className="text-sm text-gray-600">
-                  Families can link accounts and share benefits
-                </p>
-              </button>
+            {/* B2B Types */}
+            <div>
+              <h4 className="font-semibold mb-3 text-gray-700">Business Clients & Partners (B2B)</h4>
+              <div className="space-y-3">
+                {clientTypes.filter(c => c.type === 'B2B').map(client => (
+                  <Card key={client.id} className={`${client.enabled ? 'border-2 border-primary' : 'opacity-60'}`}>
+                    <div className="p-4">
+                      <div className="flex items-center gap-3 mb-3">
+                        <input
+                          type="checkbox"
+                          checked={client.enabled}
+                          onChange={() => toggleClientType(client.id)}
+                          className="h-5 w-5 text-primary rounded"
+                        />
+                        <span className="text-2xl">{client.icon}</span>
+                        <div className="flex-1">
+                          <h5 className="font-semibold text-gray-900">{client.name}</h5>
+                          <p className="text-xs text-gray-600">{client.description}</p>
+                        </div>
+                        <span className="px-2 py-1 bg-orange-100 text-orange-700 rounded text-xs font-semibold">
+                          B2B
+                        </span>
+                      </div>
 
-              <button
-                onClick={() => setBusinessModel('business')}
-                className={`p-6 rounded-lg border-2 text-left transition-all ${
-                  businessModel === 'business'
-                    ? 'border-primary bg-blue-50 shadow-md'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="text-4xl mb-3">🏢</div>
-                <h4 className="font-semibold text-lg mb-2">Business</h4>
-                <p className="text-sm text-gray-600">
-                  Corporate accounts with multiple employees
-                </p>
-              </button>
+                      {client.enabled && (
+                        <div className="mt-4 pt-4 border-t border-gray-200">
+                          <div className="grid grid-cols-2 gap-4">
+                            <div>
+                              <label className="flex items-center gap-2 text-sm">
+                                <input
+                                  type="checkbox"
+                                  checked={client.portalAccess}
+                                  onChange={(e) =>
+                                    updateClientType(client.id, { portalAccess: e.target.checked })
+                                  }
+                                  className="h-4 w-4 text-primary rounded"
+                                />
+                                <span className="text-gray-700">Portal Access</span>
+                              </label>
+                            </div>
+                            <div>
+                              <label className="block text-xs text-gray-600 mb-1">RBAC Roles:</label>
+                              <input
+                                type="text"
+                                value={client.rbacRoles.join(', ')}
+                                onChange={(e) =>
+                                  updateClientType(client.id, {
+                                    rbacRoles: e.target.value.split(',').map((r) => r.trim()).filter(r => r),
+                                  })
+                                }
+                                placeholder="Admin, Manager, User"
+                                className="w-full px-2 py-1 border border-gray-300 rounded text-xs"
+                              />
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </Card>
+                ))}
+              </div>
+            </div>
+
+            {/* Summary */}
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-900">
+                <strong>Enabled:</strong>{' '}
+                {clientTypes.filter(c => c.enabled).map(c => c.name).join(', ') || 'None'}
+              </p>
             </div>
           </div>
         </Section>
@@ -766,137 +914,140 @@ export const Screen1Organization: React.FC = () => {
                 </Button>
               </div>
             )}
-          </div>
-        </Section>
 
-        {/* Section 3: Relationship Management */}
-        {businessModel === 'household' && (
-          <Section id="relationships" title="Relationship Management" icon="🔗">
-            <div className="space-y-6">
-              <label className="flex items-center gap-3">
-                <input
-                  type="checkbox"
-                  checked={enableRelationships}
-                  onChange={(e) => setEnableRelationships(e.target.checked)}
-                  className="h-4 w-4 text-primary rounded"
-                />
-                <div>
-                  <div className="font-medium text-gray-900">Enable Family Relationships</div>
-                  <div className="text-sm text-gray-600">
-                    Allow customers to link accounts and establish family connections
-                  </div>
-                </div>
-              </label>
-
-              {enableRelationships && (
-                <>
-                  <div className="p-4 bg-gray-50 rounded-lg space-y-4">
+            {/* Relationship Management (for Household accounts) */}
+            {householdEnabled && (
+              <div className="pt-6 border-t border-gray-200">
+                <h4 className="font-semibold mb-4 flex items-center gap-2">
+                  🔗 Relationship Management
+                </h4>
+                <div className="space-y-4">
+                  <label className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      checked={enableRelationships}
+                      onChange={(e) => setEnableRelationships(e.target.checked)}
+                      className="h-4 w-4 text-primary rounded"
+                    />
                     <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Relationship Types
-                      </label>
-                      <div className="grid grid-cols-3 gap-2">
-                        {relationshipTypes.map(type => (
-                          <div key={type} className="flex items-center gap-2 p-2 bg-white rounded border border-gray-200">
+                      <div className="font-medium text-gray-900">Enable Family Relationships</div>
+                      <div className="text-sm text-gray-600">
+                        Allow customers to link accounts and establish family connections
+                      </div>
+                    </div>
+                  </label>
+
+                  {enableRelationships && (
+                    <>
+                      <div className="p-4 bg-gray-50 rounded-lg space-y-4">
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 mb-2">
+                            Relationship Types
+                          </label>
+                          <div className="grid grid-cols-3 gap-2">
+                            {relationshipTypes.map(type => (
+                              <div key={type} className="flex items-center gap-2 p-2 bg-white rounded border border-gray-200">
+                                <input
+                                  type="checkbox"
+                                  checked
+                                  className="h-4 w-4 text-primary rounded"
+                                />
+                                <span className="text-sm text-gray-900 capitalize">
+                                  {type.replace('-', ' ')}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-sm font-semibold text-gray-700 mb-2">
+                            Age of Independence
+                          </label>
+                          <div className="flex items-center gap-3">
                             <input
-                              type="checkbox"
-                              checked
-                              className="h-4 w-4 text-primary rounded"
+                              type="number"
+                              value={ageThreshold}
+                              onChange={(e) => setAgeThreshold(parseInt(e.target.value))}
+                              min="13"
+                              max="21"
+                              className="w-24 px-3 py-2 border border-gray-300 rounded-lg"
                             />
-                            <span className="text-sm text-gray-900 capitalize">
-                              {type.replace('-', ' ')}
+                            <span className="text-sm text-gray-600">
+                              years old - family members become eligible for primary membership
                             </span>
                           </div>
-                        ))}
-                      </div>
-                    </div>
+                        </div>
 
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-700 mb-2">
-                        Age of Independence
-                      </label>
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="number"
-                          value={ageThreshold}
-                          onChange={(e) => setAgeThreshold(parseInt(e.target.value))}
-                          min="13"
-                          max="21"
-                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg"
-                        />
-                        <span className="text-sm text-gray-600">
-                          years old - family members become eligible for primary membership
-                        </span>
+                        <label className="flex items-center gap-3">
+                          <input
+                            type="checkbox"
+                            checked={autoPromoteMinors}
+                            onChange={(e) => setAutoPromoteMinors(e.target.checked)}
+                            className="h-4 w-4 text-primary rounded"
+                          />
+                          <div>
+                            <div className="font-medium text-sm text-gray-900">
+                              Auto-promote minors to primary members
+                            </div>
+                            <div className="text-xs text-gray-600">
+                              When a minor reaches {ageThreshold}, system prompts to convert to primary membership
+                            </div>
+                          </div>
+                        </label>
                       </div>
-                    </div>
 
-                    <label className="flex items-center gap-3">
-                      <input
-                        type="checkbox"
-                        checked={autoPromoteMinors}
-                        onChange={(e) => setAutoPromoteMinors(e.target.checked)}
-                        className="h-4 w-4 text-primary rounded"
-                      />
                       <div>
-                        <div className="font-medium text-sm text-gray-900">
-                          Auto-promote minors to primary members
-                        </div>
-                        <div className="text-xs text-gray-600">
-                          When a minor reaches {ageThreshold}, system prompts to convert to primary membership
+                        <label className="block text-sm font-semibold text-gray-700 mb-3">
+                          Benefit Sharing Strategy
+                        </label>
+                        <div className="grid grid-cols-2 gap-4">
+                          <button
+                            onClick={() => setBenefitSharing('individual')}
+                            className={`p-4 rounded-lg border-2 text-left transition-all ${
+                              benefitSharing === 'individual'
+                                ? 'border-primary bg-blue-50'
+                                : 'border-gray-200 hover:border-gray-300'
+                            }`}
+                          >
+                            <h5 className="font-semibold mb-1">Individual Tracking</h5>
+                            <p className="text-sm text-gray-600">
+                              Each family member has their own points and rewards
+                            </p>
+                          </button>
+
+                          <button
+                            onClick={() => setBenefitSharing('pooled')}
+                            className={`p-4 rounded-lg border-2 text-left transition-all ${
+                              benefitSharing === 'pooled'
+                                ? 'border-primary bg-blue-50'
+                                : 'border-gray-200 hover:border-gray-300'
+                            }`}
+                          >
+                            <h5 className="font-semibold mb-1">Family Points Pool</h5>
+                            <p className="text-sm text-gray-600">
+                              All family members contribute to and share from a common pool
+                            </p>
+                          </button>
                         </div>
                       </div>
-                    </label>
-                  </div>
 
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 mb-3">
-                      Benefit Sharing Strategy
-                    </label>
-                    <div className="grid grid-cols-2 gap-4">
-                      <button
-                        onClick={() => setBenefitSharing('individual')}
-                        className={`p-4 rounded-lg border-2 text-left transition-all ${
-                          benefitSharing === 'individual'
-                            ? 'border-primary bg-blue-50'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                      >
-                        <h5 className="font-semibold mb-1">Individual Tracking</h5>
-                        <p className="text-sm text-gray-600">
-                          Each family member has their own points and rewards
-                        </p>
-                      </button>
-
-                      <button
-                        onClick={() => setBenefitSharing('pooled')}
-                        className={`p-4 rounded-lg border-2 text-left transition-all ${
-                          benefitSharing === 'pooled'
-                            ? 'border-primary bg-blue-50'
-                            : 'border-gray-200 hover:border-gray-300'
-                        }`}
-                      >
-                        <h5 className="font-semibold mb-1">Family Points Pool</h5>
-                        <p className="text-sm text-gray-600">
-                          All family members contribute to and share from a common pool
-                        </p>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-                    <h5 className="font-semibold text-sm mb-2 text-green-900">Example Relationship Flow:</h5>
-                    <div className="text-sm text-green-800 space-y-1">
-                      <p>• <strong>Jane (Age 42)</strong> - Primary Member</p>
-                      <p className="ml-4">└─ Spouse-of: <strong>John (Age 45)</strong> [Also Primary Member]</p>
-                      <p className="ml-4">└─ Parent-of: <strong>Emma (Age 16)</strong> [Minor - Dependent]</p>
-                      <p className="ml-4">└─ Parent-of: <strong>Lucas (Age 19)</strong> [Adult - Can be Primary]</p>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          </Section>
-        )}
+                      <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                        <h5 className="font-semibold text-sm mb-2 text-green-900">Example Relationship Flow:</h5>
+                        <div className="text-sm text-green-800 space-y-1">
+                          <p>• <strong>Jane (Age 42)</strong> - Primary Member</p>
+                          <p className="ml-4">└─ Spouse-of: <strong>John (Age 45)</strong> [Also Primary Member]</p>
+                          <p className="ml-4">└─ Parent-of: <strong>Emma (Age 16)</strong> [Minor - Dependent]</p>
+                          <p className="ml-4">└─ Parent-of: <strong>Lucas (Age 19)</strong> [Adult - Can be Primary]</p>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </Section>
 
         {/* Section 4: External System Mapping */}
         <Section id="system-mapping" title="External System Mapping" icon="🔌">
@@ -1004,11 +1155,30 @@ export const Screen1Organization: React.FC = () => {
               </pre>
             </div>
 
+            {/* Client Types Configuration */}
+            <div className="p-6 bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg">
+              <h4 className="font-semibold mb-4 text-gray-900">Customer & Partner Categories</h4>
+              <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
+{`{
+  "clientTypes": {${clientTypes.filter(c => c.enabled).map(client => `
+    "${client.id}": {
+      "name": "${client.name}",
+      "type": "${client.type}",
+      "portalAccess": ${client.portalAccess},${client.needsRBAC ? `
+      "rbacRoles": [${client.rbacRoles.map(r => `"${r}"`).join(', ')}],` : ''}
+      "enabled": true
+    }`).join(',')}
+  }
+}`}
+              </pre>
+            </div>
+
             <div className="p-6 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg">
               <h4 className="font-semibold mb-4 text-gray-900">Customer Data Structure</h4>
               <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
 {`{
   "customerId": "CUST_789456",
+  "accountType": "${clientTypes.find(c => c.enabled && c.type === 'B2C')?.id || 'individual'}",
   "profile": {
     "firstName": "Jane",
     "lastName": "Doe",
@@ -1017,7 +1187,7 @@ export const Screen1Organization: React.FC = () => {
     "dateOfBirth": "1982-03-15",
     "address": "123 Main St, City, State"${customFields.length > 0 ? `,
     ${customFields.map(f => `"${f.id}": "..."`).join(',\n    ')}` : ''}
-  },${businessModel === 'household' && enableRelationships ? `
+  },${householdEnabled && enableRelationships ? `
   "relationships": [
     {
       "type": "spouse-of",
@@ -1036,13 +1206,12 @@ export const Screen1Organization: React.FC = () => {
       "customerId": "${mappings[i.id as keyof typeof mappings]?.customerId || 'N/A'}"
     }`).join(',')}
   },
-  "membershipType": "${businessModel}",
   "createdAt": "2025-01-15T10:30:00Z"
 }`}
               </pre>
             </div>
 
-            {businessModel === 'household' && enableRelationships && (
+            {householdEnabled && enableRelationships && (
               <div className="p-6 bg-gray-50 border border-gray-300 rounded-lg">
                 <h4 className="font-semibold mb-4 text-gray-900">Relationship Flow Diagram</h4>
                 <div className="flex items-center justify-center p-8 bg-white rounded border border-gray-200">
