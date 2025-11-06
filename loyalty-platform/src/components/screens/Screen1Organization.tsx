@@ -1,145 +1,134 @@
-import React, { useState, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
-import { Toggle } from '../ui/Toggle';
 import { Button } from '../ui/Button';
-import { Modal } from '../ui/Modal';
 import { useOnboardingStore } from '../../store/onboardingStore';
-import { Building2, Users, Settings, Code, ChevronUp, ChevronDown } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus, Trash2, Check } from 'lucide-react';
 
-type Tab = 'org-structure' | 'customer-structure' | 'entity-config' | 'api-config';
+type FieldType = 'text' | 'number' | 'date' | 'boolean' | 'dropdown' | 'email' | 'phone';
+type RelationshipType = 'parent-of' | 'child-of' | 'spouse-of' | 'partner-of' | 'guardian-of' | 'sibling-of';
+
+interface CustomField {
+  id: string;
+  label: string;
+  type: FieldType;
+  required: boolean;
+  placeholder?: string;
+  options?: string[]; // For dropdown
+}
 
 export const Screen1Organization: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<Tab>('org-structure');
-  const [showApiTab, setShowApiTab] = useState(false);
+  const [expandedSections, setExpandedSections] = useState<string[]>(['business-model', 'customer-profile']);
 
-  // Modal states
-  const [showAddLevelModal, setShowAddLevelModal] = useState(false);
-  const [showAddCustomerTypeModal, setShowAddCustomerTypeModal] = useState(false);
-  const [showAddAttributeModal, setShowAddAttributeModal] = useState(false);
+  // Business Model
+  const [businessModel, setBusinessModel] = useState<'individual' | 'household' | 'business'>('household');
 
-  // Form states
-  const [newLevelName, setNewLevelName] = useState('');
-  const [newLevelDescription, setNewLevelDescription] = useState('');
-  const [newCustomerTypeName, setNewCustomerTypeName] = useState('');
-  const [newCustomerTypeDescription, setNewCustomerTypeDescription] = useState('');
-  const [newAttributeName, setNewAttributeName] = useState('');
-  const [newAttributeType, setNewAttributeType] = useState('String');
+  // Customer Profile
+  const [coreFields] = useState([
+    { id: 'firstName', label: 'First Name', required: true },
+    { id: 'lastName', label: 'Last Name', required: true },
+    { id: 'email', label: 'Email', required: true },
+    { id: 'phone', label: 'Phone', required: false },
+    { id: 'dob', label: 'Date of Birth', required: true },
+    { id: 'address', label: 'Address', required: false },
+  ]);
 
-  const {
-    organizationHierarchy,
-    customerHierarchy,
-    selectedEntity,
-    entityAttributes,
-    kpiCounts,
-    updateHierarchyLevel,
-    addCustomHierarchyLevel,
-    reorderHierarchyLevel,
-    updateCustomerHierarchyLevel,
-    addCustomerType,
-    setSelectedEntity,
-    updateEntityAttribute,
-    addCustomAttribute,
-  } = useOnboardingStore();
+  const [customFields, setCustomFields] = useState<CustomField[]>([]);
+  const [showAddFieldModal, setShowAddFieldModal] = useState(false);
+  const [newField, setNewField] = useState<CustomField>({
+    id: '',
+    label: '',
+    type: 'text',
+    required: false,
+    placeholder: '',
+  });
 
-  const tabs = [
-    { id: 'org-structure', label: 'Organization Structure', icon: Building2 },
-    { id: 'customer-structure', label: 'Customer Structure', icon: Users },
-    { id: 'entity-config', label: 'Entity Configuration', icon: Settings },
-  ];
+  // Relationships
+  const [enableRelationships, setEnableRelationships] = useState(true);
+  const [relationshipTypes] = useState<RelationshipType[]>([
+    'parent-of', 'child-of', 'spouse-of', 'partner-of', 'guardian-of', 'sibling-of'
+  ]);
+  const [ageThreshold, setAgeThreshold] = useState(18);
+  const [autoPromoteMinors, setAutoPromoteMinors] = useState(true);
+  const [benefitSharing, setBenefitSharing] = useState<'individual' | 'pooled'>('pooled');
 
-  if (showApiTab) {
-    tabs.push({ id: 'api-config', label: 'API Configuration', icon: Code });
-  }
+  // External System Mapping (mock integrations from previous step)
+  const [connectedIntegrations] = useState([
+    { id: 'salesforce', name: 'Salesforce', type: 'CRM', connected: true },
+    { id: 'stripe', name: 'Stripe', type: 'Payment', connected: true },
+    { id: 'square', name: 'Square', type: 'POS', connected: false },
+  ]);
 
-  // Get all enabled entities for dropdown
-  const allEnabledEntities = useMemo(() => {
-    const orgEntities = organizationHierarchy
-      .filter(level => level.enabled)
-      .map(level => ({ id: level.id, name: level.displayName, type: 'organization' }));
+  const [mappings, setMappings] = useState({
+    salesforce: {
+      customerId: 'Contact.Id',
+      email: 'Contact.Email',
+      phone: 'Contact.Phone',
+    },
+    stripe: {
+      customerId: 'cus_xxxxx',
+      cardToken: 'tok_xxxxx',
+    },
+  });
 
-    const custEntities = customerHierarchy
-      .filter(level => level.enabled && level.id !== 'primary') // Exclude primary as it's not an entity
-      .map(level => ({ id: level.id, name: level.displayName, type: 'customer' }));
+  const toggleSection = (section: string) => {
+    setExpandedSections(prev =>
+      prev.includes(section) ? prev.filter(s => s !== section) : [...prev, section]
+    );
+  };
 
-    return [...orgEntities, ...custEntities];
-  }, [organizationHierarchy, customerHierarchy]);
-
-  // Get standard attributes from initial entity attribute sets
-  const standardAttributeKeys = useMemo(() => {
-    // Map entity IDs to their standard attribute keys
-    const entityStandardAttrs: { [key: string]: string[] } = {
-      'corporate': ['Corporate ID', 'Corporate Name', 'Address & Location', 'Region', 'Number of Locations', 'Support Center', 'Years in Operation'],
-      'master': ['Master Franchisee ID', 'Master Franchisee Name', 'Address & Location', 'Territory Size', 'Number of Locations', 'Years in Operation'],
-      'franchisee': ['Franchisee ID', 'Franchisee Name', 'Address & Location', 'Number of Locations', 'Years in Operation'],
-      'store': ['Store ID', 'Store Name', 'Address & Location', 'Square Footage', 'Operating Hours', 'Store Format/Type', 'Seating Capacity', 'Staff Count', 'Drive-Thru', 'Parking Spaces'],
-      'department': ['Department ID', 'Department Name', 'Staff Count', 'Square Footage', 'Operating Hours'],
-      'primary': ['Member ID', 'First Name', 'Last Name', 'Email', 'Phone Number', 'Date of Birth', 'Address & Location', 'Age Group', 'Income Bracket', 'Household Size', 'Communication Preferences', 'Device Type', 'Social Media Presence'],
-      'family': ['Family Member ID', 'First Name', 'Last Name', 'Relationship', 'Date of Birth', 'Age Group'],
-      'corporate_account': ['Corporate Account ID', 'Company Name', 'Address & Location', 'Industry', 'Number of Employees', 'Annual Spend'],
-    };
-    return entityStandardAttrs[selectedEntity] || [];
-  }, [selectedEntity]);
-
-  // Get required attributes (first 2 for each entity)
-  const requiredAttributeKeys = useMemo(() => {
-    return standardAttributeKeys.slice(0, 2);
-  }, [standardAttributeKeys]);
-
-  // Split attributes into standard and custom
-  const standardAttributes = useMemo(() => {
-    return Object.entries(entityAttributes).filter(([key]) => standardAttributeKeys.includes(key));
-  }, [entityAttributes, standardAttributeKeys]);
-
-  const customAttributes = useMemo(() => {
-    return Object.entries(entityAttributes).filter(([key]) => !standardAttributeKeys.includes(key));
-  }, [entityAttributes, standardAttributeKeys]);
-
-  // Calculate enabled KPIs dynamically
-  const enabledKPIs = useMemo(() => {
-    const kpis: string[] = ['Store Comparison', 'Peak Hour Analysis'];
-
-    if (entityAttributes['Square Footage']?.enabled) {
-      kpis.push('Sales per Square Foot');
-    }
-    if (entityAttributes['Address & Location']?.enabled) {
-      kpis.push('Location Clustering');
-    }
-    if (entityAttributes['Staff Count']?.enabled) {
-      kpis.push('Staff Productivity');
-    }
-    if (entityAttributes['Seating Capacity']?.enabled) {
-      kpis.push('Capacity Utilization');
-    }
-
-    return kpis;
-  }, [entityAttributes]);
-
-  const handleAddLevel = () => {
-    if (newLevelName.trim()) {
-      addCustomHierarchyLevel(newLevelName, newLevelDescription);
-      setNewLevelName('');
-      setNewLevelDescription('');
-      setShowAddLevelModal(false);
+  const addCustomField = () => {
+    if (newField.label.trim()) {
+      const field: CustomField = {
+        ...newField,
+        id: `custom_${Date.now()}`,
+      };
+      setCustomFields([...customFields, field]);
+      setNewField({
+        id: '',
+        label: '',
+        type: 'text',
+        required: false,
+        placeholder: '',
+      });
+      setShowAddFieldModal(false);
     }
   };
 
-  const handleAddCustomerType = () => {
-    if (newCustomerTypeName.trim()) {
-      addCustomerType(newCustomerTypeName, newCustomerTypeDescription);
-      setNewCustomerTypeName('');
-      setNewCustomerTypeDescription('');
-      setShowAddCustomerTypeModal(false);
-    }
+  const removeCustomField = (id: string) => {
+    setCustomFields(customFields.filter(f => f.id !== id));
   };
 
-  const handleAddAttribute = () => {
-    if (newAttributeName.trim()) {
-      addCustomAttribute(selectedEntity, newAttributeName, newAttributeType);
-      setNewAttributeName('');
-      setNewAttributeType('String');
-      setShowAddAttributeModal(false);
-    }
+  const Section = ({ id, title, icon, children }: { id: string; title: string; icon: string; children: React.ReactNode }) => {
+    const isExpanded = expandedSections.includes(id);
+
+    return (
+      <Card className="mb-4">
+        <button
+          onClick={() => toggleSection(id)}
+          className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-50 transition-colors"
+        >
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">{icon}</span>
+            <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
+          </div>
+          {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
+        </button>
+
+        {isExpanded && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="px-6 pb-6 border-t border-gray-200"
+          >
+            <div className="pt-6">
+              {children}
+            </div>
+          </motion.div>
+        )}
+      </Card>
+    );
   };
 
   return (
@@ -152,513 +141,524 @@ export const Screen1Organization: React.FC = () => {
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            Define Your Organization Structure
+            Organization & Customer Model
           </h1>
           <p className="text-gray-600 text-lg">
-            Map your entities and their attributes to enable intelligence gathering and analytics
+            Define your customer structure, profile fields, relationships, and system integrations
           </p>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="flex gap-2 mb-6 border-b border-gray-200">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            return (
+        {/* Section 1: Business Model */}
+        <Section id="business-model" title="Business Model" icon="🏢">
+          <div className="space-y-4">
+            <p className="text-sm text-gray-600">
+              Select the primary business model for your loyalty program
+            </p>
+
+            <div className="grid grid-cols-3 gap-4">
               <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id as Tab)}
-                className={`flex items-center gap-2 px-5 py-3 font-medium transition-all ${
-                  activeTab === tab.id
-                    ? 'text-primary border-b-2 border-primary -mb-[1px]'
-                    : 'text-gray-600 hover:text-gray-900'
+                onClick={() => setBusinessModel('individual')}
+                className={`p-6 rounded-lg border-2 text-left transition-all ${
+                  businessModel === 'individual'
+                    ? 'border-primary bg-blue-50 shadow-md'
+                    : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
-                <Icon size={18} />
-                {tab.label}
-              </button>
-            );
-          })}
-        </div>
-
-        <AnimatePresence mode="wait">
-          {/* Organization Structure Tab */}
-          {activeTab === 'org-structure' && (
-            <motion.div
-              key="org-structure"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-            >
-              <Card className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                  <div>
-                    <h3 className="text-lg font-semibold mb-1">Organization Hierarchy</h3>
-                    <p className="text-sm text-gray-600">
-                      Based on your Retail Franchise selection. Customize names to match your organization.
-                    </p>
-                  </div>
-                  <Button variant="secondary" size="sm" onClick={() => setShowApiTab(true)}>
-                    <Code size={16} className="mr-2" />
-                    Developer View
-                  </Button>
-                </div>
-
-                <div className="space-y-4">
-                  {organizationHierarchy.map((level, index) => (
-                    <div key={level.id}>
-                      <div className={`flex items-center gap-4 p-4 rounded-lg border-2 ${
-                        level.enabled ? 'border-primary-light bg-blue-50' : 'border-gray-200 bg-gray-50'
-                      }`}>
-                        {/* Reorder buttons */}
-                        <div className="flex flex-col gap-1">
-                          <button
-                            onClick={() => reorderHierarchyLevel(level.id, 'up')}
-                            disabled={index === 0}
-                            className="p-1 text-gray-400 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed"
-                          >
-                            <ChevronUp size={16} />
-                          </button>
-                          <button
-                            onClick={() => reorderHierarchyLevel(level.id, 'down')}
-                            disabled={index === organizationHierarchy.length - 1}
-                            className="p-1 text-gray-400 hover:text-primary disabled:opacity-30 disabled:cursor-not-allowed"
-                          >
-                            <ChevronDown size={16} />
-                          </button>
-                        </div>
-
-                        <div className="w-12 h-12 bg-primary-light rounded-lg flex items-center justify-center text-white text-xl flex-shrink-0">
-                          {level.id === 'corporate' && '🏢'}
-                          {level.id === 'master' && '🤝'}
-                          {level.id === 'franchisee' && '👔'}
-                          {level.id === 'store' && '🏪'}
-                          {level.id === 'department' && '👥'}
-                          {level.id.startsWith('custom') && '⚙️'}
-                        </div>
-                        <div className="flex-1">
-                          <input
-                            type="text"
-                            value={level.displayName}
-                            onChange={(e) => updateHierarchyLevel(level.id, { displayName: e.target.value })}
-                            className="font-semibold text-gray-900 bg-transparent border-b border-transparent hover:border-gray-300 focus:border-primary focus:outline-none px-2 py-1 -ml-2"
-                          />
-                          <div className="text-sm text-gray-600">{level.description}</div>
-                        </div>
-                        <Toggle
-                          checked={level.enabled}
-                          onChange={(checked) => updateHierarchyLevel(level.id, { enabled: checked })}
-                          disabled={level.required}
-                        />
-                      </div>
-                      {index < organizationHierarchy.length - 1 && level.enabled && (
-                        <div className="w-0.5 h-4 bg-gray-300 ml-10" />
-                      )}
-                    </div>
-                  ))}
-                </div>
-
-                <Button variant="secondary" className="mt-4" onClick={() => setShowAddLevelModal(true)}>
-                  + Add Custom Level
-                </Button>
-              </Card>
-            </motion.div>
-          )}
-
-          {/* Customer Structure Tab */}
-          {activeTab === 'customer-structure' && (
-            <motion.div
-              key="customer-structure"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-            >
-              <Card className="p-6">
-                <h3 className="text-lg font-semibold mb-1">Customer Hierarchy</h3>
-                <p className="text-sm text-gray-600 mb-6">
-                  Define customer relationships for pooling and family features
+                <div className="text-4xl mb-3">👤</div>
+                <h4 className="font-semibold text-lg mb-2">Individual</h4>
+                <p className="text-sm text-gray-600">
+                  Each customer is independent with their own rewards
                 </p>
+              </button>
 
-                <div className="space-y-4 mb-6">
-                  {customerHierarchy.map((level, index) => (
-                    <div key={level.id}>
-                      <div className={`flex items-center gap-4 p-4 rounded-lg border-2 ${
-                        level.enabled ? 'border-primary-light bg-blue-50' : 'border-gray-200 bg-gray-50'
-                      }`}>
-                        <div className="w-12 h-12 bg-primary-light rounded-lg flex items-center justify-center text-white text-xl">
-                          {level.id === 'primary' && '👤'}
-                          {level.id === 'family' && '👨‍👩‍👧‍👦'}
-                          {level.id === 'corporate_account' && '🏢'}
-                          {level.id.startsWith('customer') && '👥'}
-                        </div>
-                        <div className="flex-1">
-                          <div className="font-semibold text-gray-900">{level.displayName}</div>
-                          <div className="text-sm text-gray-600">{level.description}</div>
-                        </div>
-                        <Toggle
-                          checked={level.enabled}
-                          onChange={(checked) => updateCustomerHierarchyLevel(level.id, { enabled: checked })}
-                          disabled={level.required}
+              <button
+                onClick={() => setBusinessModel('household')}
+                className={`p-6 rounded-lg border-2 text-left transition-all ${
+                  businessModel === 'household'
+                    ? 'border-primary bg-blue-50 shadow-md'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="text-4xl mb-3">👨‍👩‍👧‍👦</div>
+                <h4 className="font-semibold text-lg mb-2">Household</h4>
+                <p className="text-sm text-gray-600">
+                  Families can link accounts and share benefits
+                </p>
+              </button>
+
+              <button
+                onClick={() => setBusinessModel('business')}
+                className={`p-6 rounded-lg border-2 text-left transition-all ${
+                  businessModel === 'business'
+                    ? 'border-primary bg-blue-50 shadow-md'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="text-4xl mb-3">🏢</div>
+                <h4 className="font-semibold text-lg mb-2">Business</h4>
+                <p className="text-sm text-gray-600">
+                  Corporate accounts with multiple employees
+                </p>
+              </button>
+            </div>
+          </div>
+        </Section>
+
+        {/* Section 2: Primary Customer Profile Builder */}
+        <Section id="customer-profile" title="Primary Customer Profile" icon="👤">
+          <div className="space-y-6">
+            <div>
+              <h4 className="font-semibold mb-4 flex items-center gap-2">
+                <Check className="text-green-600" size={18} />
+                Core Fields
+              </h4>
+              <div className="grid grid-cols-2 gap-4">
+                {coreFields.map(field => (
+                  <div key={field.id} className="p-3 bg-gray-50 rounded-lg border border-gray-200">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          checked={field.required}
+                          disabled
+                          className="h-4 w-4 text-primary rounded"
                         />
+                        <span className="text-sm font-medium text-gray-900">{field.label}</span>
                       </div>
-                      {index < customerHierarchy.length - 1 && level.enabled && (
-                        <div className="w-0.5 h-4 bg-gray-300 ml-10" />
+                      {field.required && (
+                        <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs font-semibold">
+                          Required
+                        </span>
                       )}
                     </div>
-                  ))}
-                </div>
-
-                <Button variant="secondary" size="sm" onClick={() => setShowAddCustomerTypeModal(true)}>
-                  + Add Customer Type
-                </Button>
-
-                <Card className="p-5 bg-gray-50 mt-6">
-                  <h4 className="font-semibold mb-3">Family Pooling Rules</h4>
-                  <div className="space-y-2">
-                    {[
-                      'Enable value pooling between family members',
-                      'Primary member can manage all linked accounts',
-                      'Require approval for family link requests',
-                    ].map((rule) => (
-                      <label key={rule} className="flex items-center gap-2">
-                        <input type="checkbox" className="w-4 h-4 text-primary rounded" />
-                        <span className="text-sm text-gray-700">{rule}</span>
-                      </label>
-                    ))}
                   </div>
-                </Card>
-              </Card>
-            </motion.div>
-          )}
+                ))}
+              </div>
+            </div>
 
-          {/* Entity Configuration Tab */}
-          {activeTab === 'entity-config' && (
-            <motion.div
-              key="entity-config"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-              className="space-y-6"
-            >
-              <Card className="p-6">
-                <label className="block font-semibold mb-2">Select Entity to Configure:</label>
-                <select
-                  value={selectedEntity}
-                  onChange={(e) => setSelectedEntity(e.target.value)}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
+            <div>
+              <div className="flex items-center justify-between mb-4">
+                <h4 className="font-semibold">Custom Fields</h4>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={() => setShowAddFieldModal(true)}
                 >
-                  {allEnabledEntities.map((entity) => (
-                    <option key={entity.id} value={entity.id}>
-                      {entity.name} ({entity.type})
-                    </option>
-                  ))}
-                </select>
-              </Card>
+                  <Plus size={16} className="mr-2" />
+                  Add Custom Field
+                </Button>
+              </div>
 
-              <Card className="p-6">
-                <div className="flex items-center gap-2 mb-6">
-                  <h3 className="text-lg font-semibold">🏪 {allEnabledEntities.find(e => e.id === selectedEntity)?.name || 'Entity'} Attributes</h3>
-                  <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-xs font-semibold border border-purple-300">
-                    🤖 Intelligence Ready
-                  </span>
+              {customFields.length === 0 ? (
+                <div className="p-6 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 text-center">
+                  <p className="text-gray-600 text-sm mb-2">No custom fields yet</p>
+                  <p className="text-gray-500 text-xs">
+                    Add custom fields to capture business-specific customer data
+                  </p>
                 </div>
-
-                <div className="mb-6">
-                  <h4 className="font-semibold mb-3 text-sm">Standard Attributes</h4>
-                  <div className="grid grid-cols-2 gap-3">
-                    {standardAttributes.map(([key, value]) => (
-                      <label
-                        key={key}
-                        className="flex items-center justify-between gap-2 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer"
-                      >
-                        <div className="flex items-center gap-2">
-                          <input
-                            type="checkbox"
-                            checked={value.enabled}
-                            onChange={(e) => updateEntityAttribute(key, e.target.checked)}
-                            disabled={requiredAttributeKeys.includes(key)}
-                            className="w-4 h-4 text-primary rounded"
-                          />
-                          <span className="text-sm text-gray-700">{key}</span>
-                        </div>
-                        {requiredAttributeKeys.includes(key) && (
-                          <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded text-xs font-semibold">
+              ) : (
+                <div className="grid grid-cols-2 gap-4">
+                  {customFields.map(field => (
+                    <div key={field.id} className="p-3 bg-white rounded-lg border border-gray-200">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-medium text-gray-900">{field.label}</span>
+                        <button
+                          onClick={() => removeCustomField(field.id)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs text-gray-600">
+                        <span className="px-2 py-0.5 bg-blue-100 text-blue-700 rounded">
+                          {field.type}
+                        </span>
+                        {field.required && (
+                          <span className="px-2 py-0.5 bg-red-100 text-red-700 rounded">
                             Required
                           </span>
                         )}
-                        {value.kpiMapping && value.enabled && (
-                          <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-semibold">
-                            +{value.kpiMapping.kpis} KPIs
-                          </span>
-                        )}
-                      </label>
-                    ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {connectedIntegrations.find(i => i.id === 'salesforce' && i.connected) && (
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-800 mb-2">
+                  <strong>💡 Tip:</strong> Salesforce is connected. You can import custom fields from your Salesforce schema.
+                </p>
+                <Button variant="secondary" size="sm">
+                  Import Salesforce Fields
+                </Button>
+              </div>
+            )}
+          </div>
+        </Section>
+
+        {/* Section 3: Relationship Management */}
+        {businessModel === 'household' && (
+          <Section id="relationships" title="Relationship Management" icon="🔗">
+            <div className="space-y-6">
+              <label className="flex items-center gap-3">
+                <input
+                  type="checkbox"
+                  checked={enableRelationships}
+                  onChange={(e) => setEnableRelationships(e.target.checked)}
+                  className="h-4 w-4 text-primary rounded"
+                />
+                <div>
+                  <div className="font-medium text-gray-900">Enable Family Relationships</div>
+                  <div className="text-sm text-gray-600">
+                    Allow customers to link accounts and establish family connections
                   </div>
                 </div>
+              </label>
 
-                {customAttributes.length > 0 && (
-                  <div>
-                    <h4 className="font-semibold mb-3 text-sm">Custom Attributes</h4>
-                    <div className="grid grid-cols-2 gap-3 mb-3">
-                      {customAttributes.map(([key, value]) => (
-                        <label
-                          key={key}
-                          className="flex items-center justify-between gap-2 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 cursor-pointer"
-                        >
-                          <div className="flex items-center gap-2">
+              {enableRelationships && (
+                <>
+                  <div className="p-4 bg-gray-50 rounded-lg space-y-4">
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Relationship Types
+                      </label>
+                      <div className="grid grid-cols-3 gap-2">
+                        {relationshipTypes.map(type => (
+                          <div key={type} className="flex items-center gap-2 p-2 bg-white rounded border border-gray-200">
                             <input
                               type="checkbox"
-                              checked={value.enabled}
-                              onChange={(e) => updateEntityAttribute(key, e.target.checked)}
-                              className="w-4 h-4 text-primary rounded"
+                              checked
+                              className="h-4 w-4 text-primary rounded"
                             />
-                            <span className="text-sm text-gray-700">{key}</span>
+                            <span className="text-sm text-gray-900 capitalize">
+                              {type.replace('-', ' ')}
+                            </span>
                           </div>
-                          <span className="px-2 py-0.5 bg-gray-200 text-gray-600 rounded text-xs">
-                            Custom
-                          </span>
-                        </label>
-                      ))}
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Age of Independence
+                      </label>
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="number"
+                          value={ageThreshold}
+                          onChange={(e) => setAgeThreshold(parseInt(e.target.value))}
+                          min="13"
+                          max="21"
+                          className="w-24 px-3 py-2 border border-gray-300 rounded-lg"
+                        />
+                        <span className="text-sm text-gray-600">
+                          years old - family members become eligible for primary membership
+                        </span>
+                      </div>
+                    </div>
+
+                    <label className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={autoPromoteMinors}
+                        onChange={(e) => setAutoPromoteMinors(e.target.checked)}
+                        className="h-4 w-4 text-primary rounded"
+                      />
+                      <div>
+                        <div className="font-medium text-sm text-gray-900">
+                          Auto-promote minors to primary members
+                        </div>
+                        <div className="text-xs text-gray-600">
+                          When a minor reaches {ageThreshold}, system prompts to convert to primary membership
+                        </div>
+                      </div>
+                    </label>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-3">
+                      Benefit Sharing Strategy
+                    </label>
+                    <div className="grid grid-cols-2 gap-4">
+                      <button
+                        onClick={() => setBenefitSharing('individual')}
+                        className={`p-4 rounded-lg border-2 text-left transition-all ${
+                          benefitSharing === 'individual'
+                            ? 'border-primary bg-blue-50'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <h5 className="font-semibold mb-1">Individual Tracking</h5>
+                        <p className="text-sm text-gray-600">
+                          Each family member has their own points and rewards
+                        </p>
+                      </button>
+
+                      <button
+                        onClick={() => setBenefitSharing('pooled')}
+                        className={`p-4 rounded-lg border-2 text-left transition-all ${
+                          benefitSharing === 'pooled'
+                            ? 'border-primary bg-blue-50'
+                            : 'border-gray-200 hover:border-gray-300'
+                        }`}
+                      >
+                        <h5 className="font-semibold mb-1">Family Points Pool</h5>
+                        <p className="text-sm text-gray-600">
+                          All family members contribute to and share from a common pool
+                        </p>
+                      </button>
                     </div>
                   </div>
-                )}
 
-                <div className="mt-4">
-                  <Button variant="secondary" size="sm" onClick={() => setShowAddAttributeModal(true)}>
-                    + Add Custom Attribute
-                  </Button>
+                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
+                    <h5 className="font-semibold text-sm mb-2 text-green-900">Example Relationship Flow:</h5>
+                    <div className="text-sm text-green-800 space-y-1">
+                      <p>• <strong>Jane (Age 42)</strong> - Primary Member</p>
+                      <p className="ml-4">└─ Spouse-of: <strong>John (Age 45)</strong> [Also Primary Member]</p>
+                      <p className="ml-4">└─ Parent-of: <strong>Emma (Age 16)</strong> [Minor - Dependent]</p>
+                      <p className="ml-4">└─ Parent-of: <strong>Lucas (Age 19)</strong> [Adult - Can be Primary]</p>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </Section>
+        )}
+
+        {/* Section 4: External System Mapping */}
+        <Section id="system-mapping" title="External System Mapping" icon="🔌">
+          <div className="space-y-6">
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-800">
+                <strong>⚡ Auto-Detected</strong> from your connected integrations in Step 2. Edit or clear mappings as needed.
+              </p>
+            </div>
+
+            {connectedIntegrations.filter(i => i.connected).map(integration => (
+              <Card key={integration.id} className="p-4">
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h4 className="font-semibold text-gray-900">{integration.name}</h4>
+                    <p className="text-sm text-gray-600">{integration.type}</p>
+                  </div>
+                  <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm font-semibold flex items-center gap-2">
+                    <Check size={14} />
+                    Connected
+                  </span>
+                </div>
+
+                <div className="space-y-3">
+                  {Object.entries(mappings[integration.id as keyof typeof mappings] || {}).map(([field, value]) => (
+                    <div key={field} className="flex items-center gap-3">
+                      <span className="text-sm font-medium text-gray-700 w-32 capitalize">
+                        {field.replace(/([A-Z])/g, ' $1').trim()}:
+                      </span>
+                      <input
+                        type="text"
+                        value={value as string}
+                        onChange={(e) => {
+                          setMappings({
+                            ...mappings,
+                            [integration.id]: {
+                              ...mappings[integration.id as keyof typeof mappings],
+                              [field]: e.target.value,
+                            },
+                          });
+                        }}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded text-sm"
+                      />
+                      <span className="text-sm text-gray-600">→</span>
+                      <span className="text-sm font-mono bg-gray-100 px-2 py-1 rounded">
+                        {field}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </Card>
+            ))}
 
-              {/* KPI Dashboard */}
-              <div className="gradient-intelligence border border-purple-200 rounded-xl p-6">
-                <h3 className="text-lg font-semibold mb-4">📊 Available Intelligence & KPIs</h3>
-                <div className="grid grid-cols-3 gap-4 mb-6">
-                  <Card className="p-4 text-center">
-                    <div className="text-4xl font-bold text-primary mb-1">{kpiCounts.total}</div>
-                    <div className="text-xs text-gray-600 uppercase tracking-wide">Total KPIs</div>
-                  </Card>
-                  <Card className="p-4 text-center">
-                    <div className="text-4xl font-bold text-primary mb-1">{kpiCounts.analytics}</div>
-                    <div className="text-xs text-gray-600 uppercase tracking-wide">Analytics</div>
-                  </Card>
-                  <Card className="p-4 text-center">
-                    <div className="text-4xl font-bold text-primary mb-1">{kpiCounts.ai}</div>
-                    <div className="text-xs text-gray-600 uppercase tracking-wide">AI Features</div>
-                  </Card>
-                </div>
-                <div>
-                  <h4 className="font-semibold mb-3 text-sm">Enabled KPIs:</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {enabledKPIs.map((kpi) => (
-                      <span
-                        key={kpi}
-                        className="px-3 py-1.5 bg-white border border-primary-light text-primary rounded-full text-xs font-medium"
-                      >
-                        {kpi}
-                      </span>
-                    ))}
+            <div className="flex gap-3">
+              <Button variant="secondary" size="sm">
+                Clear All Mappings
+              </Button>
+              <Button variant="secondary" size="sm">
+                <Plus size={16} className="mr-2" />
+                Add Custom Mapping
+              </Button>
+            </div>
+          </div>
+        </Section>
+
+        {/* Section 5: Data Model Preview */}
+        <Section id="data-preview" title="Data Model Preview" icon="📊">
+          <div className="space-y-6">
+            <div className="p-6 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg">
+              <h4 className="font-semibold mb-4 text-gray-900">Customer Data Structure</h4>
+              <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
+{`{
+  "customerId": "CUST_789456",
+  "profile": {
+    "firstName": "Jane",
+    "lastName": "Doe",
+    "email": "jane.doe@example.com",
+    "phone": "+1-555-0123",
+    "dateOfBirth": "1982-03-15",
+    "address": "123 Main St, City, State"${customFields.length > 0 ? `,
+    ${customFields.map(f => `"${f.id}": "..."`).join(',\n    ')}` : ''}
+  },${businessModel === 'household' && enableRelationships ? `
+  "relationships": [
+    {
+      "type": "spouse-of",
+      "relatedCustomerId": "CUST_789457",
+      "status": "active"
+    },
+    {
+      "type": "parent-of",
+      "relatedCustomerId": "CUST_789458",
+      "isMinor": true,
+      "dateOfBirth": "2008-07-22"
+    }
+  ],` : ''}
+  "integrations": {${connectedIntegrations.filter(i => i.connected).map(i => `
+    "${i.id}": {
+      "customerId": "${mappings[i.id as keyof typeof mappings]?.customerId || 'N/A'}"
+    }`).join(',')}
+  },
+  "membershipType": "${businessModel}",
+  "createdAt": "2025-01-15T10:30:00Z"
+}`}
+              </pre>
+            </div>
+
+            {businessModel === 'household' && enableRelationships && (
+              <div className="p-6 bg-gray-50 border border-gray-300 rounded-lg">
+                <h4 className="font-semibold mb-4 text-gray-900">Relationship Flow Diagram</h4>
+                <div className="flex items-center justify-center p-8 bg-white rounded border border-gray-200">
+                  <div className="text-center space-y-4">
+                    <div className="inline-block p-4 bg-primary text-white rounded-lg font-semibold">
+                      Primary Member (Jane, 42)
+                    </div>
+                    <div className="flex gap-8 justify-center">
+                      <div className="text-center">
+                        <div className="h-12 w-0.5 bg-gray-300 mx-auto"></div>
+                        <div className="inline-block p-3 bg-blue-100 text-blue-900 rounded-lg text-sm">
+                          Spouse: John (45)<br/>
+                          <span className="text-xs">Also Primary</span>
+                        </div>
+                      </div>
+                      <div className="text-center">
+                        <div className="h-12 w-0.5 bg-gray-300 mx-auto"></div>
+                        <div className="inline-block p-3 bg-orange-100 text-orange-900 rounded-lg text-sm">
+                          Child: Emma (16)<br/>
+                          <span className="text-xs">Minor - Dependent</span>
+                        </div>
+                      </div>
+                      <div className="text-center">
+                        <div className="h-12 w-0.5 bg-gray-300 mx-auto"></div>
+                        <div className="inline-block p-3 bg-green-100 text-green-900 rounded-lg text-sm">
+                          Child: Lucas (19)<br/>
+                          <span className="text-xs">Can be Primary</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
-            </motion.div>
-          )}
+            )}
+          </div>
+        </Section>
+      </div>
 
-          {/* API Configuration Tab */}
-          {activeTab === 'api-config' && (
-            <motion.div
-              key="api-config"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 20 }}
-            >
-              <Card className="p-6">
-                <h3 className="text-lg font-semibold mb-2">API Field Mapping</h3>
-                <p className="text-sm text-gray-600 mb-6">
-                  Configure how entities are referenced in API calls and integrations
-                </p>
+      {/* Add Custom Field Modal */}
+      {showAddFieldModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full p-6">
+            <h3 className="text-xl font-bold mb-4">Add Custom Field</h3>
 
-                <div className="overflow-x-auto mb-6">
-                  <table className="w-full">
-                    <thead className="border-b-2 border-gray-200">
-                      <tr>
-                        <th className="text-left py-3 px-4 font-semibold">Display Name</th>
-                        <th className="text-left py-3 px-4 font-semibold">API Reference</th>
-                        <th className="text-left py-3 px-4 font-semibold">ID Pattern</th>
-                        <th className="text-left py-3 px-4 font-semibold">Type</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {allEnabledEntities.map((entity) => {
-                        const apiRef = entity.id.replace(/_/g, '-');
-                        const idPattern = `${entity.id.substring(0, 3).toUpperCase()}_{sequential}`;
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  Field Label *
+                </label>
+                <input
+                  type="text"
+                  value={newField.label}
+                  onChange={(e) => setNewField({ ...newField, label: e.target.value })}
+                  placeholder="e.g., Dietary Preferences, Company Name"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                />
+              </div>
 
-                        return (
-                          <tr key={entity.id} className="border-b border-gray-200">
-                            <td className="py-3 px-4">{entity.name}</td>
-                            <td className="py-3 px-4">
-                              <input
-                                type="text"
-                                value={apiRef}
-                                className="px-3 py-1 border border-gray-300 rounded w-full"
-                                readOnly
-                              />
-                            </td>
-                            <td className="py-3 px-4">
-                              <input
-                                type="text"
-                                value={idPattern}
-                                className="px-3 py-1 border border-gray-300 rounded w-full"
-                                readOnly
-                              />
-                            </td>
-                            <td className="py-3 px-4">
-                              <span className="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">
-                                {entity.type}
-                              </span>
-                            </td>
-                          </tr>
-                        );
-                      })}
-                    </tbody>
-                  </table>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Field Type
+                  </label>
+                  <select
+                    value={newField.type}
+                    onChange={(e) => setNewField({ ...newField, type: e.target.value as FieldType })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  >
+                    <option value="text">Text (Short)</option>
+                    <option value="number">Number</option>
+                    <option value="date">Date</option>
+                    <option value="boolean">Yes/No (Boolean)</option>
+                    <option value="dropdown">Dropdown (Select)</option>
+                    <option value="email">Email</option>
+                    <option value="phone">Phone</option>
+                  </select>
                 </div>
 
                 <div>
-                  <h4 className="font-semibold mb-3">Example API Payload:</h4>
-                  <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
-{`{
-  "transaction": {
-    "id": "TXN_20250105_001234",
-    "${allEnabledEntities[0]?.id || 'store'}": "${allEnabledEntities[0]?.id.substring(0, 3).toUpperCase()}_045",
-    "customer": "CUST_789456",
-    "amount": 125.50,
-    "points_earned": 125
-  }
-}`}
-                  </pre>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Placeholder (Optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={newField.placeholder}
+                    onChange={(e) => setNewField({ ...newField, placeholder: e.target.value })}
+                    placeholder="e.g., Enter your company name"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg"
+                  />
                 </div>
-              </Card>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
+              </div>
 
-      {/* Add Custom Level Modal */}
-      <Modal
-        isOpen={showAddLevelModal}
-        onClose={() => setShowAddLevelModal(false)}
-        title="Add Custom Hierarchy Level"
-      >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-semibold mb-2">Level Name</label>
-            <input
-              type="text"
-              value={newLevelName}
-              onChange={(e) => setNewLevelName(e.target.value)}
-              placeholder="e.g., Regional Manager"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold mb-2">Description</label>
-            <textarea
-              value={newLevelDescription}
-              onChange={(e) => setNewLevelDescription(e.target.value)}
-              placeholder="Describe this hierarchy level..."
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
-          </div>
-          <div className="flex gap-3 justify-end">
-            <Button variant="secondary" onClick={() => setShowAddLevelModal(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleAddLevel} disabled={!newLevelName.trim()}>
-              Add Level
-            </Button>
+              <label className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  checked={newField.required}
+                  onChange={(e) => setNewField({ ...newField, required: e.target.checked })}
+                  className="h-4 w-4 text-primary rounded"
+                />
+                <span className="text-sm text-gray-700">Make this field required</span>
+              </label>
+            </div>
+
+            <div className="flex gap-3 justify-end mt-6">
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  setShowAddFieldModal(false);
+                  setNewField({
+                    id: '',
+                    label: '',
+                    type: 'text',
+                    required: false,
+                    placeholder: '',
+                  });
+                }}
+              >
+                Cancel
+              </Button>
+              <Button onClick={addCustomField} disabled={!newField.label.trim()}>
+                Add Field
+              </Button>
+            </div>
           </div>
         </div>
-      </Modal>
-
-      {/* Add Customer Type Modal */}
-      <Modal
-        isOpen={showAddCustomerTypeModal}
-        onClose={() => setShowAddCustomerTypeModal(false)}
-        title="Add Customer Type"
-      >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-semibold mb-2">Customer Type Name</label>
-            <input
-              type="text"
-              value={newCustomerTypeName}
-              onChange={(e) => setNewCustomerTypeName(e.target.value)}
-              placeholder="e.g., VIP Member, Student"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold mb-2">Description</label>
-            <textarea
-              value={newCustomerTypeDescription}
-              onChange={(e) => setNewCustomerTypeDescription(e.target.value)}
-              placeholder="Describe this customer type..."
-              rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
-          </div>
-          <div className="flex gap-3 justify-end">
-            <Button variant="secondary" onClick={() => setShowAddCustomerTypeModal(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleAddCustomerType} disabled={!newCustomerTypeName.trim()}>
-              Add Customer Type
-            </Button>
-          </div>
-        </div>
-      </Modal>
-
-      {/* Add Custom Attribute Modal */}
-      <Modal
-        isOpen={showAddAttributeModal}
-        onClose={() => setShowAddAttributeModal(false)}
-        title="Add Custom Attribute"
-      >
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-semibold mb-2">Attribute Name</label>
-            <input
-              type="text"
-              value={newAttributeName}
-              onChange={(e) => setNewAttributeName(e.target.value)}
-              placeholder="e.g., Drive-Through Available"
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold mb-2">Data Type</label>
-            <select
-              value={newAttributeType}
-              onChange={(e) => setNewAttributeType(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary focus:border-transparent"
-            >
-              <option value="String">String (Text)</option>
-              <option value="Number">Number</option>
-              <option value="Boolean">Boolean (Yes/No)</option>
-              <option value="Date">Date</option>
-            </select>
-          </div>
-          <div className="flex gap-3 justify-end">
-            <Button variant="secondary" onClick={() => setShowAddAttributeModal(false)}>
-              Cancel
-            </Button>
-            <Button onClick={handleAddAttribute} disabled={!newAttributeName.trim()}>
-              Add Attribute
-            </Button>
-          </div>
-        </div>
-      </Modal>
+      )}
     </motion.div>
   );
 };
