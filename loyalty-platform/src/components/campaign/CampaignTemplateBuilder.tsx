@@ -84,8 +84,10 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
     expiryDays: 30,
     // HOW - Communication
     sendEmail: true,
+    emailService: 'sendgrid',
     emailTemplate: '',
     sendSms: false,
+    smsService: 'twilio',
     smsTemplate: '',
     sendPush: false,
     pushTemplate: '',
@@ -1369,17 +1371,35 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
                         <span className="font-medium">Email</span>
                       </div>
                       {templateData.sendEmail && (
-                        <select
-                          value={templateData.emailTemplate}
-                          onChange={(e) => updateTemplate({ emailTemplate: e.target.value })}
-                          className="mt-2 w-full px-3 py-2 border border-gray-300 rounded text-sm"
-                        >
-                          <option value="">Select email template...</option>
-                          <option value="welcome">Welcome Email</option>
-                          <option value="promo">Promotional Offer</option>
-                          <option value="win-back">Win-Back Campaign</option>
-                          <option value="custom">Custom Template</option>
-                        </select>
+                        <div className="mt-2 space-y-2">
+                          <div>
+                            <label className="block text-xs text-gray-600 mb-1">Email Service:</label>
+                            <select
+                              value={templateData.emailService}
+                              onChange={(e) => updateTemplate({ emailService: e.target.value })}
+                              className="w-full px-3 py-2 border border-gray-300 rounded text-sm bg-white"
+                            >
+                              <option value="sendgrid">SendGrid</option>
+                              <option value="salesforce">Salesforce Marketing Cloud</option>
+                              <option value="mailchimp">Mailchimp</option>
+                              <option value="custom">Custom Integration</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-xs text-gray-600 mb-1">Template:</label>
+                            <select
+                              value={templateData.emailTemplate}
+                              onChange={(e) => updateTemplate({ emailTemplate: e.target.value })}
+                              className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                            >
+                              <option value="">Select email template...</option>
+                              <option value="welcome">Welcome Email</option>
+                              <option value="promo">Promotional Offer</option>
+                              <option value="win-back">Win-Back Campaign</option>
+                              <option value="custom">Custom Template</option>
+                            </select>
+                          </div>
+                        </div>
                       )}
                     </div>
                   </label>
@@ -1397,13 +1417,31 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
                         <span className="font-medium">SMS</span>
                       </div>
                       {templateData.sendSms && (
-                        <textarea
-                          value={templateData.smsTemplate}
-                          onChange={(e) => updateTemplate({ smsTemplate: e.target.value })}
-                          placeholder="Hi {name}, here's a special offer just for you..."
-                          rows={2}
-                          className="mt-2 w-full px-3 py-2 border border-gray-300 rounded text-sm"
-                        />
+                        <div className="mt-2 space-y-2">
+                          <div>
+                            <label className="block text-xs text-gray-600 mb-1">SMS Service:</label>
+                            <select
+                              value={templateData.smsService}
+                              onChange={(e) => updateTemplate({ smsService: e.target.value })}
+                              className="w-full px-3 py-2 border border-gray-300 rounded text-sm bg-white"
+                            >
+                              <option value="twilio">Twilio</option>
+                              <option value="plivo">Plivo</option>
+                              <option value="messagebird">MessageBird</option>
+                              <option value="custom">Custom Integration</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-xs text-gray-600 mb-1">Message Template:</label>
+                            <textarea
+                              value={templateData.smsTemplate}
+                              onChange={(e) => updateTemplate({ smsTemplate: e.target.value })}
+                              placeholder="Hi {name}, here's a special offer just for you..."
+                              rows={2}
+                              className="w-full px-3 py-2 border border-gray-300 rounded text-sm"
+                            />
+                          </div>
+                        </div>
                       )}
                     </div>
                   </label>
@@ -1547,11 +1585,24 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
                 <Card className="p-4">
                   <h4 className="font-semibold text-sm text-gray-700 mb-3">📢 Communication</h4>
                   <div className="space-y-2 text-sm">
-                    <div className="flex items-center gap-2">
-                      {templateData.sendEmail && <span>📧 Email</span>}
-                      {templateData.sendSms && <span>💬 SMS</span>}
-                      {templateData.sendPush && <span>🔔 Push</span>}
-                    </div>
+                    {templateData.sendEmail && (
+                      <div>
+                        <span className="text-gray-600">📧 Email via:</span> <strong className="capitalize">{templateData.emailService}</strong>
+                      </div>
+                    )}
+                    {templateData.sendSms && (
+                      <div>
+                        <span className="text-gray-600">💬 SMS via:</span> <strong className="capitalize">{templateData.smsService}</strong>
+                      </div>
+                    )}
+                    {templateData.sendPush && (
+                      <div>
+                        <span className="text-gray-600">🔔 Push Notification</span>
+                      </div>
+                    )}
+                    {!templateData.sendEmail && !templateData.sendSms && !templateData.sendPush && (
+                      <div className="text-gray-500 italic">No communication channels selected</div>
+                    )}
                   </div>
                 </Card>
 
