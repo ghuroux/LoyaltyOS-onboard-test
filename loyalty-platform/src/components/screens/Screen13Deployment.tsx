@@ -13,16 +13,16 @@ export const Screen13Deployment: React.FC = () => {
   const { deploymentStrategy } = useOnboardingStore();
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-10">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Deployment Strategy & Activation</h1>
           <p className="text-gray-600 text-lg">Define your rollout plan and go-live timeline</p>
         </div>
 
-        <div className="grid grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-3 gap-5 mb-8">
           {deploymentOptions.map((option) => (
-            <Card key={option.id} clickable selected={deploymentStrategy === option.id} className="p-6 text-center">
+            <Card key={option.id} clickable selected={deploymentStrategy === option.id} className="p-5 text-center">
               <div className="text-5xl mb-4">{option.icon}</div>
               <h3 className="font-semibold text-lg mb-2">{option.name}</h3>
               <p className="text-sm text-gray-600">{option.desc}</p>
@@ -30,8 +30,8 @@ export const Screen13Deployment: React.FC = () => {
           ))}
         </div>
 
-        <div className="grid grid-cols-2 gap-6 mb-6">
-          <Card className="p-6">
+        <div className="grid grid-cols-2 gap-5 mb-5">
+          <Card className="p-5">
             <h3 className="text-lg font-semibold mb-4">Go-Live Readiness Checklist</h3>
             <div className="space-y-3">
               {[
@@ -56,7 +56,7 @@ export const Screen13Deployment: React.FC = () => {
             </div>
           </Card>
 
-          <Card className="p-6">
+          <Card className="p-5">
             <h3 className="text-lg font-semibold mb-4">Launch Timeline</h3>
             <div className="space-y-4">
               <div className="flex items-start gap-4">
@@ -84,7 +84,7 @@ export const Screen13Deployment: React.FC = () => {
           </Card>
         </div>
 
-        <Card className="p-6">
+        <Card className="p-5">
           <h3 className="text-lg font-semibold mb-4">Intelligence Activation Settings</h3>
           <div className="grid grid-cols-3 gap-4">
             <div className="p-4 bg-gray-50 rounded-lg">
@@ -114,16 +114,16 @@ export const Screen13Deployment: React.FC = () => {
           </div>
         </Card>
 
-        <div className="mt-8 p-6 bg-gradient-to-r from-primary to-primary-light rounded-xl text-white text-center">
+        <div className="mt-8 p-5 bg-brand-500 rounded-xl text-white text-center">
           <h2 className="text-2xl font-bold mb-2">🎉 Configuration Complete!</h2>
-          <p className="text-blue-100 mb-4">
+          <p className="text-white mb-4">
             Your StratOS Loyalty platform is ready to deploy. Review your configuration and launch when ready.
           </p>
           <div className="flex gap-4 justify-center">
-            <button className="px-6 py-3 bg-white text-primary rounded-lg font-semibold hover:bg-gray-100">
+            <button className="px-6 py-3 bg-white text-brand-600 rounded-lg font-semibold hover:bg-gray-100">
               Download Configuration
             </button>
-            <button className="px-6 py-3 bg-secondary text-white rounded-lg font-semibold hover:bg-green-600">
+            <button className="px-6 py-3 bg-success-600 text-white rounded-lg font-semibold hover:bg-success-700">
               Launch Platform
             </button>
           </div>

@@ -12,16 +12,16 @@ export const Screen2Integrations: React.FC = () => {
   ];
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-10">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Integration Configuration</h1>
           <p className="text-gray-600 text-lg">Connect external systems to enable data flow and automation</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-2 gap-5 mb-5">
           {integrations.map((category) => (
-            <Card key={category.category} className="p-6">
+            <Card key={category.category} className="p-5">
               <h3 className="text-lg font-semibold mb-4">{category.category}</h3>
               <div className="space-y-2">
                 {category.items.map((item) => (
@@ -35,7 +35,7 @@ export const Screen2Integrations: React.FC = () => {
           ))}
         </div>
 
-        <Card className="p-6">
+        <Card className="p-5">
           <h3 className="text-lg font-semibold mb-4">Connected Integrations</h3>
           <div className="space-y-3">
             {[

@@ -43,7 +43,7 @@ export const Footer: React.FC<FooterProps> = ({
   validationErrors = 0,
 }) => {
   return (
-    <div className="bg-white border-t border-gray-200 px-10 py-5">
+    <div className="bg-white border-t border-gray-200 px-8 py-4">
       <div className="flex justify-between items-center">
         {/* Left: Step Info */}
         <div>
@@ -54,11 +54,11 @@ export const Footer: React.FC<FooterProps> = ({
         </div>
 
         {/* Right: Actions */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           {/* Save Draft */}
           {onSaveDraft && (
             <Button variant="secondary" size="sm" onClick={onSaveDraft}>
-              <Save size={16} className="mr-2" />
+              <Save size={16} className="mr-1.5" />
               Save Draft
             </Button>
           )}
@@ -69,12 +69,12 @@ export const Footer: React.FC<FooterProps> = ({
               variant="secondary"
               size="sm"
               onClick={onValidate}
-              className={validationErrors > 0 ? 'border-yellow-500 text-yellow-700' : ''}
+              className={validationErrors > 0 ? 'border-warning-500 text-warning-700' : ''}
             >
-              <CheckCircle size={16} className="mr-2" />
+              <CheckCircle size={16} className="mr-1.5" />
               Validate
               {validationErrors > 0 && (
-                <span className="ml-2 px-2 py-0.5 bg-yellow-100 text-yellow-800 rounded-full text-xs font-bold">
+                <span className="ml-2 px-2 py-0.5 bg-warning-100 text-warning-800 rounded-full text-xs font-semibold">
                   {validationErrors}
                 </span>
               )}
@@ -82,10 +82,10 @@ export const Footer: React.FC<FooterProps> = ({
           )}
 
           {/* Navigation */}
-          <div className="flex gap-2 ml-4 pl-4 border-l border-gray-300">
+          <div className="flex gap-2 ml-3 pl-3 border-l border-gray-200">
             {currentScreen > 0 && (
               <Button variant="secondary" onClick={onPrevious}>
-                <ArrowLeft size={16} className="mr-2" />
+                <ArrowLeft size={16} className="mr-1.5" />
                 Back
               </Button>
             )}
@@ -97,11 +97,11 @@ export const Footer: React.FC<FooterProps> = ({
                 title={!canProceed ? 'Please complete required fields' : ''}
               >
                 Next
-                <ArrowRight size={16} className="ml-2" />
+                <ArrowRight size={16} className="ml-1.5" />
               </Button>
             ) : (
               <Button variant="primary" onClick={onNext} disabled={!canProceed}>
-                <CheckCircle size={16} className="mr-2" />
+                <CheckCircle size={16} className="mr-1.5" />
                 Complete Setup
               </Button>
             )}

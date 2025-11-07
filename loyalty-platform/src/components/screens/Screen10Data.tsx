@@ -4,14 +4,14 @@ import { Card } from '../ui/Card';
 
 export const Screen10Data: React.FC = () => {
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-10">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Data Strategy & ETL Configuration</h1>
           <p className="text-gray-600 text-lg">Define data sources and learning strategy for the AI engine</p>
         </div>
 
-        <Card className="p-6 mb-6">
+        <Card className="p-5 mb-5">
           <h3 className="text-lg font-semibold mb-4">Data Source Inventory</h3>
           <div className="grid grid-cols-2 gap-4">
             {[
@@ -43,25 +43,25 @@ export const Screen10Data: React.FC = () => {
           </div>
         </Card>
 
-        <Card className="p-6 mb-6">
+        <Card className="p-5 mb-5">
           <h3 className="text-lg font-semibold mb-4">Historical Data Assessment</h3>
           <div className="grid grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-blue-50 rounded-lg">
-              <div className="text-3xl font-bold text-blue-600 mb-2">24 months</div>
+            <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <div className="text-3xl font-bold text-brand-600 mb-2">24 months</div>
               <div className="text-sm text-gray-600">Transaction History</div>
             </div>
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <div className="text-3xl font-bold text-green-600 mb-2">2.5M</div>
+            <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <div className="text-3xl font-bold text-brand-600 mb-2">2.5M</div>
               <div className="text-sm text-gray-600">Customer Records</div>
             </div>
-            <div className="text-center p-4 bg-purple-50 rounded-lg">
-              <div className="text-3xl font-bold text-purple-600 mb-2">82%</div>
+            <div className="text-center p-4 bg-gray-50 rounded-lg">
+              <div className="text-3xl font-bold text-brand-600 mb-2">82%</div>
               <div className="text-sm text-gray-600">Data Completeness</div>
             </div>
           </div>
         </Card>
 
-        <Card className="p-6">
+        <Card className="p-5">
           <h3 className="text-lg font-semibold mb-4">Learning Timeline</h3>
           <div className="space-y-3">
             {[

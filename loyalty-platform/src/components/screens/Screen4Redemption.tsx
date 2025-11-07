@@ -21,7 +21,7 @@ export const Screen4Redemption: React.FC = () => {
   const currency = valueConfig.currency || 'USD';
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-10">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Redemption Configuration</h1>
@@ -31,7 +31,7 @@ export const Screen4Redemption: React.FC = () => {
         {/* Points Redemption */}
         {valueType === 'points' && (
           <>
-            <Card className="p-6 mb-6">
+            <Card className="p-5 mb-5">
               <h3 className="text-xl font-semibold mb-4">Redemption Methods</h3>
               <div className="grid grid-cols-3 gap-4">
                 {[
@@ -47,7 +47,7 @@ export const Screen4Redemption: React.FC = () => {
                     <h3 className="font-semibold mb-1">{type.name}</h3>
                     <p className="text-xs text-gray-600">{type.desc}</p>
                     <label className="flex items-center justify-center gap-2 mt-3">
-                      <input type="checkbox" className="w-4 h-4 text-primary rounded" defaultChecked={type.name === 'Instant Discount'} />
+                      <input type="checkbox" className="w-4 h-4 text-brand-600 rounded" defaultChecked={type.name === 'Instant Discount'} />
                       <span className="text-xs">Enable</span>
                     </label>
                   </Card>
@@ -55,9 +55,9 @@ export const Screen4Redemption: React.FC = () => {
               </div>
             </Card>
 
-            <Card className="p-6">
+            <Card className="p-5">
               <h3 className="text-xl font-semibold mb-4">Redemption Rules</h3>
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 gap-5">
                 <div>
                   <label className="block font-semibold mb-2 text-sm">Minimum Redemption</label>
                   <div className="flex items-center gap-2">
@@ -107,32 +107,32 @@ export const Screen4Redemption: React.FC = () => {
         {/* Cashback Redemption */}
         {valueType === 'cashback' && (
           <>
-            <Card className="p-6 mb-6">
+            <Card className="p-5 mb-5">
               <h3 className="text-xl font-semibold mb-4">Cashback Redemption Methods</h3>
               <div className="grid grid-cols-2 gap-4">
-                <label className="flex items-start gap-3 p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary transition-colors">
-                  <input type="checkbox" className="w-5 h-5 text-primary rounded mt-1" defaultChecked />
+                <label className="flex items-start gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-primary transition-colors">
+                  <input type="checkbox" className="w-5 h-5 text-brand-600 rounded mt-1" defaultChecked />
                   <div className="flex-1">
                     <div className="font-semibold text-gray-900">Auto-Apply at Checkout</div>
                     <div className="text-sm text-gray-600 mt-1">Automatically deduct cashback balance from purchases</div>
                   </div>
                 </label>
-                <label className="flex items-start gap-3 p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary transition-colors">
-                  <input type="checkbox" className="w-5 h-5 text-primary rounded mt-1" />
+                <label className="flex items-start gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-primary transition-colors">
+                  <input type="checkbox" className="w-5 h-5 text-brand-600 rounded mt-1" />
                   <div className="flex-1">
                     <div className="font-semibold text-gray-900">Manual Withdrawal</div>
                     <div className="text-sm text-gray-600 mt-1">Customer chooses when to withdraw cashback</div>
                   </div>
                 </label>
-                <label className="flex items-start gap-3 p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary transition-colors">
-                  <input type="checkbox" className="w-5 h-5 text-primary rounded mt-1" />
+                <label className="flex items-start gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-primary transition-colors">
+                  <input type="checkbox" className="w-5 h-5 text-brand-600 rounded mt-1" />
                   <div className="flex-1">
                     <div className="font-semibold text-gray-900">Bank Transfer</div>
                     <div className="text-sm text-gray-600 mt-1">Transfer cashback directly to bank account</div>
                   </div>
                 </label>
-                <label className="flex items-start gap-3 p-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:border-primary transition-colors">
-                  <input type="checkbox" className="w-5 h-5 text-primary rounded mt-1" />
+                <label className="flex items-start gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-primary transition-colors">
+                  <input type="checkbox" className="w-5 h-5 text-brand-600 rounded mt-1" />
                   <div className="flex-1">
                     <div className="font-semibold text-gray-900">Store Credit</div>
                     <div className="text-sm text-gray-600 mt-1">Convert cashback to non-expiring store credit</div>
@@ -141,9 +141,9 @@ export const Screen4Redemption: React.FC = () => {
               </div>
             </Card>
 
-            <Card className="p-6">
+            <Card className="p-5">
               <h3 className="text-xl font-semibold mb-4">Cashback Rules</h3>
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 gap-5">
                 <div>
                   <label className="block font-semibold mb-2 text-sm">Minimum Withdrawal</label>
                   <div className="flex items-center gap-2">
@@ -172,7 +172,7 @@ export const Screen4Redemption: React.FC = () => {
                 </div>
                 <div className="col-span-2">
                   <label className="flex items-center gap-2">
-                    <input type="checkbox" className="w-4 h-4 text-primary rounded" defaultChecked />
+                    <input type="checkbox" className="w-4 h-4 text-brand-600 rounded" defaultChecked />
                     <span className="text-sm text-gray-700">Allow partial cashback redemption</span>
                   </label>
                 </div>
@@ -183,13 +183,13 @@ export const Screen4Redemption: React.FC = () => {
 
         {/* Credits Redemption */}
         {valueType === 'credits' && (
-          <Card className="p-6">
+          <Card className="p-5">
             <h3 className="text-xl font-semibold mb-4">Store Credit Redemption</h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 mb-5">
               Store credits are already in the customer's wallet and can be applied at checkout.
               Configure how credits can be used below.
             </p>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-5">
               <div>
                 <label className="block font-semibold mb-2 text-sm">Minimum Redemption per Transaction</label>
                 <div className="flex items-center gap-2">
@@ -221,16 +221,16 @@ export const Screen4Redemption: React.FC = () => {
                     type="checkbox"
                     checked={valueConfig.allowPartialRedemption !== false}
                     onChange={(e) => updateValueConfig({ allowPartialRedemption: e.target.checked })}
-                    className="w-4 h-4 text-primary rounded"
+                    className="w-4 h-4 text-brand-600 rounded"
                   />
                   <span className="text-sm text-gray-700">Allow partial credit redemption (use any amount)</span>
                 </label>
                 <label className="flex items-center gap-2">
-                  <input type="checkbox" className="w-4 h-4 text-primary rounded" defaultChecked />
+                  <input type="checkbox" className="w-4 h-4 text-brand-600 rounded" defaultChecked />
                   <span className="text-sm text-gray-700">Auto-apply available credits at checkout</span>
                 </label>
                 <label className="flex items-center gap-2">
-                  <input type="checkbox" className="w-4 h-4 text-primary rounded" />
+                  <input type="checkbox" className="w-4 h-4 text-brand-600 rounded" />
                   <span className="text-sm text-gray-700">Allow combining credits with promotions</span>
                 </label>
               </div>
@@ -240,13 +240,13 @@ export const Screen4Redemption: React.FC = () => {
 
         {/* Vouchers Redemption */}
         {valueType === 'vouchers' && (
-          <Card className="p-6">
+          <Card className="p-5">
             <h3 className="text-xl font-semibold mb-4">Voucher Redemption</h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 mb-5">
               Vouchers are fixed-value rewards earned through the loyalty program.
               Configure how customers can redeem their vouchers.
             </p>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-5">
               <div>
                 <label className="block font-semibold mb-2 text-sm">Minimum Purchase to Use Voucher</label>
                 <div className="flex items-center gap-2">
@@ -274,16 +274,16 @@ export const Screen4Redemption: React.FC = () => {
                     type="checkbox"
                     checked={valueConfig.voucherStackable || false}
                     onChange={(e) => updateValueConfig({ voucherStackable: e.target.checked })}
-                    className="w-4 h-4 text-primary rounded"
+                    className="w-4 h-4 text-brand-600 rounded"
                   />
                   <span className="text-sm text-gray-700">Allow stacking multiple vouchers in one transaction</span>
                 </label>
                 <label className="flex items-center gap-2">
-                  <input type="checkbox" className="w-4 h-4 text-primary rounded" />
+                  <input type="checkbox" className="w-4 h-4 text-brand-600 rounded" />
                   <span className="text-sm text-gray-700">Allow combining vouchers with promotions</span>
                 </label>
                 <label className="flex items-center gap-2">
-                  <input type="checkbox" className="w-4 h-4 text-primary rounded" defaultChecked />
+                  <input type="checkbox" className="w-4 h-4 text-brand-600 rounded" defaultChecked />
                   <span className="text-sm text-gray-700">Voucher code required at redemption</span>
                 </label>
               </div>
@@ -293,13 +293,13 @@ export const Screen4Redemption: React.FC = () => {
 
         {/* Hybrid Redemption */}
         {valueType === 'hybrid' && (
-          <Card className="p-6">
+          <Card className="p-5">
             <h3 className="text-xl font-semibold mb-4">Hybrid Redemption Options</h3>
-            <p className="text-gray-600 mb-6">
+            <p className="text-gray-600 mb-5">
               With a hybrid model, customers have multiple value types. Configure redemption rules for each type below.
             </p>
             <div className="space-y-4">
-              <div className="p-4 bg-blue-50 rounded-lg">
+              <div className="p-4 bg-gray-50 rounded-lg">
                 <h4 className="font-semibold text-gray-900 mb-2">Primary Value Type Redemption</h4>
                 <p className="text-sm text-gray-600">Configure redemption for your primary value type (selected in Value configuration).</p>
               </div>
@@ -307,7 +307,7 @@ export const Screen4Redemption: React.FC = () => {
                 <h4 className="font-semibold text-gray-900 mb-2">Secondary Value Type Redemption</h4>
                 <p className="text-sm text-gray-600">Configure redemption for your secondary value type.</p>
               </div>
-              <div className="p-4 border-2 border-dashed border-gray-300 rounded-lg text-center">
+              <div className="p-4 border border-dashed border-gray-300 rounded-lg text-center">
                 <p className="text-gray-600">Detailed hybrid redemption configuration will be based on your Value tab settings.</p>
                 <p className="text-sm text-gray-500 mt-2">Return to the Value tab to review your hybrid strategy.</p>
               </div>

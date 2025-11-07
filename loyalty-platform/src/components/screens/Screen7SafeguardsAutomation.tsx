@@ -8,7 +8,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
   const { safeguardSettings, updateSafeguardSettings } = useOnboardingStore();
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-10">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">🛡️ Automation Safeguards</h1>
@@ -21,7 +21,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
             onClick={() => setActiveTab('anti-gaming')}
             className={`px-6 py-3 font-semibold border-b-2 transition-colors ${
               activeTab === 'anti-gaming'
-                ? 'border-primary text-primary'
+                ? 'border-primary text-brand-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
           >
@@ -31,7 +31,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
             onClick={() => setActiveTab('communication')}
             className={`px-6 py-3 font-semibold border-b-2 transition-colors ${
               activeTab === 'communication'
-                ? 'border-primary text-primary'
+                ? 'border-primary text-brand-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
           >
@@ -41,7 +41,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
             onClick={() => setActiveTab('overrides')}
             className={`px-6 py-3 font-semibold border-b-2 transition-colors ${
               activeTab === 'overrides'
-                ? 'border-primary text-primary'
+                ? 'border-primary text-brand-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
           >
@@ -53,7 +53,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
         {activeTab === 'anti-gaming' && (
           <div className="space-y-6">
             {/* Cooldown Periods */}
-            <Card className="p-6">
+            <Card className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-lg font-semibold mb-1">⏱️ Cooldown Periods</h3>
@@ -66,7 +66,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
                     onChange={(e) => updateSafeguardSettings?.({ cooldownEnabled: e.target.checked })}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-500"></div>
                 </label>
               </div>
 
@@ -140,7 +140,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
             </Card>
 
             {/* Maximum Benefit Caps */}
-            <Card className="p-6">
+            <Card className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-lg font-semibold mb-1">🎯 Maximum Benefit Caps</h3>
@@ -153,7 +153,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
                     onChange={(e) => updateSafeguardSettings?.({ benefitCapsEnabled: e.target.checked })}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-500"></div>
                 </label>
               </div>
 
@@ -222,7 +222,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
             </Card>
 
             {/* Pattern Detection */}
-            <Card className="p-6">
+            <Card className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-lg font-semibold mb-1">🔍 Behavioral Pattern Detection</h3>
@@ -235,7 +235,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
                     onChange={(e) => updateSafeguardSettings?.({ patternDetectionEnabled: e.target.checked })}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-500"></div>
                 </label>
               </div>
 
@@ -296,7 +296,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
                                   : current.filter((p) => p !== pattern.id)
                               });
                             }}
-                            className="mt-1 h-4 w-4 text-primary border-gray-300 rounded"
+                            className="mt-1 h-4 w-4 text-brand-600 border-gray-300 rounded"
                           />
                           <label htmlFor={pattern.id} className="flex-1 cursor-pointer">
                             <div className="text-sm font-medium">{pattern.label}</div>
@@ -311,7 +311,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
             </Card>
 
             {/* Diminishing Returns */}
-            <Card className="p-6">
+            <Card className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-lg font-semibold mb-1">📉 Diminishing Returns</h3>
@@ -324,7 +324,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
                     onChange={(e) => updateSafeguardSettings?.({ diminishingReturnsEnabled: e.target.checked })}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-500"></div>
                 </label>
               </div>
 
@@ -362,7 +362,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="p-4 bg-gray-50 border border-blue-200 rounded-lg">
                     <p className="text-sm text-blue-800">
                       <strong>Example:</strong> If a customer triggers a win-back automation 3 times in a quarter with "Moderate" setting:
                     </p>
@@ -382,7 +382,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
         {activeTab === 'communication' && (
           <div className="space-y-6">
             {/* Global Frequency Limits */}
-            <Card className="p-6">
+            <Card className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-lg font-semibold mb-1">🌐 Global Communication Limits</h3>
@@ -395,7 +395,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
                     onChange={(e) => updateSafeguardSettings?.({ globalLimitsEnabled: e.target.checked })}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-500"></div>
                 </label>
               </div>
 
@@ -441,7 +441,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
             </Card>
 
             {/* Channel-Specific Limits */}
-            <Card className="p-6">
+            <Card className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-lg font-semibold mb-1">📱 Channel-Specific Limits</h3>
@@ -454,7 +454,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
                     onChange={(e) => updateSafeguardSettings?.({ channelLimitsEnabled: e.target.checked })}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-500"></div>
                 </label>
               </div>
 
@@ -531,7 +531,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
             </Card>
 
             {/* Priority System */}
-            <Card className="p-6">
+            <Card className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-lg font-semibold mb-1">🎯 Communication Priority System</h3>
@@ -544,7 +544,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
                     onChange={(e) => updateSafeguardSettings?.({ prioritySystemEnabled: e.target.checked })}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-500"></div>
                 </label>
               </div>
 
@@ -582,7 +582,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
                     </div>
                   ))}
 
-                  <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mt-4">
+                  <div className="p-4 bg-gray-50 border border-blue-200 rounded-lg mt-4">
                     <p className="text-sm text-blue-800">
                       When a customer reaches their communication limit, lower priority messages will be queued or skipped to make room for higher priority communications.
                     </p>
@@ -592,7 +592,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
             </Card>
 
             {/* Quiet Hours */}
-            <Card className="p-6">
+            <Card className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-lg font-semibold mb-1">🌙 Quiet Hours</h3>
@@ -605,7 +605,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
                     onChange={(e) => updateSafeguardSettings?.({ quietHoursEnabled: e.target.checked })}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-500"></div>
                 </label>
               </div>
 
@@ -674,7 +674,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
                                   : current.filter((ex) => ex !== exception.id)
                               });
                             }}
-                            className="h-4 w-4 text-primary border-gray-300 rounded"
+                            className="h-4 w-4 text-brand-600 border-gray-300 rounded"
                           />
                           <span className="text-sm">{exception.label}</span>
                         </label>
@@ -691,7 +691,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
         {activeTab === 'overrides' && (
           <div className="space-y-6">
             {/* Manual Approval Thresholds */}
-            <Card className="p-6">
+            <Card className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="text-lg font-semibold mb-1">✋ Manual Approval Thresholds</h3>
@@ -704,7 +704,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
                     onChange={(e) => updateSafeguardSettings?.({ manualApprovalEnabled: e.target.checked })}
                     className="sr-only peer"
                   />
-                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                  <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-500"></div>
                 </label>
               </div>
 
@@ -769,7 +769,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
                                   : current.filter((t) => t !== type.id)
                               });
                             }}
-                            className="mt-1 h-4 w-4 text-primary border-gray-300 rounded"
+                            className="mt-1 h-4 w-4 text-brand-600 border-gray-300 rounded"
                           />
                           <div className="flex-1">
                             <div className="text-sm font-medium">{type.label}</div>
@@ -784,7 +784,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
             </Card>
 
             {/* Approval Workflow */}
-            <Card className="p-6">
+            <Card className="p-5">
               <h3 className="text-lg font-semibold mb-4">👥 Approval Workflow</h3>
 
               <div className="space-y-4">
@@ -827,15 +827,15 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
                   </label>
                   <div className="space-y-2">
                     <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                      <div className="flex items-center justify-center w-6 h-6 bg-blue-500 text-white rounded-full text-xs font-bold">1</div>
+                      <div className="flex items-center justify-center w-6 h-6 bg-gray-500 text-white rounded-full text-xs font-bold">1</div>
                       <div className="flex-1 text-sm">Store Manager (Primary Approver)</div>
                     </div>
                     <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                      <div className="flex items-center justify-center w-6 h-6 bg-blue-500 text-white rounded-full text-xs font-bold">2</div>
+                      <div className="flex items-center justify-center w-6 h-6 bg-gray-500 text-white rounded-full text-xs font-bold">2</div>
                       <div className="flex-1 text-sm">Regional Manager (If timeout reached)</div>
                     </div>
                     <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                      <div className="flex items-center justify-center w-6 h-6 bg-blue-500 text-white rounded-full text-xs font-bold">3</div>
+                      <div className="flex items-center justify-center w-6 h-6 bg-gray-500 text-white rounded-full text-xs font-bold">3</div>
                       <div className="flex-1 text-sm">Marketing Director (Final escalation)</div>
                     </div>
                   </div>
@@ -844,7 +844,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
             </Card>
 
             {/* Emergency Override */}
-            <Card className="p-6">
+            <Card className="p-5">
               <h3 className="text-lg font-semibold mb-4">🚨 Emergency Override Controls</h3>
 
               <div className="space-y-4">
@@ -870,7 +870,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
                                 : current.filter((r) => r !== role.id)
                             });
                           }}
-                          className="mt-1 h-4 w-4 text-primary border-gray-300 rounded"
+                          className="mt-1 h-4 w-4 text-brand-600 border-gray-300 rounded"
                         />
                         <div className="flex-1">
                           <div className="text-sm font-medium">{role.label}</div>
@@ -896,7 +896,7 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
             </Card>
 
             {/* Pause All Automations */}
-            <Card className="p-6 border-2 border-red-200">
+            <Card className="p-5 border border-red-200">
               <div className="flex items-center justify-between">
                 <div>
                   <h3 className="text-lg font-semibold text-red-700 mb-1">⏸️ Pause All Automations</h3>
@@ -914,11 +914,11 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
         )}
 
         {/* Summary Card */}
-        <Card className="p-6 mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200">
+        <Card className="p-5 mt-8 bg-gray-50 border border-gray-200">
           <h3 className="text-lg font-semibold mb-3">📊 Safeguards Summary</h3>
           <div className="grid grid-cols-3 gap-4">
             <div className="bg-white p-4 rounded-lg">
-              <div className="text-2xl font-bold text-primary">
+              <div className="text-2xl font-bold text-brand-600">
                 {Object.values(safeguardSettings || {}).filter((v) => v === true).length}
               </div>
               <div className="text-sm text-gray-600 mt-1">Active Safeguards</div>

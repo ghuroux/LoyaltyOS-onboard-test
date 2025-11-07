@@ -75,7 +75,7 @@ export const Screen0Discovery: React.FC = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="p-10"
+      className="p-8"
     >
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
@@ -94,7 +94,7 @@ export const Screen0Discovery: React.FC = () => {
               clickable
               selected={localIndustry === industry.id}
               onClick={() => handleIndustrySelect(industry.id)}
-              className="p-6 text-center"
+              className="p-5 text-center"
             >
               <div className="text-4xl mb-3">{industry.icon}</div>
               <div className="font-semibold text-gray-900 mb-1">{industry.name}</div>
@@ -107,12 +107,12 @@ export const Screen0Discovery: React.FC = () => {
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
-            className="bg-white rounded-xl border border-gray-200 p-6 mb-6"
+            className="bg-white rounded-xl border border-gray-200 p-5 mb-5"
           >
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-xl font-semibold">
+            <div className="flex justify-between items-center mb-5">
+              <h2 className="text-xl font-semibold text-gray-900">
                 📚 Available Templates for{' '}
-                <span className="text-primary">
+                <span className="text-brand-600">
                   {industries.find((i) => i.id === localIndustry)?.name}
                 </span>
               </h2>
@@ -148,8 +148,8 @@ export const Screen0Discovery: React.FC = () => {
           </motion.div>
         )}
 
-        <div className="bg-white rounded-xl border border-gray-200 p-6">
-          <h2 className="text-xl font-semibold mb-4">🎯 Define Your Success Metrics</h2>
+        <div className="bg-white rounded-xl border border-gray-200 p-5">
+          <h2 className="text-xl font-semibold text-gray-900 mb-4">🎯 Define Your Success Metrics</h2>
           <div className="grid grid-cols-3 gap-3">
             {[
               'Increase Customer Lifetime Value',

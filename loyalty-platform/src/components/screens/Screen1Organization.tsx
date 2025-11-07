@@ -849,7 +849,7 @@ export const Screen1Organization: React.FC = () => {
     const isExpanded = expandedSections.includes(id);
 
     return (
-      <Card className="mb-6 shadow-md hover:shadow-lg transition-shadow">
+      <Card className="mb-6 shadow-lg hover:shadow-lg transition-shadow">
         <button
           onClick={() => toggleSection(id)}
           className="w-full flex items-center justify-between p-6 text-left hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 transition-all rounded-t-lg"
@@ -888,7 +888,7 @@ export const Screen1Organization: React.FC = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="p-10"
+      className="p-8"
     >
       <div className="max-w-7xl mx-auto">
         <div className="mb-10">
@@ -903,8 +903,8 @@ export const Screen1Organization: React.FC = () => {
         </div>
 
         {/* Configuration Health Score */}
-        <Card className="mb-8 border-2 border-blue-300 bg-gradient-to-br from-blue-50 via-white to-purple-50">
-          <div className="p-6">
+        <Card className="mb-8 border border-blue-300 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+          <div className="p-5">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
                 <span className="text-2xl">📊</span>
@@ -926,7 +926,7 @@ export const Screen1Organization: React.FC = () => {
 
             <div className="grid grid-cols-3 gap-4">
               {/* Business Hierarchy Status */}
-              <div className="p-4 bg-white rounded-lg border-2 border-gray-200">
+              <div className="p-4 bg-white rounded-lg border border-gray-200">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-semibold text-gray-700">Business Hierarchy</span>
                   {entityLevels.filter(e => e.enabled).every(e => e.attributes.length > 0) ? (
@@ -945,7 +945,7 @@ export const Screen1Organization: React.FC = () => {
               </div>
 
               {/* Customer Categories Status */}
-              <div className="p-4 bg-white rounded-lg border-2 border-gray-200">
+              <div className="p-4 bg-white rounded-lg border border-gray-200">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-semibold text-gray-700">Customer Categories</span>
                   {clientTypes.filter(c => c.enabled).length > 0 ? (
@@ -964,7 +964,7 @@ export const Screen1Organization: React.FC = () => {
               </div>
 
               {/* Customer Profile Status */}
-              <div className="p-4 bg-white rounded-lg border-2 border-gray-200">
+              <div className="p-4 bg-white rounded-lg border border-gray-200">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-semibold text-gray-700">Customer Profile</span>
                   <span className="text-green-600 text-lg">✓</span>
@@ -983,7 +983,7 @@ export const Screen1Organization: React.FC = () => {
             {(entityLevels.filter(e => e.enabled && e.attributes.length === 0).length > 0 ||
               (householdEnabled && !enableRelationships) ||
               clientTypes.filter(c => c.enabled).length === 0) && (
-              <div className="mt-4 p-4 bg-yellow-50 border-2 border-yellow-300 rounded-lg">
+              <div className="mt-4 p-4 bg-yellow-50 border border-yellow-300 rounded-lg">
                 <h4 className="font-semibold text-yellow-900 mb-2 flex items-center gap-2">
                   <span>⚠</span> Recommendations
                 </h4>
@@ -1027,7 +1027,7 @@ export const Screen1Organization: React.FC = () => {
             <div className="space-y-4">
               <h4 className="font-semibold">Entity Levels</h4>
               {entityLevels.map((entity) => (
-                <Card key={entity.id} className={`transition-all ${entity.enabled ? 'border-2 border-blue-500 bg-gradient-to-r from-blue-50 to-purple-50 shadow-md' : 'opacity-60 hover:opacity-80'}`}>
+                <Card key={entity.id} className={`transition-all ${entity.enabled ? 'border bg-gray-500 bg-gradient-to-r from-blue-50 to-purple-50 shadow-lg' : 'opacity-60 hover:opacity-80'}`}>
                   <div className="p-4">
                     <div className="flex items-center justify-between mb-4">
                       <div className="flex items-center gap-3 flex-1">
@@ -1036,7 +1036,7 @@ export const Screen1Organization: React.FC = () => {
                           checked={entity.enabled}
                           onChange={() => toggleEntityLevel(entity.id)}
                           disabled={!entity.optional}
-                          className="h-5 w-5 text-primary rounded"
+                          className="h-5 w-5 text-brand-600 rounded"
                         />
                         <span className="text-2xl">{entity.icon}</span>
                         <div className="flex-1">
@@ -1108,7 +1108,7 @@ export const Screen1Organization: React.FC = () => {
                           <div className="mb-4 space-y-2">
                             <p className="text-xs font-semibold text-gray-700 mb-2">Attributes:</p>
                             {entity.attributes.map((attr) => (
-                              <div key={attr.id} className="p-4 bg-white rounded-xl border-2 border-gray-200 hover:border-blue-300 transition-colors shadow-sm">
+                              <div key={attr.id} className="p-4 bg-white rounded-xl border border-gray-200 hover:border-blue-300 transition-colors shadow-sm">
                                 <div className="flex items-start justify-between mb-2">
                                   <div className="flex-1">
                                     <div className="flex items-center gap-2 mb-2">
@@ -1123,7 +1123,7 @@ export const Screen1Organization: React.FC = () => {
                                       )}
                                     </div>
                                     {attr.insights.length > 0 && (
-                                      <div className="mt-3 p-3 bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-lg">
+                                      <div className="mt-3 p-3 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-lg">
                                         <p className="text-xs font-bold text-emerald-900 mb-2 flex items-center gap-1">
                                           📊 Analytics Insights
                                         </p>
@@ -1143,7 +1143,7 @@ export const Screen1Organization: React.FC = () => {
                                   <div className="flex gap-2">
                                     <button
                                       onClick={() => openEditAttributeModal(entity.id, attr)}
-                                      className="text-blue-500 hover:text-blue-700 hover:bg-blue-50 p-2 rounded-lg transition-colors"
+                                      className="text-blue-500 hover:text-blue-700 hover:bg-gray-50 p-2 rounded-lg transition-colors"
                                       title="Edit attribute"
                                     >
                                       <Edit2 size={16} />
@@ -1172,7 +1172,7 @@ export const Screen1Organization: React.FC = () => {
                                 onChange={(e) =>
                                   updateEntityLevel(entity.id, { portalAccess: e.target.checked })
                                 }
-                                className="h-4 w-4 text-primary rounded"
+                                className="h-4 w-4 text-brand-600 rounded"
                               />
                               <span className="text-gray-700">Portal Access</span>
                             </label>
@@ -1185,7 +1185,7 @@ export const Screen1Organization: React.FC = () => {
                                 onChange={(e) =>
                                   updateEntityLevel(entity.id, { createAccounts: e.target.checked })
                                 }
-                                className="h-4 w-4 text-primary rounded"
+                                className="h-4 w-4 text-brand-600 rounded"
                               />
                               <span className="text-gray-700">Create Accounts</span>
                             </label>
@@ -1215,7 +1215,7 @@ export const Screen1Organization: React.FC = () => {
                               onChange={(e) =>
                                 updateEntityLevel(entity.id, { stateManagementEnabled: e.target.checked })
                               }
-                              className="h-4 w-4 text-primary rounded"
+                              className="h-4 w-4 text-brand-600 rounded"
                             />
                             <div className="flex-1">
                               <div className="font-semibold text-sm text-gray-900">Enable State Management</div>
@@ -1226,7 +1226,7 @@ export const Screen1Organization: React.FC = () => {
                           </label>
 
                           {entity.stateManagementEnabled && (
-                            <div className="mt-3 p-4 bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg border-2 border-purple-200">
+                            <div className="mt-3 p-4 bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg border border-purple-200">
                               <h5 className="font-semibold text-sm mb-3 text-gray-900">Runtime States</h5>
                               <div className="space-y-2">
                                 {entity.states.map((state) => (
@@ -1241,7 +1241,7 @@ export const Screen1Organization: React.FC = () => {
                                           : state.color === 'yellow'
                                           ? 'bg-yellow-500'
                                           : state.color === 'blue'
-                                          ? 'bg-blue-500'
+                                          ? 'bg-gray-500'
                                           : state.color === 'red'
                                           ? 'bg-red-500'
                                           : 'bg-gray-500'
@@ -1258,7 +1258,7 @@ export const Screen1Organization: React.FC = () => {
                                   </div>
                                 ))}
                               </div>
-                              <div className="mt-3 p-2 bg-blue-50 border border-blue-200 rounded text-xs text-blue-800">
+                              <div className="mt-3 p-2 bg-gray-50 border border-blue-200 rounded text-xs text-blue-800">
                                 <strong>💡 Tip:</strong> Terminal states cannot be reversed (e.g., once permanently closed, cannot reopen)
                               </div>
                             </div>
@@ -1285,7 +1285,7 @@ export const Screen1Organization: React.FC = () => {
                             <div className="h-8 w-0.5 bg-gray-300"></div>
                           </div>
                         )}
-                        <div className="flex-1 p-3 bg-white border-2 border-gray-300 rounded-lg shadow-sm">
+                        <div className="flex-1 p-3 bg-white border border-gray-300 rounded-lg shadow-sm">
                           <div className="flex items-center gap-2">
                             <span className="text-xl">{entity.icon}</span>
                             <div className="flex-1">
@@ -1320,14 +1320,14 @@ export const Screen1Organization: React.FC = () => {
               <h4 className="font-semibold mb-3 text-gray-700">Consumer Accounts (B2C)</h4>
               <div className="grid grid-cols-2 gap-4">
                 {clientTypes.filter(c => c.type === 'B2C').map(client => (
-                  <Card key={client.id} className={`transition-all ${client.enabled ? 'border-2 border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 shadow-md' : 'opacity-60 hover:opacity-80'}`}>
+                  <Card key={client.id} className={`transition-all ${client.enabled ? 'border border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 shadow-lg' : 'opacity-60 hover:opacity-80'}`}>
                     <div className="p-4">
                       <div className="flex items-center gap-3 mb-3">
                         <input
                           type="checkbox"
                           checked={client.enabled}
                           onChange={() => toggleClientType(client.id)}
-                          className="h-5 w-5 text-primary rounded"
+                          className="h-5 w-5 text-brand-600 rounded"
                         />
                         <span className="text-3xl">{client.icon}</span>
                         <div className="flex-1">
@@ -1346,14 +1346,14 @@ export const Screen1Organization: React.FC = () => {
               <h4 className="font-semibold mb-3 text-gray-700">Business Clients & Partners (B2B)</h4>
               <div className="space-y-3">
                 {clientTypes.filter(c => c.type === 'B2B').map(client => (
-                  <Card key={client.id} className={`transition-all ${client.enabled ? 'border-2 border-orange-500 bg-gradient-to-br from-orange-50 to-amber-50 shadow-md' : 'opacity-60 hover:opacity-80'}`}>
+                  <Card key={client.id} className={`transition-all ${client.enabled ? 'border border-orange-500 bg-gradient-to-br from-orange-50 to-amber-50 shadow-lg' : 'opacity-60 hover:opacity-80'}`}>
                     <div className="p-4">
                       <div className="flex items-center gap-3 mb-3">
                         <input
                           type="checkbox"
                           checked={client.enabled}
                           onChange={() => toggleClientType(client.id)}
-                          className="h-5 w-5 text-primary rounded"
+                          className="h-5 w-5 text-brand-600 rounded"
                         />
                         <span className="text-2xl">{client.icon}</span>
                         <div className="flex-1">
@@ -1376,7 +1376,7 @@ export const Screen1Organization: React.FC = () => {
                                   onChange={(e) =>
                                     updateClientType(client.id, { portalAccess: e.target.checked })
                                   }
-                                  className="h-4 w-4 text-primary rounded"
+                                  className="h-4 w-4 text-brand-600 rounded"
                                 />
                                 <span className="text-gray-700">Portal Access</span>
                               </label>
@@ -1405,7 +1405,7 @@ export const Screen1Organization: React.FC = () => {
             </div>
 
             {/* Summary */}
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="p-4 bg-gray-50 border border-blue-200 rounded-lg">
               <p className="text-sm text-blue-900">
                 <strong>Enabled:</strong>{' '}
                 {clientTypes.filter(c => c.enabled).map(c => c.name).join(', ') || 'None'}
@@ -1424,14 +1424,14 @@ export const Screen1Organization: React.FC = () => {
               </h4>
               <div className="grid grid-cols-2 gap-4">
                 {coreFields.map(field => (
-                  <div key={field.id} className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border-2 border-blue-200 shadow-sm">
+                  <div key={field.id} className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200 shadow-sm">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <input
                           type="checkbox"
                           checked={field.required}
                           disabled
-                          className="h-4 w-4 text-primary rounded"
+                          className="h-4 w-4 text-brand-600 rounded"
                         />
                         <span className="text-sm font-semibold text-gray-900">{field.label}</span>
                       </div>
@@ -1442,7 +1442,7 @@ export const Screen1Organization: React.FC = () => {
                       )}
                     </div>
                     {field.insight && (
-                      <div className="ml-6 mt-2 p-2.5 bg-white border-2 border-blue-300 rounded-lg">
+                      <div className="ml-6 mt-2 p-2.5 bg-white border border-blue-300 rounded-lg">
                         <p className="text-xs text-blue-900">
                           <strong>📊 Insights:</strong> {field.insight}
                         </p>
@@ -1467,7 +1467,7 @@ export const Screen1Organization: React.FC = () => {
               </div>
 
               {customFields.length === 0 ? (
-                <div className="p-8 bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl border-2 border-dashed border-gray-300 text-center">
+                <div className="p-8 bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl border border-dashed border-gray-300 text-center">
                   <p className="text-gray-700 text-base font-semibold mb-2">No custom fields yet</p>
                   <p className="text-gray-600 text-sm">
                     Add custom fields to capture business-specific customer data
@@ -1503,7 +1503,7 @@ export const Screen1Organization: React.FC = () => {
             </div>
 
             {connectedIntegrations.find(i => i.id === 'salesforce' && i.connected) && (
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+              <div className="p-4 bg-gray-50 border border-blue-200 rounded-lg">
                 <p className="text-sm text-blue-800 mb-2">
                   <strong>💡 Tip:</strong> Salesforce is connected. You can import custom fields from your Salesforce schema.
                 </p>
@@ -1525,7 +1525,7 @@ export const Screen1Organization: React.FC = () => {
                       type="checkbox"
                       checked={enableRelationships}
                       onChange={(e) => setEnableRelationships(e.target.checked)}
-                      className="h-4 w-4 text-primary rounded"
+                      className="h-4 w-4 text-brand-600 rounded"
                     />
                     <div>
                       <div className="font-medium text-gray-900">Enable Family Relationships</div>
@@ -1548,7 +1548,7 @@ export const Screen1Organization: React.FC = () => {
                                 <input
                                   type="checkbox"
                                   checked
-                                  className="h-4 w-4 text-primary rounded"
+                                  className="h-4 w-4 text-brand-600 rounded"
                                 />
                                 <span className="text-sm text-gray-900 capitalize">
                                   {type.replace('-', ' ')}
@@ -1582,7 +1582,7 @@ export const Screen1Organization: React.FC = () => {
                             type="checkbox"
                             checked={autoPromoteMinors}
                             onChange={(e) => setAutoPromoteMinors(e.target.checked)}
-                            className="h-4 w-4 text-primary rounded"
+                            className="h-4 w-4 text-brand-600 rounded"
                           />
                           <div>
                             <div className="font-medium text-sm text-gray-900">
@@ -1602,9 +1602,9 @@ export const Screen1Organization: React.FC = () => {
                         <div className="grid grid-cols-2 gap-4">
                           <button
                             onClick={() => setBenefitSharing('individual')}
-                            className={`p-4 rounded-lg border-2 text-left transition-all ${
+                            className={`p-4 rounded-lg border text-left transition-all ${
                               benefitSharing === 'individual'
-                                ? 'border-primary bg-blue-50'
+                                ? 'border-primary bg-gray-50'
                                 : 'border-gray-200 hover:border-gray-300'
                             }`}
                           >
@@ -1616,9 +1616,9 @@ export const Screen1Organization: React.FC = () => {
 
                           <button
                             onClick={() => setBenefitSharing('pooled')}
-                            className={`p-4 rounded-lg border-2 text-left transition-all ${
+                            className={`p-4 rounded-lg border text-left transition-all ${
                               benefitSharing === 'pooled'
-                                ? 'border-primary bg-blue-50'
+                                ? 'border-primary bg-gray-50'
                                 : 'border-gray-200 hover:border-gray-300'
                             }`}
                           >
@@ -1650,7 +1650,7 @@ export const Screen1Organization: React.FC = () => {
         {/* Section 4: External System Mapping */}
         <Section id="system-mapping" title="External System Mapping" icon="🔌">
           <div className="space-y-6">
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="p-4 bg-gray-50 border border-blue-200 rounded-lg">
               <p className="text-sm text-blue-800">
                 <strong>⚡ Auto-Detected</strong> from your connected integrations in Step 2. Edit or clear mappings as needed.
               </p>
@@ -1844,7 +1844,7 @@ export const Screen1Organization: React.FC = () => {
       {/* Add Custom Field Modal */}
       {showAddFieldModal && (
         <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8 border-2 border-gray-200">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8 border border-gray-200">
             <h3 className="text-2xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Add Custom Field</h3>
 
             <div className="space-y-4">
@@ -1902,7 +1902,7 @@ export const Screen1Organization: React.FC = () => {
                   type="checkbox"
                   checked={newField.required}
                   onChange={(e) => setNewField({ ...newField, required: e.target.checked })}
-                  className="h-4 w-4 text-primary rounded"
+                  className="h-4 w-4 text-brand-600 rounded"
                 />
                 <span className="text-sm text-gray-700">Make this field required</span>
               </label>
@@ -1935,7 +1935,7 @@ export const Screen1Organization: React.FC = () => {
       {/* Add/Edit Attribute to Entity Modal */}
       {showAddAttributeModal && (
         <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8 border-2 border-gray-200">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8 border border-gray-200">
             <h3 className="text-2xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
               {isEditMode ? 'Edit' : 'Add'} Attribute {isEditMode ? 'for' : 'to'} {entityLevels.find((e) => e.id === editingEntityId)?.customLabel || entityLevels.find((e) => e.id === editingEntityId)?.name}
             </h3>
@@ -1990,7 +1990,7 @@ export const Screen1Organization: React.FC = () => {
                       type="checkbox"
                       checked={newAttribute.required}
                       onChange={(e) => setNewAttribute({ ...newAttribute, required: e.target.checked })}
-                      className="h-4 w-4 text-primary rounded"
+                      className="h-4 w-4 text-brand-600 rounded"
                     />
                     <span className="text-sm text-gray-700">Required field</span>
                   </label>
@@ -1999,7 +1999,7 @@ export const Screen1Organization: React.FC = () => {
 
               {/* Live Insight Preview */}
               {newAttribute.label && (
-                <div className="p-5 bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-300 rounded-xl shadow-sm">
+                <div className="p-5 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-300 rounded-xl shadow-sm">
                   <p className="text-sm font-bold text-emerald-900 mb-3 flex items-center gap-2">
                     <span className="text-lg">📊</span> Analytics Insights This Attribute Enables:
                   </p>
@@ -2007,7 +2007,7 @@ export const Screen1Organization: React.FC = () => {
                     {getInsightsForAttribute(newAttribute.label, newAttribute.type).map((insight, idx) => (
                       <span
                         key={idx}
-                        className="px-3 py-1.5 bg-white border-2 border-emerald-400 text-emerald-900 rounded-full text-sm font-semibold shadow-sm"
+                        className="px-3 py-1.5 bg-white border border-emerald-400 text-emerald-900 rounded-full text-sm font-semibold shadow-sm"
                       >
                         ✓ {insight}
                       </span>
@@ -2085,7 +2085,7 @@ export const Screen1Organization: React.FC = () => {
       {/* Entity Model Template Catalog Modal */}
       {showTemplateModal && (
         <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full p-8 border-2 border-gray-200 max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full p-8 border border-gray-200 max-h-[90vh] overflow-y-auto">
             <div className="mb-6">
               <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
                 Entity Model Templates
@@ -2095,12 +2095,12 @@ export const Screen1Organization: React.FC = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-2 gap-4 mb-5">
               {entityTemplates.map((template) => (
                 <button
                   key={template.id}
                   onClick={() => applyTemplate(template)}
-                  className="p-5 text-left border-2 border-gray-200 rounded-xl hover:border-blue-500 hover:bg-blue-50 transition-all group"
+                  className="p-5 text-left border border-gray-200 rounded-xl hover:bg-gray-500 hover:bg-gray-50 transition-all group"
                 >
                   <div className="flex items-start gap-4">
                     <div className="text-4xl">{template.icon}</div>
@@ -2136,7 +2136,7 @@ export const Screen1Organization: React.FC = () => {
               ))}
             </div>
 
-            <div className="p-4 bg-blue-50 border-2 border-blue-200 rounded-lg mb-4">
+            <div className="p-4 bg-gray-50 border border-blue-200 rounded-lg mb-4">
               <p className="text-sm text-blue-900">
                 <strong>💡 Tip:</strong> Templates configure which entity levels are enabled. You can customize
                 attributes and settings after applying a template.

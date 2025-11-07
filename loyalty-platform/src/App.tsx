@@ -46,8 +46,8 @@ function App() {
   const CurrentScreenComponent = screens[currentScreen];
 
   return (
-    <div className="min-h-screen gradient-purple flex items-center justify-center p-5">
-      <div className="w-full max-w-[1600px] bg-gray-50 rounded-2xl shadow-large flex flex-col" style={{ minHeight: '900px' }}>
+    <div className="min-h-screen app-background flex items-center justify-center p-6">
+      <div className="w-full max-w-[1600px] bg-white rounded-xl shadow-xl border border-gray-200 flex flex-col" style={{ minHeight: '900px' }}>
         <Header
           clientName="Acme Coffee Chain"
           clientId="ACC-2025"
@@ -60,7 +60,7 @@ function App() {
         />
         <ProgressBar currentScreen={currentScreen} onNavigate={setCurrentScreen} />
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto bg-gray-50">
           <AnimatePresence mode="wait">
             <CurrentScreenComponent key={currentScreen} onNavigate={setCurrentScreen} />
           </AnimatePresence>

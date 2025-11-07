@@ -8,16 +8,16 @@ export const Screen9Queues: React.FC = () => {
   const { queues, updateQueue } = useOnboardingStore();
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-10">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">⭐ Queue Intelligence Configuration</h1>
           <p className="text-gray-600 text-lg">Configure queue-based operational intelligence (key differentiator)</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-2 gap-5">
           {queues.map((queue) => (
-            <Card key={queue.id} className="p-6">
+            <Card key={queue.id} className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">{queue.name}</h3>
@@ -61,7 +61,7 @@ export const Screen9Queues: React.FC = () => {
           ))}
         </div>
 
-        <Card className="mt-6 p-6 gradient-intelligence border border-purple-200">
+        <Card className="mt-5 p-5 bg-gray-50 border border-gray-200">
           <h3 className="text-lg font-semibold mb-3">🤖 Intelligence Level</h3>
           <p className="text-sm text-gray-700 mb-4">
             Queues continuously learn from your data and become more accurate over time. The system will start conservative and gradually increase confidence.
@@ -74,7 +74,7 @@ export const Screen9Queues: React.FC = () => {
               { label: 'Confidence Level', value: 'Learning' },
             ].map((stat) => (
               <div key={stat.label} className="text-center p-3 bg-white rounded-lg">
-                <div className="text-2xl font-bold text-primary mb-1">{stat.value}</div>
+                <div className="text-2xl font-bold text-brand-600 mb-1">{stat.value}</div>
                 <div className="text-xs text-gray-600">{stat.label}</div>
               </div>
             ))}

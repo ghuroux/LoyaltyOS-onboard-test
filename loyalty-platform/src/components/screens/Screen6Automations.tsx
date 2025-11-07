@@ -47,7 +47,7 @@ export const Screen6Automations: React.FC = () => {
                   onChange={(e) => updateAutomation?.(automation.id, { enabled: e.target.checked })}
                   className="sr-only peer"
                 />
-                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-500"></div>
               </label>
               <h3 className="text-lg font-semibold">{automation.name || 'Untitled Automation'}</h3>
             </div>
@@ -60,7 +60,7 @@ export const Screen6Automations: React.FC = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setExpandedAutomation(isExpanded ? null : automation.id)}
-              className="px-3 py-1 text-sm text-primary hover:bg-blue-50 rounded"
+              className="px-3 py-1 text-sm text-brand-600 hover:bg-gray-50 rounded"
             >
               {isExpanded ? 'Collapse' : 'Expand'}
             </button>
@@ -77,7 +77,7 @@ export const Screen6Automations: React.FC = () => {
           <div className="space-y-4 mt-4 pt-4 border-t border-gray-200">
             {/* Render trigger-specific configuration */}
             {activeTab === 'segment' && (
-              <div className="grid grid-cols-2 gap-4 p-4 bg-blue-50 rounded-lg">
+              <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">WHEN Segment Changes FROM:</label>
                   <select
@@ -112,7 +112,7 @@ export const Screen6Automations: React.FC = () => {
             )}
 
             {activeTab === 'milestone' && (
-              <div className="p-4 bg-blue-50 rounded-lg">
+              <div className="p-4 bg-gray-50 rounded-lg">
                 <label className="block text-sm font-semibold text-gray-700 mb-2">WHEN Customer Reaches:</label>
                 <div className="grid grid-cols-3 gap-3">
                   <select
@@ -143,7 +143,7 @@ export const Screen6Automations: React.FC = () => {
             )}
 
             {activeTab === 'inactivity' && (
-              <div className="p-4 bg-blue-50 rounded-lg">
+              <div className="p-4 bg-gray-50 rounded-lg">
                 <label className="block text-sm font-semibold text-gray-700 mb-2">WHEN Customer Inactive For:</label>
                 <div className="flex items-center gap-3">
                   <input
@@ -161,7 +161,7 @@ export const Screen6Automations: React.FC = () => {
                       type="checkbox"
                       checked={automation.excludeRecentContacts || false}
                       onChange={(e) => updateAutomation?.(automation.id, { excludeRecentContacts: e.target.checked })}
-                      className="h-4 w-4 text-primary border-gray-300 rounded"
+                      className="h-4 w-4 text-brand-600 border-gray-300 rounded"
                     />
                     Exclude customers contacted in the last 14 days
                   </label>
@@ -170,7 +170,7 @@ export const Screen6Automations: React.FC = () => {
             )}
 
             {activeTab === 'birthday' && (
-              <div className="p-4 bg-blue-50 rounded-lg">
+              <div className="p-4 bg-gray-50 rounded-lg">
                 <label className="block text-sm font-semibold text-gray-700 mb-2">WHEN Customer Birthday:</label>
                 <div className="space-y-3">
                   <select
@@ -189,7 +189,7 @@ export const Screen6Automations: React.FC = () => {
                       type="checkbox"
                       checked={automation.requireOptIn || false}
                       onChange={(e) => updateAutomation?.(automation.id, { requireOptIn: e.target.checked })}
-                      className="h-4 w-4 text-primary border-gray-300 rounded"
+                      className="h-4 w-4 text-brand-600 border-gray-300 rounded"
                     />
                     Only send if customer opted in to birthday communications
                   </label>
@@ -198,7 +198,7 @@ export const Screen6Automations: React.FC = () => {
             )}
 
             {activeTab === 'expiry' && (
-              <div className="p-4 bg-blue-50 rounded-lg">
+              <div className="p-4 bg-gray-50 rounded-lg">
                 <label className="block text-sm font-semibold text-gray-700 mb-2">WHEN Points About to Expire:</label>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3">
@@ -225,7 +225,7 @@ export const Screen6Automations: React.FC = () => {
             )}
 
             {activeTab === 'threshold' && (
-              <div className="p-4 bg-blue-50 rounded-lg">
+              <div className="p-4 bg-gray-50 rounded-lg">
                 <label className="block text-sm font-semibold text-gray-700 mb-2">WHEN Tier Status Changes:</label>
                 <div className="grid grid-cols-2 gap-3">
                   <select
@@ -282,7 +282,7 @@ export const Screen6Automations: React.FC = () => {
                               });
                             }
                           }}
-                          className="mt-1 h-4 w-4 text-primary border-gray-300 rounded"
+                          className="mt-1 h-4 w-4 text-brand-600 border-gray-300 rounded"
                         />
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
@@ -528,7 +528,7 @@ export const Screen6Automations: React.FC = () => {
   };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-10">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">⚡ Automations & Triggers</h1>
@@ -541,18 +541,18 @@ export const Screen6Automations: React.FC = () => {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className={`p-4 rounded-lg border-2 transition-all ${
+              className={`p-4 rounded-lg border transition-all ${
                 activeTab === tab.id
-                  ? 'border-primary bg-blue-50'
+                  ? 'border-primary bg-gray-50'
                   : 'border-gray-200 bg-white hover:border-gray-300'
               }`}
             >
               <div className="text-3xl mb-2">{tab.icon}</div>
-              <div className={`text-sm font-semibold mb-1 ${activeTab === tab.id ? 'text-primary' : 'text-gray-900'}`}>
+              <div className={`text-sm font-semibold mb-1 ${activeTab === tab.id ? 'text-brand-600' : 'text-gray-900'}`}>
                 {tab.label}
               </div>
               <div className="text-xs text-gray-500">{tab.desc}</div>
-              <div className="mt-2 text-xs font-bold text-primary">
+              <div className="mt-2 text-xs font-bold text-brand-600">
                 {automations?.filter((a) => a.triggerType === tab.id).length || 0} active
               </div>
             </button>
@@ -561,7 +561,7 @@ export const Screen6Automations: React.FC = () => {
 
         {/* Current Tab Content */}
         <div>
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-5">
             <h2 className="text-xl font-bold text-gray-900">
               {triggerTabs.find((t) => t.id === activeTab)?.label} Automations
             </h2>
@@ -587,7 +587,7 @@ export const Screen6Automations: React.FC = () => {
             <Card className="p-12 text-center">
               <div className="text-6xl mb-4">{triggerTabs.find((t) => t.id === activeTab)?.icon}</div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">No Automations Yet</h3>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-600 mb-5">
                 Create your first {triggerTabs.find((t) => t.id === activeTab)?.label.toLowerCase()} automation to get started
               </p>
               <button
@@ -615,7 +615,7 @@ export const Screen6Automations: React.FC = () => {
         </div>
 
         {/* Info Box */}
-        <Card className="p-6 mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200">
+        <Card className="p-5 mt-8 bg-gray-50 border border-gray-200">
           <div className="flex items-start gap-3">
             <span className="text-2xl">💡</span>
             <div>
