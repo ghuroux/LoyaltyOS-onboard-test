@@ -2,7 +2,20 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
-import { ChevronDown, Plus, Trash2, Check, Edit2, X } from 'lucide-react';
+import {
+  ChevronDown,
+  Plus,
+  Trash2,
+  Check,
+  Edit2,
+  X,
+  Target,
+  User,
+  Plug,
+  BarChart3,
+  FileText,
+  Layers
+} from 'lucide-react';
 
 type FieldType = 'text' | 'textarea' | 'number' | 'date' | 'boolean' | 'dropdown' | 'email' | 'phone' | 'uuid';
 type RelationshipType = 'parent-of' | 'child-of' | 'spouse-of' | 'partner-of' | 'guardian-of' | 'sibling-of';
@@ -51,6 +64,7 @@ interface EntityLevel {
 
 export const Screen1Organization: React.FC = () => {
   const [expandedSections, setExpandedSections] = useState<string[]>(['business-hierarchy', 'client-categories']);
+  const [expandedEntities, setExpandedEntities] = useState<string[]>([]);
 
   // Helper to create default attributes for each entity
   const getDefaultAttributes = (entityId: string): EntityAttribute[] => {
@@ -724,6 +738,12 @@ export const Screen1Organization: React.FC = () => {
     );
   };
 
+  const toggleEntity = (entityId: string) => {
+    setExpandedEntities(prev =>
+      prev.includes(entityId) ? prev.filter(e => e !== entityId) : [...prev, entityId]
+    );
+  };
+
   const toggleEntityLevel = (entityId: string) => {
     setEntityLevels(prev =>
       prev.map(entity =>
@@ -845,25 +865,26 @@ export const Screen1Organization: React.FC = () => {
     setCustomFields(customFields.filter(f => f.id !== id));
   };
 
-  const Section = ({ id, title, icon, children }: { id: string; title: string; icon: string; children: React.ReactNode }) => {
+  const Section = ({ id, title, icon: IconComponent, children }: { id: string; title: string; icon: React.ElementType; children: React.ReactNode }) => {
     const isExpanded = expandedSections.includes(id);
 
     return (
-      <Card className="mb-6 shadow-lg hover:shadow-lg transition-shadow">
+      <Card className="mb-5 shadow-sm hover:shadow-md transition-shadow">
         <button
+          type="button"
           onClick={() => toggleSection(id)}
-          className="w-full flex items-center justify-between p-6 text-left hover:bg-gradient-to-r hover:from-gray-50 hover:to-blue-50 transition-all rounded-t-lg"
+          className="w-full flex items-center justify-between p-5 text-left hover:bg-gray-50 transition-colors rounded-t-lg"
         >
-          <div className="flex items-center gap-4">
-            <div className="text-3xl bg-gradient-to-br from-blue-500 to-purple-500 p-2 rounded-lg shadow-sm">
-              {icon}
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 bg-brand-500 rounded-lg">
+              <IconComponent size={20} className="text-white" />
             </div>
-            <h3 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+            <h3 className="text-xl font-semibold text-gray-900">
               {title}
             </h3>
           </div>
           <div className={`transition-transform ${isExpanded ? 'rotate-180' : ''}`}>
-            <ChevronDown size={24} className="text-gray-400" />
+            <ChevronDown size={20} className="text-gray-400" />
           </div>
         </button>
 
@@ -872,9 +893,10 @@ export const Screen1Organization: React.FC = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            className="px-6 pb-6 border-t border-gray-200"
+            transition={{ duration: 0.2 }}
+            className="border-t border-gray-200"
           >
-            <div className="pt-6">
+            <div className="p-5">
               {children}
             </div>
           </motion.div>
@@ -892,18 +914,18 @@ export const Screen1Organization: React.FC = () => {
     >
       <div className="max-w-7xl mx-auto">
         <div className="mb-10">
-          <div className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white rounded-2xl p-8 shadow-lg">
+          <div className="bg-brand-500 text-white rounded-2xl p-8 shadow-lg">
             <h1 className="text-4xl font-bold mb-3">
               Organization & Customer Model
             </h1>
-            <p className="text-blue-50 text-lg max-w-3xl">
+            <p className="text-white text-lg max-w-3xl">
               Define your business hierarchy, customer structure, profile fields, relationships, and system integrations to power your loyalty platform
             </p>
           </div>
         </div>
 
         {/* Configuration Health Score */}
-        <Card className="mb-8 border border-blue-300 bg-gradient-to-br from-blue-50 via-white to-purple-50">
+        <Card className="mb-8 border border-gray-300 bg-brand-50">
           <div className="p-5">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-bold text-gray-900 flex items-center gap-2">
@@ -912,7 +934,7 @@ export const Screen1Organization: React.FC = () => {
               </h2>
               <div className="flex items-center gap-3">
                 <div className="text-right">
-                  <div className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                  <div className="text-3xl font-bold text-brand-600">
                     {Math.round((
                       (entityLevels.filter(e => e.enabled).length / entityLevels.length) * 30 +
                       (clientTypes.filter(c => c.enabled).length / clientTypes.length) * 30 +
@@ -1006,7 +1028,7 @@ export const Screen1Organization: React.FC = () => {
         </Card>
 
         {/* Section 0: Business Organizational Hierarchy */}
-        <Section id="business-hierarchy" title="Business Organizational Hierarchy" icon="🌳">
+        <Section id="business-hierarchy" title="Business Organizational Hierarchy" icon={Layers}>
           <div className="space-y-6">
             <div className="flex items-center justify-between">
               <p className="text-sm text-gray-600">
@@ -1018,7 +1040,7 @@ export const Screen1Organization: React.FC = () => {
                 size="sm"
                 onClick={() => setShowTemplateModal(true)}
               >
-                <span className="mr-2">📋</span>
+                <FileText size={16} className="mr-2" />
                 Load from Template
               </Button>
             </div>
@@ -1027,111 +1049,127 @@ export const Screen1Organization: React.FC = () => {
             <div className="space-y-4">
               <h4 className="font-semibold">Entity Levels</h4>
               {entityLevels.map((entity) => (
-                <Card key={entity.id} className={`transition-all ${entity.enabled ? 'border bg-gray-500 bg-gradient-to-r from-blue-50 to-purple-50 shadow-lg' : 'opacity-60 hover:opacity-80'}`}>
-                  <div className="p-4">
-                    <div className="flex items-center justify-between mb-4">
-                      <div className="flex items-center gap-3 flex-1">
-                        <input
-                          type="checkbox"
-                          checked={entity.enabled}
-                          onChange={() => toggleEntityLevel(entity.id)}
-                          disabled={!entity.optional}
-                          className="h-5 w-5 text-brand-600 rounded"
-                        />
-                        <span className="text-2xl">{entity.icon}</span>
-                        <div className="flex-1">
-                          {editingEntityName === entity.id ? (
-                            <div className="flex items-center gap-2">
-                              <input
-                                type="text"
-                                value={entity.customLabel || entity.name}
-                                onChange={(e) =>
-                                  updateEntityLevel(entity.id, { customLabel: e.target.value })
-                                }
-                                className="px-2 py-1 border border-primary rounded text-sm font-semibold"
-                                autoFocus
-                              />
-                              <button
-                                onClick={() => setEditingEntityName(null)}
-                                className="text-green-600 hover:text-green-700"
-                              >
-                                <Check size={16} />
-                              </button>
-                              <button
-                                onClick={() => {
-                                  updateEntityLevel(entity.id, { customLabel: undefined });
-                                  setEditingEntityName(null);
-                                }}
-                                className="text-red-600 hover:text-red-700"
-                              >
-                                <X size={16} />
-                              </button>
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-2">
-                              <h5 className="font-semibold text-gray-900">
-                                {entity.customLabel || entity.name}
-                              </h5>
-                              <button
-                                onClick={() => setEditingEntityName(entity.id)}
-                                className="text-gray-400 hover:text-gray-600 transition-colors"
-                                title="Customize entity name"
-                              >
-                                <Edit2 size={14} />
-                              </button>
-                            </div>
+                <Card key={entity.id} className={`transition-all ${entity.enabled ? 'border-brand-200 shadow-sm' : 'opacity-60'}`}>
+                  <button
+                    type="button"
+                    onClick={() => toggleEntity(entity.id)}
+                    className="w-full p-4 text-left hover:bg-gray-50 transition-colors flex items-center justify-between"
+                  >
+                    <div className="flex items-center gap-3 flex-1">
+                      <input
+                        type="checkbox"
+                        checked={entity.enabled}
+                        onChange={(e) => { e.stopPropagation(); toggleEntityLevel(entity.id); }}
+                        disabled={!entity.optional}
+                        className="h-5 w-5 text-brand-500 rounded"
+                      />
+                      <span className="text-2xl">{entity.icon}</span>
+                      <div className="flex-1">
+                        {editingEntityName === entity.id ? (
+                          <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
+                            <input
+                              type="text"
+                              value={entity.customLabel || entity.name}
+                              onChange={(e) =>
+                                updateEntityLevel(entity.id, { customLabel: e.target.value })
+                              }
+                              className="px-2 py-1 border border-brand-500 rounded text-sm font-semibold"
+                              autoFocus
+                            />
+                            <button
+                              onClick={() => setEditingEntityName(null)}
+                              className="text-green-600 hover:text-green-700"
+                            >
+                              <Check size={16} />
+                            </button>
+                            <button
+                              onClick={() => {
+                                updateEntityLevel(entity.id, { customLabel: undefined });
+                                setEditingEntityName(null);
+                              }}
+                              className="text-red-600 hover:text-red-700"
+                            >
+                              <X size={16} />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2">
+                            <h5 className="font-semibold text-gray-900">
+                              {entity.customLabel || entity.name}
+                            </h5>
+                            <button
+                              onClick={(e) => { e.stopPropagation(); setEditingEntityName(entity.id); }}
+                              className="text-gray-400 hover:text-gray-600 transition-colors"
+                              title="Customize entity name"
+                            >
+                              <Edit2 size={14} />
+                            </button>
+                          </div>
+                        )}
+                        <p className="text-xs text-gray-600">
+                          Level {entity.level} {entity.optional && '(Optional)'}
+                          {entity.customLabel && (
+                            <span className="ml-2 text-blue-600">(Custom: {entity.name})</span>
                           )}
-                          <p className="text-xs text-gray-600">
-                            Level {entity.level} {entity.optional && '(Optional)'}
-                            {entity.customLabel && (
-                              <span className="ml-2 text-blue-600">(Custom: {entity.name})</span>
-                            )}
-                          </p>
-                        </div>
+                        </p>
                       </div>
-                      {entity.enabled && (
-                        <Button
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => openAddAttributeModal(entity.id)}
-                        >
-                          <Plus size={14} className="mr-1" />
-                          Add Attribute
-                        </Button>
-                      )}
                     </div>
+                    <ChevronDown
+                      size={20}
+                      className={`text-gray-400 transition-transform ${expandedEntities.includes(entity.id) ? 'rotate-180' : ''}`}
+                    />
+                  </button>
 
-                    {entity.enabled && (
-                      <>
+                  {entity.enabled && expandedEntities.includes(entity.id) && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="border-t border-gray-200"
+                    >
+                      <div className="p-4">
+                        <div className="flex justify-between items-center mb-4">
+                          <h6 className="text-sm font-semibold text-gray-700">Configuration</h6>
+                          <Button
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => openAddAttributeModal(entity.id)}
+                          >
+                            <Plus size={14} className="mr-1" />
+                            Add Attribute
+                          </Button>
+                        </div>
+
                         {/* Attributes */}
                         {entity.attributes.length > 0 && (
                           <div className="mb-4 space-y-2">
                             <p className="text-xs font-semibold text-gray-700 mb-2">Attributes:</p>
                             {entity.attributes.map((attr) => (
-                              <div key={attr.id} className="p-4 bg-white rounded-xl border border-gray-200 hover:border-blue-300 transition-colors shadow-sm">
+                              <div key={attr.id} className="p-4 bg-white rounded-xl border border-gray-200 hover:border-gray-300 transition-colors shadow-sm">
                                 <div className="flex items-start justify-between mb-2">
                                   <div className="flex-1">
                                     <div className="flex items-center gap-2 mb-2">
                                       <span className="text-sm font-semibold text-gray-900">{attr.label}</span>
-                                      <span className="px-2.5 py-1 bg-gradient-to-r from-blue-100 to-blue-200 text-blue-800 rounded-full text-xs font-medium">
+                                      <span className="px-2.5 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
                                         {attr.type}
                                       </span>
                                       {attr.required && (
-                                        <span className="px-2.5 py-1 bg-gradient-to-r from-red-100 to-red-200 text-red-800 rounded-full text-xs font-medium">
+                                        <span className="px-2.5 py-1 bg-red-100 text-red-800 rounded-full text-xs font-medium">
                                           Required
                                         </span>
                                       )}
                                     </div>
                                     {attr.insights.length > 0 && (
-                                      <div className="mt-3 p-3 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200 rounded-lg">
-                                        <p className="text-xs font-bold text-emerald-900 mb-2 flex items-center gap-1">
+                                      <div className="mt-3 p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                                        <p className="text-xs font-bold text-gray-900 mb-2 flex items-center gap-1">
                                           📊 Analytics Insights
                                         </p>
                                         <div className="flex flex-wrap gap-1.5">
                                           {attr.insights.map((insight, idx) => (
                                             <span
                                               key={idx}
-                                              className="px-2.5 py-1 bg-white border border-emerald-300 text-emerald-800 rounded-full text-xs font-medium shadow-sm"
+                                              className="px-2.5 py-1 bg-white border border-gray-300 text-gray-800 rounded-full text-xs font-medium shadow-sm"
                                             >
                                               {insight}
                                             </span>
@@ -1226,7 +1264,7 @@ export const Screen1Organization: React.FC = () => {
                           </label>
 
                           {entity.stateManagementEnabled && (
-                            <div className="mt-3 p-4 bg-gradient-to-br from-purple-50 to-blue-50 rounded-lg border border-purple-200">
+                            <div className="mt-3 p-4 bg-gray-50 border border-gray-200 rounded-lg">
                               <h5 className="font-semibold text-sm mb-3 text-gray-900">Runtime States</h5>
                               <div className="space-y-2">
                                 {entity.states.map((state) => (
@@ -1264,15 +1302,15 @@ export const Screen1Organization: React.FC = () => {
                             </div>
                           )}
                         </div>
-                      </>
-                    )}
-                  </div>
+                      </div>
+                    </motion.div>
+                  )}
                 </Card>
               ))}
             </div>
 
             {/* Visual Hierarchy Preview */}
-            <div className="p-5 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg">
+            <div className="p-5 bg-gray-50 border border-gray-200 rounded-lg">
               <h4 className="font-semibold mb-4 text-gray-900">Hierarchy Visualization</h4>
               <div className="flex flex-col items-center space-y-3">
                 {entityLevels
@@ -1309,7 +1347,7 @@ export const Screen1Organization: React.FC = () => {
         </Section>
 
         {/* Section 1: Customer & Partner Categories */}
-        <Section id="client-categories" title="Customer & Partner Categories" icon="🎯">
+        <Section id="client-categories" title="Customer & Partner Categories" icon={Target}>
           <div className="space-y-6">
             <p className="text-sm text-gray-600">
               Enable customer types and business partners that will interact with your loyalty program
@@ -1320,7 +1358,7 @@ export const Screen1Organization: React.FC = () => {
               <h4 className="font-semibold mb-3 text-gray-700">Consumer Accounts (B2C)</h4>
               <div className="grid grid-cols-2 gap-4">
                 {clientTypes.filter(c => c.type === 'B2C').map(client => (
-                  <Card key={client.id} className={`transition-all ${client.enabled ? 'border border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 shadow-lg' : 'opacity-60 hover:opacity-80'}`}>
+                  <Card key={client.id} className={`transition-all ${client.enabled ? 'bg-gray-50 border border-gray-200' : 'opacity-60 hover:opacity-80'}`}>
                     <div className="p-4">
                       <div className="flex items-center gap-3 mb-3">
                         <input
@@ -1346,7 +1384,7 @@ export const Screen1Organization: React.FC = () => {
               <h4 className="font-semibold mb-3 text-gray-700">Business Clients & Partners (B2B)</h4>
               <div className="space-y-3">
                 {clientTypes.filter(c => c.type === 'B2B').map(client => (
-                  <Card key={client.id} className={`transition-all ${client.enabled ? 'border border-orange-500 bg-gradient-to-br from-orange-50 to-amber-50 shadow-lg' : 'opacity-60 hover:opacity-80'}`}>
+                  <Card key={client.id} className={`transition-all ${client.enabled ? 'bg-gray-50 border border-gray-200' : 'opacity-60 hover:opacity-80'}`}>
                     <div className="p-4">
                       <div className="flex items-center gap-3 mb-3">
                         <input
@@ -1415,7 +1453,7 @@ export const Screen1Organization: React.FC = () => {
         </Section>
 
         {/* Section 2: Primary Customer Profile Builder */}
-        <Section id="customer-profile" title="Primary Customer Profile" icon="👤">
+        <Section id="customer-profile" title="Primary Customer Profile" icon={User}>
           <div className="space-y-6">
             <div>
               <h4 className="font-semibold mb-4 flex items-center gap-2">
@@ -1424,7 +1462,7 @@ export const Screen1Organization: React.FC = () => {
               </h4>
               <div className="grid grid-cols-2 gap-4">
                 {coreFields.map(field => (
-                  <div key={field.id} className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200 shadow-sm">
+                  <div key={field.id} className="p-4 bg-gray-50 rounded-xl border border-gray-200 shadow-sm">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <input
@@ -1436,14 +1474,14 @@ export const Screen1Organization: React.FC = () => {
                         <span className="text-sm font-semibold text-gray-900">{field.label}</span>
                       </div>
                       {field.required && (
-                        <span className="px-2.5 py-1 bg-gradient-to-r from-red-100 to-red-200 text-red-800 rounded-full text-xs font-bold">
+                        <span className="px-2.5 py-1 bg-red-100 text-red-800 rounded-full text-xs font-bold">
                           Required
                         </span>
                       )}
                     </div>
                     {field.insight && (
-                      <div className="ml-6 mt-2 p-2.5 bg-white border border-blue-300 rounded-lg">
-                        <p className="text-xs text-blue-900">
+                      <div className="ml-6 mt-2 p-2.5 bg-white border border-gray-200 rounded-lg">
+                        <p className="text-xs text-gray-700">
                           <strong>📊 Insights:</strong> {field.insight}
                         </p>
                       </div>
@@ -1467,7 +1505,7 @@ export const Screen1Organization: React.FC = () => {
               </div>
 
               {customFields.length === 0 ? (
-                <div className="p-8 bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl border border-dashed border-gray-300 text-center">
+                <div className="p-8 bg-gray-50 rounded-xl border border-dashed border-gray-300 text-center">
                   <p className="text-gray-700 text-base font-semibold mb-2">No custom fields yet</p>
                   <p className="text-gray-600 text-sm">
                     Add custom fields to capture business-specific customer data
@@ -1604,7 +1642,7 @@ export const Screen1Organization: React.FC = () => {
                             onClick={() => setBenefitSharing('individual')}
                             className={`p-4 rounded-lg border text-left transition-all ${
                               benefitSharing === 'individual'
-                                ? 'border-primary bg-gray-50'
+                                ? 'border-brand-500 bg-brand-50'
                                 : 'border-gray-200 hover:border-gray-300'
                             }`}
                           >
@@ -1618,7 +1656,7 @@ export const Screen1Organization: React.FC = () => {
                             onClick={() => setBenefitSharing('pooled')}
                             className={`p-4 rounded-lg border text-left transition-all ${
                               benefitSharing === 'pooled'
-                                ? 'border-primary bg-gray-50'
+                                ? 'border-brand-500 bg-brand-50'
                                 : 'border-gray-200 hover:border-gray-300'
                             }`}
                           >
@@ -1648,7 +1686,7 @@ export const Screen1Organization: React.FC = () => {
         </Section>
 
         {/* Section 4: External System Mapping */}
-        <Section id="system-mapping" title="External System Mapping" icon="🔌">
+        <Section id="system-mapping" title="External System Mapping" icon={Plug}>
           <div className="space-y-6">
             <div className="p-4 bg-gray-50 border border-blue-200 rounded-lg">
               <p className="text-sm text-blue-800">
@@ -1712,10 +1750,10 @@ export const Screen1Organization: React.FC = () => {
         </Section>
 
         {/* Section 5: Data Model Preview */}
-        <Section id="data-preview" title="Data Model Preview" icon="📊">
+        <Section id="data-preview" title="Data Model Preview" icon={BarChart3}>
           <div className="space-y-6">
             {/* Business Hierarchy Data Structure */}
-            <div className="p-6 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 rounded-lg">
+            <div className="p-6 bg-gray-50 border border-gray-200 rounded-lg">
               <h4 className="font-semibold mb-4 text-gray-900">Business Organizational Hierarchy</h4>
               <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
 {`{
@@ -1747,7 +1785,7 @@ export const Screen1Organization: React.FC = () => {
             </div>
 
             {/* Client Types Configuration */}
-            <div className="p-6 bg-gradient-to-r from-orange-50 to-yellow-50 border border-orange-200 rounded-lg">
+            <div className="p-6 bg-gray-50 border border-gray-200 rounded-lg">
               <h4 className="font-semibold mb-4 text-gray-900">Customer & Partner Categories</h4>
               <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
 {`{
@@ -1764,7 +1802,7 @@ export const Screen1Organization: React.FC = () => {
               </pre>
             </div>
 
-            <div className="p-6 bg-gradient-to-r from-purple-50 to-blue-50 border border-purple-200 rounded-lg">
+            <div className="p-6 bg-gray-50 border border-gray-200 rounded-lg">
               <h4 className="font-semibold mb-4 text-gray-900">Customer Data Structure</h4>
               <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
 {`{
@@ -1845,7 +1883,7 @@ export const Screen1Organization: React.FC = () => {
       {showAddFieldModal && (
         <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8 border border-gray-200">
-            <h3 className="text-2xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Add Custom Field</h3>
+            <h3 className="text-2xl font-bold mb-6 text-gray-900">Add Custom Field</h3>
 
             <div className="space-y-4">
               <div>
@@ -1936,7 +1974,7 @@ export const Screen1Organization: React.FC = () => {
       {showAddAttributeModal && (
         <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full p-8 border border-gray-200">
-            <h3 className="text-2xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            <h3 className="text-2xl font-bold mb-6 text-gray-900">
               {isEditMode ? 'Edit' : 'Add'} Attribute {isEditMode ? 'for' : 'to'} {entityLevels.find((e) => e.id === editingEntityId)?.customLabel || entityLevels.find((e) => e.id === editingEntityId)?.name}
             </h3>
 
@@ -1999,15 +2037,15 @@ export const Screen1Organization: React.FC = () => {
 
               {/* Live Insight Preview */}
               {newAttribute.label && (
-                <div className="p-5 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-300 rounded-xl shadow-sm">
-                  <p className="text-sm font-bold text-emerald-900 mb-3 flex items-center gap-2">
+                <div className="p-5 bg-gray-50 border border-gray-200 rounded-xl shadow-sm">
+                  <p className="text-sm font-bold text-gray-900 mb-3 flex items-center gap-2">
                     <span className="text-lg">📊</span> Analytics Insights This Attribute Enables:
                   </p>
                   <div className="flex flex-wrap gap-2">
                     {getInsightsForAttribute(newAttribute.label, newAttribute.type).map((insight, idx) => (
                       <span
                         key={idx}
-                        className="px-3 py-1.5 bg-white border border-emerald-400 text-emerald-900 rounded-full text-sm font-semibold shadow-sm"
+                        className="px-3 py-1.5 bg-white border border-gray-300 text-gray-800 rounded-full text-sm font-semibold shadow-sm"
                       >
                         ✓ {insight}
                       </span>
@@ -2087,7 +2125,7 @@ export const Screen1Organization: React.FC = () => {
         <div className="fixed inset-0 bg-black bg-opacity-60 z-50 flex items-center justify-center p-4 backdrop-blur-sm">
           <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full p-8 border border-gray-200 max-h-[90vh] overflow-y-auto">
             <div className="mb-6">
-              <h3 className="text-2xl font-bold mb-2 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <h3 className="text-2xl font-bold mb-2 text-gray-900">
                 Entity Model Templates
               </h3>
               <p className="text-gray-600 text-sm">
