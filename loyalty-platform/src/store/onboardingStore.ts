@@ -801,7 +801,7 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
   })),
 
   nextScreen: () => set((state) => ({
-    currentScreen: Math.min(state.currentScreen + 1, 13),
+    currentScreen: Math.min(state.currentScreen + 1, 14),
   })),
 
   previousScreen: () => set((state) => ({
