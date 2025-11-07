@@ -306,7 +306,7 @@ export const Screen0Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          {screens.slice(1).map((screen) => {
+          {screens.map((screen) => {
             const Icon = screen.icon;
             return (
               <Card
