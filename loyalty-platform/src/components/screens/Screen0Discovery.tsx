@@ -3,16 +3,17 @@ import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { useOnboardingStore, type Template } from '../../store/onboardingStore';
+import { Store, ShoppingBag, Monitor, Building, Plane, Landmark, Smartphone, Settings } from 'lucide-react';
 
 const industries = [
-  { id: 'retail-franchise', icon: '🏪', name: 'Retail Franchise', desc: 'Multi-location, franchise model' },
-  { id: 'retail-chain', icon: '🛍️', name: 'Retail Chain', desc: 'Company-owned locations' },
-  { id: 'online-retail', icon: '💻', name: 'Online Retail', desc: 'E-commerce focused' },
-  { id: 'hospitality', icon: '🏨', name: 'Hospitality', desc: 'Hotels, QSR, Restaurants' },
-  { id: 'airlines', icon: '✈️', name: 'Airlines', desc: 'Routes & partners' },
-  { id: 'banking', icon: '🏦', name: 'Banking', desc: 'Products & accounts' },
-  { id: 'telecom', icon: '📱', name: 'Telecom', desc: 'Subscribers & plans' },
-  { id: 'custom', icon: '⚙️', name: 'Custom', desc: 'Build from scratch' },
+  { id: 'retail-franchise', icon: Store, name: 'Retail Franchise', desc: 'Multi-location, franchise model', color: 'bg-blue-500' },
+  { id: 'retail-chain', icon: ShoppingBag, name: 'Retail Chain', desc: 'Company-owned locations', color: 'bg-purple-500' },
+  { id: 'online-retail', icon: Monitor, name: 'Online Retail', desc: 'E-commerce focused', color: 'bg-green-500' },
+  { id: 'hospitality', icon: Building, name: 'Hospitality', desc: 'Hotels, QSR, Restaurants', color: 'bg-amber-500' },
+  { id: 'airlines', icon: Plane, name: 'Airlines', desc: 'Routes & partners', color: 'bg-sky-500' },
+  { id: 'banking', icon: Landmark, name: 'Banking', desc: 'Products & accounts', color: 'bg-emerald-500' },
+  { id: 'telecom', icon: Smartphone, name: 'Telecom', desc: 'Subscribers & plans', color: 'bg-indigo-500' },
+  { id: 'custom', icon: Settings, name: 'Custom', desc: 'Build from scratch', color: 'bg-gray-500' },
 ];
 
 const templates: { [key: string]: Template[] } = {
@@ -88,19 +89,26 @@ export const Screen0Discovery: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-4 gap-4 mb-8">
-          {industries.map((industry) => (
-            <Card
-              key={industry.id}
-              clickable
-              selected={localIndustry === industry.id}
-              onClick={() => handleIndustrySelect(industry.id)}
-              className="p-5 text-center"
-            >
-              <div className="text-4xl mb-3">{industry.icon}</div>
-              <div className="font-semibold text-gray-900 mb-1">{industry.name}</div>
-              <div className="text-xs text-gray-500">{industry.desc}</div>
-            </Card>
-          ))}
+          {industries.map((industry) => {
+            const IconComponent = industry.icon;
+            return (
+              <Card
+                key={industry.id}
+                clickable
+                selected={localIndustry === industry.id}
+                onClick={() => handleIndustrySelect(industry.id)}
+                className="p-5 text-center"
+              >
+                <div className="flex justify-center mb-3">
+                  <div className={`p-3 ${industry.color} rounded-lg`}>
+                    <IconComponent className="text-white" size={24} />
+                  </div>
+                </div>
+                <div className="font-semibold text-gray-900 mb-1">{industry.name}</div>
+                <div className="text-xs text-gray-500">{industry.desc}</div>
+              </Card>
+            );
+          })}
         </div>
 
         {localIndustry && templates[localIndustry] && (

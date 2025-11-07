@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { useOnboardingStore } from '../../store/onboardingStore';
+import { Mail, MessageSquare, Bell, Smartphone } from 'lucide-react';
 
 export const Screen7SafeguardsAutomation: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'anti-gaming' | 'communication' | 'overrides'>('anti-gaming');
@@ -461,16 +462,20 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
               {safeguardSettings?.channelLimitsEnabled && (
                 <div className="space-y-4 mt-4">
                   {[
-                    { channel: 'email', icon: '📧', label: 'Email', defaultDaily: 1, defaultWeekly: 3, defaultMonthly: 10 },
-                    { channel: 'sms', icon: '💬', label: 'SMS', defaultDaily: 1, defaultWeekly: 2, defaultMonthly: 6 },
-                    { channel: 'push', icon: '🔔', label: 'Push Notification', defaultDaily: 2, defaultWeekly: 5, defaultMonthly: 15 },
-                    { channel: 'in-app', icon: '📱', label: 'In-App Message', defaultDaily: 3, defaultWeekly: 10, defaultMonthly: 30 },
-                  ].map((ch) => (
-                    <div key={ch.channel} className="p-4 bg-gray-50 rounded-lg">
-                      <div className="flex items-center gap-2 mb-3">
-                        <span className="text-2xl">{ch.icon}</span>
-                        <h4 className="font-semibold">{ch.label}</h4>
-                      </div>
+                    { channel: 'email', icon: Mail, label: 'Email', defaultDaily: 1, defaultWeekly: 3, defaultMonthly: 10, color: 'bg-blue-500' },
+                    { channel: 'sms', icon: MessageSquare, label: 'SMS', defaultDaily: 1, defaultWeekly: 2, defaultMonthly: 6, color: 'bg-green-500' },
+                    { channel: 'push', icon: Bell, label: 'Push Notification', defaultDaily: 2, defaultWeekly: 5, defaultMonthly: 15, color: 'bg-amber-500' },
+                    { channel: 'in-app', icon: Smartphone, label: 'In-App Message', defaultDaily: 3, defaultWeekly: 10, defaultMonthly: 30, color: 'bg-purple-500' },
+                  ].map((ch) => {
+                    const IconComponent = ch.icon;
+                    return (
+                      <div key={ch.channel} className="p-4 bg-gray-50 rounded-lg">
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className={`p-2 ${ch.color} rounded-lg`}>
+                            <IconComponent className="text-white" size={20} />
+                          </div>
+                          <h4 className="font-semibold">{ch.label}</h4>
+                        </div>
                       <div className="grid grid-cols-3 gap-3">
                         <div>
                           <label className="block text-xs text-gray-600 mb-1">Per Day</label>
@@ -524,8 +529,9 @@ export const Screen7SafeguardsAutomation: React.FC = () => {
                           />
                         </div>
                       </div>
-                    </div>
-                  ))}
+                      </div>
+                    );
+                  })}
                 </div>
               )}
             </Card>

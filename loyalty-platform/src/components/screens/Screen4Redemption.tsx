@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import { useOnboardingStore } from '../../store/onboardingStore';
-import { QrCode, Smartphone, CreditCard, Phone, Bell, ExternalLink, Check } from 'lucide-react';
+import { QrCode, Smartphone, CreditCard, Phone, Bell, ExternalLink, Check, Gift, Ticket, Sparkles, Handshake, Heart, Percent } from 'lucide-react';
 
 export const Screen4Redemption: React.FC = () => {
   const { valueType, valueConfig, updateValueConfig } = useOnboardingStore();
@@ -162,23 +162,30 @@ export const Screen4Redemption: React.FC = () => {
               <h3 className="text-xl font-semibold mb-5">Redemption Methods</h3>
               <div className="grid grid-cols-3 gap-4">
                 {[
-                  { icon: '💳', name: 'Instant Discount', desc: 'Apply points as discount at POS' },
-                  { icon: '🎁', name: 'Product Rewards', desc: 'Redeem points for specific items' },
-                  { icon: '🎟️', name: 'Vouchers', desc: 'Convert points to vouchers' },
-                  { icon: '🌟', name: 'Experiences', desc: 'Special events & perks' },
-                  { icon: '🤝', name: 'Partner Rewards', desc: 'External partner catalog' },
-                  { icon: '❤️', name: 'Donations', desc: 'Donate points to charities' },
-                ].map((type) => (
-                  <Card key={type.name} clickable className="p-5 text-center hover:border-primary transition-colors">
-                    <div className="text-4xl mb-3">{type.icon}</div>
-                    <h3 className="font-semibold mb-1">{type.name}</h3>
-                    <p className="text-xs text-gray-600">{type.desc}</p>
-                    <label className="flex items-center justify-center gap-2 mt-3">
-                      <input type="checkbox" className="w-4 h-4 text-brand-600 rounded" defaultChecked={type.name === 'Instant Discount'} />
-                      <span className="text-xs">Enable</span>
-                    </label>
-                  </Card>
-                ))}
+                  { icon: Percent, name: 'Instant Discount', desc: 'Apply points as discount at POS', color: 'bg-green-500' },
+                  { icon: Gift, name: 'Product Rewards', desc: 'Redeem points for specific items', color: 'bg-blue-500' },
+                  { icon: Ticket, name: 'Vouchers', desc: 'Convert points to vouchers', color: 'bg-purple-500' },
+                  { icon: Sparkles, name: 'Experiences', desc: 'Special events & perks', color: 'bg-amber-500' },
+                  { icon: Handshake, name: 'Partner Rewards', desc: 'External partner catalog', color: 'bg-indigo-500' },
+                  { icon: Heart, name: 'Donations', desc: 'Donate points to charities', color: 'bg-red-500' },
+                ].map((type) => {
+                  const IconComponent = type.icon;
+                  return (
+                    <Card key={type.name} clickable className="p-5 text-center hover:border-primary transition-colors">
+                      <div className="flex justify-center mb-3">
+                        <div className={`p-3 ${type.color} rounded-lg`}>
+                          <IconComponent className="text-white" size={24} />
+                        </div>
+                      </div>
+                      <h3 className="font-semibold mb-1">{type.name}</h3>
+                      <p className="text-xs text-gray-600">{type.desc}</p>
+                      <label className="flex items-center justify-center gap-2 mt-3">
+                        <input type="checkbox" className="w-4 h-4 text-brand-600 rounded" defaultChecked={type.name === 'Instant Discount'} />
+                        <span className="text-xs">Enable</span>
+                      </label>
+                    </Card>
+                  );
+                })}
               </div>
             </Card>
 
