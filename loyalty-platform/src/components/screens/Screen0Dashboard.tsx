@@ -207,9 +207,9 @@ export const Screen0Dashboard: React.FC<DashboardProps> = ({
   const getStatusIcon = (status: Screen['status']) => {
     switch (status) {
       case 'complete':
-        return <CheckCircle2 size={20} className="text-green-600" />;
+        return <CheckCircle2 size={20} className="text-success-600" />;
       case 'in-progress':
-        return <Clock size={20} className="text-blue-600" />;
+        return <Clock size={20} className="text-brand-600" />;
       default:
         return <AlertCircle size={20} className="text-gray-400" />;
     }
@@ -218,9 +218,9 @@ export const Screen0Dashboard: React.FC<DashboardProps> = ({
   const getStatusColor = (status: Screen['status']) => {
     switch (status) {
       case 'complete':
-        return 'border-green-500 bg-gradient-to-br from-green-50 to-emerald-50';
+        return 'border border-success-500 bg-gray-50';
       case 'in-progress':
-        return 'border-blue-500 bg-gradient-to-br from-blue-50 to-indigo-50';
+        return 'border border-brand-500 bg-gray-50';
       default:
         return 'border-gray-200 hover:border-gray-300 bg-white';
     }
@@ -231,11 +231,11 @@ export const Screen0Dashboard: React.FC<DashboardProps> = ({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="p-10"
+      className="p-8"
     >
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-10">
+        <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-3">
             Configuration Dashboard
           </h1>
@@ -245,7 +245,7 @@ export const Screen0Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         {/* Overall Progress Card */}
-        <Card className="mb-8 border-2 border-blue-300 bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+        <Card className="mb-8 border border-gray-200 bg-gray-50">
           <div className="p-8">
             <div className="flex items-center justify-between mb-6">
               <div>
@@ -256,10 +256,10 @@ export const Screen0Dashboard: React.FC<DashboardProps> = ({
                 </p>
               </div>
               <div className="text-right">
-                <div className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <div className="text-5xl font-bold text-brand-600">
                   {totalProgress}%
                 </div>
-                <div className="text-sm text-gray-600 mt-1">Complete</div>
+                <div className="text-sm text-gray-500 mt-1">Complete</div>
               </div>
             </div>
 
@@ -269,38 +269,38 @@ export const Screen0Dashboard: React.FC<DashboardProps> = ({
                 initial={{ width: 0 }}
                 animate={{ width: `${totalProgress}%` }}
                 transition={{ duration: 1, ease: 'easeOut' }}
-                className="h-full bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500"
+                className="h-full bg-gradient-to-r from-brand-500 to-brand-600"
               />
             </div>
 
             {/* Quick Stats */}
-            <div className="grid grid-cols-4 gap-4 mt-6">
+            <div className="grid grid-cols-4 gap-4 mt-5">
               <div className="p-4 bg-white rounded-lg border border-gray-200">
                 <div className="text-2xl font-bold text-gray-900">{completedScreens}</div>
-                <div className="text-xs text-gray-600">Completed</div>
+                <div className="text-xs text-gray-500">Completed</div>
               </div>
               <div className="p-4 bg-white rounded-lg border border-gray-200">
-                <div className="text-2xl font-bold text-blue-600">{inProgressScreens}</div>
-                <div className="text-xs text-gray-600">In Progress</div>
+                <div className="text-2xl font-bold text-brand-600">{inProgressScreens}</div>
+                <div className="text-xs text-gray-500">In Progress</div>
               </div>
               <div className="p-4 bg-white rounded-lg border border-gray-200">
                 <div className="text-2xl font-bold text-gray-400">
                   {screens.filter((s) => s.status === 'not-started').length}
                 </div>
-                <div className="text-xs text-gray-600">Not Started</div>
+                <div className="text-xs text-gray-500">Not Started</div>
               </div>
               <div className="p-4 bg-white rounded-lg border border-gray-200">
-                <div className="text-2xl font-bold text-purple-600">~2.5 hrs</div>
-                <div className="text-xs text-gray-600">Est. Time Left</div>
+                <div className="text-2xl font-bold text-brand-600">~2.5 hrs</div>
+                <div className="text-xs text-gray-500">Est. Time Left</div>
               </div>
             </div>
           </div>
         </Card>
 
         {/* Configuration Sections */}
-        <div className="mb-6">
+        <div className="mb-5">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">Configuration Sections</h2>
-          <p className="text-gray-600 mb-6">
+          <p className="text-gray-700 mb-5">
             Click any section to begin or continue configuration
           </p>
         </div>
@@ -314,10 +314,10 @@ export const Screen0Dashboard: React.FC<DashboardProps> = ({
                 className={`transition-all hover:shadow-lg cursor-pointer ${getStatusColor(screen.status)}`}
                 onClick={() => onNavigate(screen.id)}
               >
-                <div className="p-6">
+                <div className="p-5">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-start gap-4 flex-1">
-                      <div className="p-3 bg-white rounded-xl shadow-sm border-2 border-gray-200">
+                      <div className="p-3 bg-white rounded-xl shadow-sm border border-gray-200">
                         <Icon size={28} className="text-gray-700" />
                       </div>
                       <div className="flex-1">
@@ -325,7 +325,7 @@ export const Screen0Dashboard: React.FC<DashboardProps> = ({
                           <h3 className="font-bold text-lg text-gray-900">{screen.name}</h3>
                           {getStatusIcon(screen.status)}
                         </div>
-                        <p className="text-sm text-gray-600 mb-3">{screen.description}</p>
+                        <p className="text-sm text-gray-700 mb-3">{screen.description}</p>
 
                         {/* Progress Bar */}
                         {screen.progress > 0 && (
@@ -333,7 +333,7 @@ export const Screen0Dashboard: React.FC<DashboardProps> = ({
                             <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
                               <div
                                 style={{ width: `${screen.progress}%` }}
-                                className="h-full bg-gradient-to-r from-blue-500 to-purple-500"
+                                className="h-full bg-gradient-to-r from-brand-500 to-brand-600"
                               />
                             </div>
                           </div>
@@ -353,8 +353,8 @@ export const Screen0Dashboard: React.FC<DashboardProps> = ({
                   </div>
 
                   {screen.status === 'in-progress' && (
-                    <div className="pt-3 border-t border-blue-200">
-                      <div className="text-sm text-blue-700 font-medium">
+                    <div className="pt-3 border-t border-gray-200">
+                      <div className="text-sm text-brand-700 font-medium">
                         Continue where you left off →
                       </div>
                     </div>

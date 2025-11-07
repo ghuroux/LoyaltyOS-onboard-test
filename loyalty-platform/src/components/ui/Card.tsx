@@ -16,13 +16,13 @@ export const Card: React.FC<CardProps> = ({
   onClick,
   selected = false,
 }) => {
-  const baseClasses = 'bg-white rounded-xl shadow-card transition-all duration-200';
-  const clickableClasses = clickable ? 'cursor-pointer hover:-translate-y-1 hover:shadow-card-hover' : '';
-  const selectedClasses = selected ? 'border-2 border-primary ring-2 ring-primary/20' : 'border-2 border-transparent';
+  const baseClasses = 'bg-white rounded-lg border border-gray-200 transition-all duration-200';
+  const clickableClasses = clickable ? 'cursor-pointer hover:shadow-md hover:border-gray-300' : 'shadow-sm';
+  const selectedClasses = selected ? 'border-brand-500 ring-2 ring-brand-100 shadow-md' : '';
 
   return (
     <motion.div
-      whileHover={clickable ? { y: -4 } : {}}
+      whileHover={clickable ? { y: -2 } : {}}
       onClick={onClick}
       className={`${baseClasses} ${clickableClasses} ${selectedClasses} ${className}`}
     >

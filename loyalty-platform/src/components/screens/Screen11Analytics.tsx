@@ -23,21 +23,21 @@ export const Screen11Analytics: React.FC = () => {
   ];
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-10">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Analytics & KPI Configuration</h1>
           <p className="text-gray-600 text-lg">Select and configure success metrics based on available data</p>
         </div>
 
-        <div className="grid grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-2 gap-5 mb-5">
           {kpiCategories.map((cat) => (
-            <Card key={cat.category} className="p-6">
+            <Card key={cat.category} className="p-5">
               <h3 className="text-lg font-semibold mb-4">{cat.category}</h3>
               <div className="space-y-2">
                 {cat.kpis.map((kpi) => (
                   <label key={kpi} className="flex items-center gap-3 p-2 rounded hover:bg-gray-50 cursor-pointer">
-                    <input type="checkbox" className="w-4 h-4 text-primary rounded" defaultChecked />
+                    <input type="checkbox" className="w-4 h-4 text-brand-600 rounded" defaultChecked />
                     <span className="text-sm font-medium flex-1">{kpi}</span>
                     <span className="text-xs text-gray-500">✓ Available</span>
                   </label>
@@ -47,20 +47,20 @@ export const Screen11Analytics: React.FC = () => {
           ))}
         </div>
 
-        <Card className="p-6 mb-6">
+        <Card className="p-5 mb-5">
           <h3 className="text-lg font-semibold mb-4">Dashboard Designer</h3>
           <p className="text-sm text-gray-600 mb-4">Drag KPIs to design your executive dashboard</p>
           <div className="grid grid-cols-3 gap-4 min-h-[200px] bg-gray-50 rounded-lg p-4">
             {['Customer Lifetime Value', 'Active Members', 'Campaign ROAS', 'Churn Rate', 'Sales per Sq Ft', 'Redemption Rate'].map((kpi) => (
-              <div key={kpi} className="p-4 bg-white border-2 border-dashed border-gray-300 rounded-lg text-center">
+              <div key={kpi} className="p-4 bg-white border border-dashed border-gray-300 rounded-lg text-center">
                 <div className="text-sm font-semibold text-gray-700">{kpi}</div>
-                <div className="text-2xl font-bold text-primary mt-2">--</div>
+                <div className="text-2xl font-bold text-brand-600 mt-2">--</div>
               </div>
             ))}
           </div>
         </Card>
 
-        <Card className="p-6">
+        <Card className="p-5">
           <h3 className="text-lg font-semibold mb-4">Alert Configuration</h3>
           <div className="space-y-3">
             {[

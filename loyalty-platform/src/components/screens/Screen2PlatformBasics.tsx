@@ -78,25 +78,25 @@ export const Screen2PlatformBasics: React.FC = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="p-10"
+      className="p-8"
     >
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="mb-10">
-          <div className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white rounded-2xl p-8 shadow-lg">
+        <div className="mb-8">
+          <div className="bg-brand-500 text-white rounded-2xl p-8 shadow-lg">
             <h1 className="text-4xl font-bold mb-3">Platform Basics</h1>
-            <p className="text-blue-50 text-lg max-w-3xl">
+            <p className="text-white text-lg max-w-3xl">
               Configure fundamental platform settings, regional preferences, and create your primary administrator account
             </p>
           </div>
         </div>
 
-        <div className="space-y-6">
+        <div className="space-y-5">
           {/* Program Identity */}
-          <Card className="shadow-md">
-            <div className="p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg">
+          <Card className="shadow-lg">
+            <div className="p-5">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="p-3 bg-brand-500 rounded-lg">
                   <Building2 className="text-white" size={24} />
                 </div>
                 <div>
@@ -115,7 +115,7 @@ export const Screen2PlatformBasics: React.FC = () => {
                     value={programName}
                     onChange={(e) => setProgramName(e.target.value)}
                     placeholder="e.g., Acme Rewards, MyBrand Loyalty, VIP Club"
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:border-brand-500 focus:outline-none"
                   />
                   <p className="text-xs text-gray-500 mt-1">This will be displayed to your customers</p>
                 </div>
@@ -129,7 +129,7 @@ export const Screen2PlatformBasics: React.FC = () => {
                     onChange={(e) => setProgramDescription(e.target.value)}
                     placeholder="Brief description of your loyalty program..."
                     rows={3}
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:border-brand-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -137,10 +137,10 @@ export const Screen2PlatformBasics: React.FC = () => {
           </Card>
 
           {/* Regional Settings */}
-          <Card className="shadow-md">
-            <div className="p-6">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-3 bg-gradient-to-br from-green-500 to-teal-500 rounded-lg">
+          <Card className="shadow-lg">
+            <div className="p-5">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="p-3 bg-brand-500 rounded-lg">
                   <Globe className="text-white" size={24} />
                 </div>
                 <div>
@@ -149,7 +149,7 @@ export const Screen2PlatformBasics: React.FC = () => {
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 gap-5">
                 {/* Currency */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -158,7 +158,7 @@ export const Screen2PlatformBasics: React.FC = () => {
                   <select
                     value={currency}
                     onChange={(e) => setCurrency(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:border-brand-500 focus:outline-none"
                   >
                     {currencies.map((curr) => (
                       <option key={curr.code} value={curr.code}>
@@ -177,7 +177,7 @@ export const Screen2PlatformBasics: React.FC = () => {
                   <select
                     value={timezone}
                     onChange={(e) => setTimezone(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:border-brand-500 focus:outline-none"
                   >
                     {timezones.map((tz) => (
                       <option key={tz.value} value={tz.value}>
@@ -196,7 +196,7 @@ export const Screen2PlatformBasics: React.FC = () => {
                   <select
                     value={language}
                     onChange={(e) => setLanguage(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:border-brand-500 focus:outline-none"
                   >
                     {languages.map((lang) => (
                       <option key={lang.code} value={lang.code}>
@@ -215,7 +215,7 @@ export const Screen2PlatformBasics: React.FC = () => {
                   <select
                     value={dateFormat}
                     onChange={(e) => setDateFormat(e.target.value)}
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:border-brand-500 focus:outline-none"
                   >
                     <option value="MM/DD/YYYY">MM/DD/YYYY (US)</option>
                     <option value="DD/MM/YYYY">DD/MM/YYYY (UK/EU)</option>
@@ -235,7 +235,7 @@ export const Screen2PlatformBasics: React.FC = () => {
                     value={fiscalYearStart}
                     onChange={(e) => setFiscalYearStart(e.target.value)}
                     placeholder="MM-DD"
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:border-brand-500 focus:outline-none"
                   />
                   <p className="text-xs text-gray-500 mt-1">
                     When does your fiscal year begin? (e.g., 01-01 for January 1st, 04-01 for April 1st)
@@ -246,9 +246,9 @@ export const Screen2PlatformBasics: React.FC = () => {
           </Card>
 
           {/* Seed User / Primary Administrator */}
-          <Card className="shadow-md border-2 border-blue-300">
+          <Card className="shadow-lg border-2 border-blue-300">
             <div className="p-6 bg-gradient-to-br from-blue-50 to-indigo-50">
-              <div className="flex items-center gap-3 mb-6">
+              <div className="flex items-center gap-3 mb-5">
                 <div className="p-3 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg">
                   <User className="text-white" size={24} />
                 </div>
@@ -258,7 +258,7 @@ export const Screen2PlatformBasics: React.FC = () => {
                 </div>
               </div>
 
-              <div className="bg-blue-100 border-2 border-blue-300 rounded-lg p-4 mb-6">
+              <div className="bg-blue-100 border-2 border-blue-300 rounded-lg p-4 mb-5">
                 <p className="text-sm text-blue-900">
                   <strong>💡 Important:</strong> This user will have full system access and will be responsible for initial
                   configuration and managing other user accounts. They will receive credentials via email.
@@ -275,7 +275,7 @@ export const Screen2PlatformBasics: React.FC = () => {
                     value={seedUser.firstName}
                     onChange={(e) => setSeedUser({ ...seedUser, firstName: e.target.value })}
                     placeholder="John"
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:border-brand-500 focus:outline-none"
                   />
                 </div>
 
@@ -288,7 +288,7 @@ export const Screen2PlatformBasics: React.FC = () => {
                     value={seedUser.lastName}
                     onChange={(e) => setSeedUser({ ...seedUser, lastName: e.target.value })}
                     placeholder="Smith"
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:border-brand-500 focus:outline-none"
                   />
                 </div>
 
@@ -301,7 +301,7 @@ export const Screen2PlatformBasics: React.FC = () => {
                     value={seedUser.email}
                     onChange={(e) => setSeedUser({ ...seedUser, email: e.target.value })}
                     placeholder="john.smith@company.com"
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:border-brand-500 focus:outline-none"
                   />
                 </div>
 
@@ -314,7 +314,7 @@ export const Screen2PlatformBasics: React.FC = () => {
                     value={seedUser.phone}
                     onChange={(e) => setSeedUser({ ...seedUser, phone: e.target.value })}
                     placeholder="+1-555-0123"
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:border-brand-500 focus:outline-none"
                   />
                 </div>
 
@@ -327,7 +327,7 @@ export const Screen2PlatformBasics: React.FC = () => {
                     value={seedUser.role}
                     onChange={(e) => setSeedUser({ ...seedUser, role: e.target.value })}
                     placeholder="System Administrator"
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:border-brand-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -335,9 +335,9 @@ export const Screen2PlatformBasics: React.FC = () => {
           </Card>
 
           {/* Support Contact (Optional) */}
-          <Card className="shadow-md">
-            <div className="p-6">
-              <div className="flex items-center gap-3 mb-6">
+          <Card className="shadow-lg">
+            <div className="p-5">
+              <div className="flex items-center gap-3 mb-5">
                 <div className="p-3 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg">
                   <Phone className="text-white" size={24} />
                 </div>
@@ -359,7 +359,7 @@ export const Screen2PlatformBasics: React.FC = () => {
                     value={supportContact.email}
                     onChange={(e) => setSupportContact({ ...supportContact, email: e.target.value })}
                     placeholder="support@company.com"
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:border-brand-500 focus:outline-none"
                   />
                 </div>
 
@@ -372,7 +372,7 @@ export const Screen2PlatformBasics: React.FC = () => {
                     value={supportContact.phone}
                     onChange={(e) => setSupportContact({ ...supportContact, phone: e.target.value })}
                     placeholder="+1-800-555-0100"
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:border-brand-500 focus:outline-none"
                   />
                 </div>
 
@@ -385,7 +385,7 @@ export const Screen2PlatformBasics: React.FC = () => {
                     value={supportContact.hours}
                     onChange={(e) => setSupportContact({ ...supportContact, hours: e.target.value })}
                     placeholder="9:00 AM - 5:00 PM EST"
-                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg text-base focus:border-blue-500 focus:outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:border-brand-500 focus:outline-none"
                   />
                 </div>
               </div>
@@ -393,8 +393,8 @@ export const Screen2PlatformBasics: React.FC = () => {
           </Card>
 
           {/* Summary Box */}
-          <Card className="shadow-md bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-300">
-            <div className="p-6">
+          <Card className="shadow-lg bg-gray-50 border border-gray-200">
+            <div className="p-5">
               <h3 className="font-bold text-lg text-gray-900 mb-3">✓ Configuration Summary</h3>
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>

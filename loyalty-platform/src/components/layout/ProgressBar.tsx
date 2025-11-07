@@ -32,7 +32,7 @@ interface ProgressBarProps {
 
 export const ProgressBar: React.FC<ProgressBarProps> = ({ currentScreen, onNavigate }) => {
   return (
-    <div className="bg-white border-b border-gray-200 px-10 py-5">
+    <div className="bg-gray-50 border-b border-gray-200 px-8 py-4">
       <div className="max-w-5xl mx-auto">
         <div className="flex justify-between items-center relative">
           {steps.map((step, index) => {
@@ -45,13 +45,13 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({ currentScreen, onNavig
             return (
               <div key={step.number} className="flex flex-col items-center gap-2 relative flex-1">
                 {index < 5 && (
-                  <div className="absolute top-5 left-1/2 w-full h-0.5 bg-gray-200 -z-10">
+                  <div className="absolute top-4 left-1/2 w-full h-0.5 bg-gray-200 -z-10">
                     {isCompleted && (
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: '100%' }}
-                        transition={{ duration: 0.5 }}
-                        className="h-full bg-secondary"
+                        transition={{ duration: 0.3 }}
+                        className="h-full bg-success-500"
                       />
                     )}
                   </div>
@@ -61,24 +61,24 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({ currentScreen, onNavig
                   disabled={!onNavigate}
                   initial={false}
                   animate={{
-                    scale: isActive ? 1.1 : 1,
+                    scale: isActive ? 1.05 : 1,
                     backgroundColor: isCompleted
-                      ? '#10B981'
+                      ? '#22c55e'
                       : isActive
-                      ? '#1E3A8A'
+                      ? '#0ea5e9'
                       : '#ffffff',
-                    borderColor: isCompleted || isActive ? 'transparent' : '#E5E7EB',
-                    color: isCompleted || isActive ? '#ffffff' : '#6B7280',
+                    borderColor: isCompleted || isActive ? 'transparent' : '#e5e7eb',
+                    color: isCompleted || isActive ? '#ffffff' : '#6b7280',
                   }}
-                  whileHover={onNavigate ? { scale: 1.15, cursor: 'pointer' } : {}}
-                  className="w-10 h-10 rounded-full border-2 flex items-center justify-center font-semibold text-sm z-10 transition-transform"
+                  whileHover={onNavigate ? { scale: 1.1, cursor: 'pointer' } : {}}
+                  className="w-8 h-8 rounded-full border-2 flex items-center justify-center font-semibold text-xs z-10 transition-all shadow-sm"
                   title={`Go to ${step.label}`}
                 >
                   {isCompleted ? '✓' : step.number}
                 </motion.button>
                 <span
                   className={`text-xs text-center ${
-                    isActive ? 'text-primary font-semibold' : 'text-gray-500'
+                    isActive ? 'text-brand-600 font-semibold' : 'text-gray-500'
                   }`}
                 >
                   {step.label}
@@ -92,10 +92,10 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({ currentScreen, onNavig
               className="flex flex-col items-center gap-2 hover:opacity-80 transition-opacity"
               title="Current screen"
             >
-              <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center text-xs text-gray-600 font-semibold">
+              <div className="w-8 h-8 rounded-full bg-brand-500 flex items-center justify-center text-xs text-white font-semibold shadow-sm">
                 {currentScreen}
               </div>
-              <span className="text-xs text-gray-500">current</span>
+              <span className="text-xs text-brand-600 font-semibold">current</span>
             </button>
           )}
         </div>

@@ -20,16 +20,17 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/50 z-40"
+            className="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-40"
           />
 
           {/* Modal */}
           <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
             <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              initial={{ opacity: 0, scale: 0.96, y: 16 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              className="bg-white rounded-xl shadow-2xl w-full max-w-md"
+              exit={{ opacity: 0, scale: 0.96, y: 16 }}
+              transition={{ duration: 0.15 }}
+              className="bg-white rounded-xl shadow-xl border border-gray-200 w-full max-w-md"
               onClick={(e) => e.stopPropagation()}
             >
               {/* Header */}
@@ -37,9 +38,9 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
                 <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
                 <button
                   onClick={onClose}
-                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                  className="text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg p-1.5 transition-colors"
                 >
-                  <X size={20} />
+                  <X size={18} />
                 </button>
               </div>
 

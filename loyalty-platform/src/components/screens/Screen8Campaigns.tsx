@@ -148,7 +148,7 @@ export const Screen8Campaigns: React.FC = () => {
   const currentTemplates = starterTemplates[activeType] || [];
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-10">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">📢 Campaign Templates & Framework</h1>
@@ -161,14 +161,14 @@ export const Screen8Campaigns: React.FC = () => {
             <button
               key={type.id}
               onClick={() => setActiveType(type.id)}
-              className={`p-6 rounded-lg border-2 transition-all text-left ${
+              className={`p-6 rounded-lg border transition-all text-left ${
                 activeType === type.id
-                  ? 'border-primary bg-blue-50 shadow-md'
+                  ? 'border-primary bg-gray-50 shadow-lg'
                   : 'border-gray-200 bg-white hover:border-gray-300'
               }`}
             >
               <div className="text-4xl mb-3">{type.icon}</div>
-              <h3 className={`font-semibold text-lg mb-2 ${activeType === type.id ? 'text-primary' : 'text-gray-900'}`}>
+              <h3 className={`font-semibold text-lg mb-2 ${activeType === type.id ? 'text-brand-600' : 'text-gray-900'}`}>
                 {type.name}
               </h3>
               <p className="text-sm text-gray-600 mb-3">{type.desc}</p>
@@ -217,7 +217,7 @@ export const Screen8Campaigns: React.FC = () => {
                           }}
                           className="sr-only peer"
                         />
-                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+                        <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-brand-500"></div>
                       </label>
                       <h3 className="text-lg font-semibold">{template.name}</h3>
                       <span className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">Template</span>
@@ -245,7 +245,7 @@ export const Screen8Campaigns: React.FC = () => {
                       setEditingTemplate({ id: template.id, name: template.name, type: activeType });
                       setBuilderOpen(true);
                     }}
-                    className="ml-4 px-4 py-2 text-sm text-primary hover:bg-blue-50 rounded-lg font-medium border border-primary"
+                    className="ml-4 px-4 py-2 text-sm text-brand-600 hover:bg-gray-50 rounded-lg font-medium border border-brand-500"
                   >
                     Configure
                   </button>
@@ -290,7 +290,7 @@ export const Screen8Campaigns: React.FC = () => {
         </div>
 
         {/* Program-Wide Campaign Controls */}
-        <Card className="p-6 mb-6">
+        <Card className="p-5 mb-5">
           <h3 className="text-lg font-semibold mb-4">📊 Program-Wide Campaign Controls</h3>
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-gray-50 rounded-lg">
@@ -350,7 +350,7 @@ export const Screen8Campaigns: React.FC = () => {
         </Card>
 
         {/* Campaign Approval Workflow */}
-        <Card className="p-6">
+        <Card className="p-5">
           <h3 className="text-lg font-semibold mb-4">✅ Campaign Approval Workflow</h3>
           <p className="text-sm text-gray-600 mb-4">Define who can create and approve campaigns</p>
 
@@ -360,7 +360,7 @@ export const Screen8Campaigns: React.FC = () => {
                 type="checkbox"
                 checked={campaignSettings?.requireApproval || false}
                 onChange={(e) => updateCampaignSettings?.({ requireApproval: e.target.checked })}
-                className="h-4 w-4 text-primary border-gray-300 rounded"
+                className="h-4 w-4 text-brand-600 border-gray-300 rounded"
               />
               <div className="flex-1">
                 <div className="font-medium text-sm">Require approval for all campaigns</div>
@@ -404,7 +404,7 @@ export const Screen8Campaigns: React.FC = () => {
         </Card>
 
         {/* Info Box */}
-        <Card className="p-6 mt-8 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200">
+        <Card className="p-5 mt-8 bg-gray-50 border border-gray-200">
           <div className="flex items-start gap-3">
             <span className="text-2xl">💡</span>
             <div>

@@ -16,7 +16,7 @@ const valueTypes = [
 
 const tierColors = [
   { value: 'gray', label: 'Gray', class: 'bg-gray-500' },
-  { value: 'blue', label: 'Blue', class: 'bg-blue-500' },
+  { value: 'blue', label: 'Blue', class: 'bg-gray-500' },
   { value: 'green', label: 'Green', class: 'bg-green-500' },
   { value: 'yellow', label: 'Yellow', class: 'bg-yellow-500' },
   { value: 'orange', label: 'Orange', class: 'bg-orange-500' },
@@ -223,7 +223,7 @@ const EarningRulesEditor: React.FC<EarningRulesEditorProps> = ({ rules, onUpdate
                       },
                     },
                   })}
-                  className="w-4 h-4 text-primary rounded"
+                  className="w-4 h-4 text-brand-600 rounded"
                 />
                 <span className="font-medium text-gray-900">Spending Threshold</span>
               </label>
@@ -280,7 +280,7 @@ const EarningRulesEditor: React.FC<EarningRulesEditorProps> = ({ rules, onUpdate
                       },
                     },
                   })}
-                  className="w-4 h-4 text-primary rounded"
+                  className="w-4 h-4 text-brand-600 rounded"
                 />
                 <span className="font-medium text-gray-900">Purchase Frequency</span>
               </label>
@@ -338,7 +338,7 @@ const EarningRulesEditor: React.FC<EarningRulesEditorProps> = ({ rules, onUpdate
                       },
                     },
                   })}
-                  className="w-4 h-4 text-primary rounded"
+                  className="w-4 h-4 text-brand-600 rounded"
                 />
                 <span className="font-medium text-gray-900">Period-Based Spending</span>
               </label>
@@ -461,7 +461,7 @@ const EarningRulesEditor: React.FC<EarningRulesEditorProps> = ({ rules, onUpdate
                     },
                   },
                 })}
-                className="w-4 h-4 text-primary rounded"
+                className="w-4 h-4 text-brand-600 rounded"
               />
               <span className="font-medium text-gray-900">Frequency Bonus</span>
             </label>
@@ -519,7 +519,7 @@ const EarningRulesEditor: React.FC<EarningRulesEditorProps> = ({ rules, onUpdate
                     },
                   },
                 })}
-                className="w-4 h-4 text-primary rounded"
+                className="w-4 h-4 text-brand-600 rounded"
               />
               <span className="font-medium text-gray-900">Spending Threshold Bonus</span>
             </label>
@@ -580,7 +580,7 @@ const EarningRulesEditor: React.FC<EarningRulesEditorProps> = ({ rules, onUpdate
                     },
                   },
                 })}
-                className="w-4 h-4 text-primary rounded"
+                className="w-4 h-4 text-brand-600 rounded"
               />
               <span className="font-medium text-gray-900">Birthday Reward</span>
             </label>
@@ -734,7 +734,7 @@ const EarningRulesEditor: React.FC<EarningRulesEditorProps> = ({ rules, onUpdate
                     },
                   },
                 })}
-                className="w-4 h-4 text-primary rounded"
+                className="w-4 h-4 text-brand-600 rounded"
               />
               <span className="font-medium text-gray-900">First Purchase Bonus</span>
             </label>
@@ -784,7 +784,7 @@ const EarningRulesEditor: React.FC<EarningRulesEditorProps> = ({ rules, onUpdate
                     type="checkbox"
                     checked={tracker.enabled}
                     onChange={() => handleToggleSkuTracker(tracker.id)}
-                    className="w-4 h-4 text-primary rounded"
+                    className="w-4 h-4 text-brand-600 rounded"
                   />
                   <div className="flex-1">
                     <div className="text-sm font-medium text-gray-900">
@@ -800,7 +800,7 @@ const EarningRulesEditor: React.FC<EarningRulesEditorProps> = ({ rules, onUpdate
                 <div className="flex gap-2">
                   <button
                     onClick={() => handleEditSkuTracker(tracker)}
-                    className="p-2 text-gray-600 hover:text-primary transition-colors"
+                    className="p-2 text-gray-600 hover:text-brand-600 transition-colors"
                   >
                     <Edit2 size={16} />
                   </button>
@@ -911,7 +911,7 @@ const EarningRulesEditor: React.FC<EarningRulesEditorProps> = ({ rules, onUpdate
           </div>
 
           {skuForm.rewardType === 'different' && (
-            <div className="grid grid-cols-2 gap-4 p-3 bg-blue-50 rounded-lg">
+            <div className="grid grid-cols-2 gap-4 p-3 bg-gray-50 rounded-lg">
               <div>
                 <label className="block text-sm font-medium mb-1">Reward SKU/PLU Code</label>
                 <input
@@ -1092,7 +1092,7 @@ export const Screen3Value: React.FC = () => {
       case 'points':
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-5">
               <div>
                 <label className="block font-semibold mb-2 text-sm">Point Value</label>
                 <div className="flex items-center gap-2">
@@ -1160,7 +1160,7 @@ export const Screen3Value: React.FC = () => {
                     type="checkbox"
                     checked={valueConfig.allowFractional || false}
                     onChange={(e) => updateValueConfig({ allowFractional: e.target.checked })}
-                    className="w-4 h-4 text-primary rounded"
+                    className="w-4 h-4 text-brand-600 rounded"
                   />
                   <span className="text-sm text-gray-700">Allow fractional points</span>
                 </label>
@@ -1169,7 +1169,7 @@ export const Screen3Value: React.FC = () => {
                     type="checkbox"
                     checked={valueConfig.enablePooling || false}
                     onChange={(e) => updateValueConfig({ enablePooling: e.target.checked })}
-                    className="w-4 h-4 text-primary rounded"
+                    className="w-4 h-4 text-brand-600 rounded"
                   />
                   <span className="text-sm text-gray-700">Enable family pooling</span>
                 </label>
@@ -1178,7 +1178,7 @@ export const Screen3Value: React.FC = () => {
                     type="checkbox"
                     checked={valueConfig.allowTransfers || false}
                     onChange={(e) => updateValueConfig({ allowTransfers: e.target.checked })}
-                    className="w-4 h-4 text-primary rounded"
+                    className="w-4 h-4 text-brand-600 rounded"
                   />
                   <span className="text-sm text-gray-700">Allow point transfers between members</span>
                 </label>
@@ -1187,7 +1187,7 @@ export const Screen3Value: React.FC = () => {
                     type="checkbox"
                     checked={valueConfig.enablePurchase || false}
                     onChange={(e) => updateValueConfig({ enablePurchase: e.target.checked })}
-                    className="w-4 h-4 text-primary rounded"
+                    className="w-4 h-4 text-brand-600 rounded"
                   />
                   <span className="text-sm text-gray-700">Enable point purchase</span>
                 </label>
@@ -1196,7 +1196,7 @@ export const Screen3Value: React.FC = () => {
                     type="checkbox"
                     checked={valueConfig.differentBurnRate || false}
                     onChange={(e) => updateValueConfig({ differentBurnRate: e.target.checked })}
-                    className="w-4 h-4 text-primary rounded"
+                    className="w-4 h-4 text-brand-600 rounded"
                   />
                   <span className="text-sm text-gray-700">Different earn vs burn rates</span>
                 </label>
@@ -1208,7 +1208,7 @@ export const Screen3Value: React.FC = () => {
       case 'cashback':
         return (
           <div className="space-y-6">
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-5">
               <div>
                 <label className="block font-semibold mb-2 text-sm">Cashback Percentage</label>
                 <div className="flex items-center gap-2">
@@ -1262,12 +1262,12 @@ export const Screen3Value: React.FC = () => {
       case 'credits':
         return (
           <div className="space-y-6">
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mb-4">
+            <div className="p-4 bg-gray-50 border border-blue-200 rounded-lg mb-4">
               <p className="text-sm text-blue-900">
                 <strong>Store Credits:</strong> Wallet-based rewards that accumulate and allow partial redemption. Customers can spend credits incrementally like cash.
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-5">
               <div>
                 <label className="block font-semibold mb-2 text-sm">Currency</label>
                 <select
@@ -1325,7 +1325,7 @@ export const Screen3Value: React.FC = () => {
                     type="checkbox"
                     checked={valueConfig.allowPartialRedemption !== false}
                     onChange={(e) => updateValueConfig({ allowPartialRedemption: e.target.checked })}
-                    className="w-4 h-4 text-primary rounded"
+                    className="w-4 h-4 text-brand-600 rounded"
                   />
                   <span className="text-sm text-gray-700">Allow partial redemption (use any amount)</span>
                 </label>
@@ -1337,12 +1337,12 @@ export const Screen3Value: React.FC = () => {
       case 'vouchers':
         return (
           <div className="space-y-6">
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg mb-4">
+            <div className="p-4 bg-gray-50 border border-blue-200 rounded-lg mb-4">
               <p className="text-sm text-blue-900">
                 <strong>Vouchers:</strong> Fixed-denomination coupons for one-time use. Unlike credits, vouchers are redeemed entirely and don't hold a balance after use.
               </p>
             </div>
-            <div className="grid grid-cols-2 gap-6">
+            <div className="grid grid-cols-2 gap-5">
               <div>
                 <label className="block font-semibold mb-2 text-sm">Currency</label>
                 <select
@@ -1382,13 +1382,13 @@ export const Screen3Value: React.FC = () => {
                   return (
                     <label
                       key={amount}
-                      className={`flex items-center gap-2 p-3 rounded-lg border-2 cursor-pointer transition-all ${
+                      className={`flex items-center gap-2 p-3 rounded-lg border cursor-pointer transition-all ${
                         isChecked ? 'bg-primary-50 border-primary' : 'bg-gray-50 border-gray-200 hover:border-gray-300'
                       }`}
                     >
                       <input
                         type="checkbox"
-                        className="w-4 h-4 text-primary rounded"
+                        className="w-4 h-4 text-brand-600 rounded"
                         checked={isChecked}
                         onChange={(e) => {
                           const newDenominations = e.target.checked
@@ -1412,7 +1412,7 @@ export const Screen3Value: React.FC = () => {
                     type="checkbox"
                     checked={valueConfig.voucherStackable || false}
                     onChange={(e) => updateValueConfig({ voucherStackable: e.target.checked })}
-                    className="w-4 h-4 text-primary rounded"
+                    className="w-4 h-4 text-brand-600 rounded"
                   />
                   <span className="text-sm text-gray-700">Allow multiple vouchers per transaction</span>
                 </label>
@@ -1424,7 +1424,7 @@ export const Screen3Value: React.FC = () => {
       case 'hybrid':
         return (
           <div className="space-y-6">
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+            <div className="p-4 bg-gray-50 border border-blue-200 rounded-lg">
               <p className="text-sm text-blue-900">
                 <strong>Hybrid Mode:</strong> Combine multiple value types for maximum flexibility. Choose a strategy below.
               </p>
@@ -1435,7 +1435,7 @@ export const Screen3Value: React.FC = () => {
               <label className="block font-semibold mb-3 text-sm">Hybrid Strategy</label>
               <div className="grid grid-cols-3 gap-3">
                 <label
-                  className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                  className={`p-4 border rounded-lg cursor-pointer transition-all ${
                     valueConfig.hybridStrategy === 'dual' ? 'border-primary bg-primary-50' : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
@@ -1451,7 +1451,7 @@ export const Screen3Value: React.FC = () => {
                   <div className="text-xs text-gray-600">Earn two value types simultaneously</div>
                 </label>
                 <label
-                  className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                  className={`p-4 border rounded-lg cursor-pointer transition-all ${
                     valueConfig.hybridStrategy === 'conversion' ? 'border-primary bg-primary-50' : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
@@ -1467,7 +1467,7 @@ export const Screen3Value: React.FC = () => {
                   <div className="text-xs text-gray-600">Convert points to credits at milestones</div>
                 </label>
                 <label
-                  className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                  className={`p-4 border rounded-lg cursor-pointer transition-all ${
                     valueConfig.hybridStrategy === 'both' ? 'border-primary bg-primary-50' : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
@@ -1646,7 +1646,7 @@ export const Screen3Value: React.FC = () => {
                         autoConvert: e.target.checked,
                       },
                     })}
-                    className="w-4 h-4 text-primary rounded"
+                    className="w-4 h-4 text-brand-600 rounded"
                   />
                   <span className="text-sm text-gray-700">Automatically convert when threshold is reached</span>
                 </label>
@@ -1668,7 +1668,7 @@ export const Screen3Value: React.FC = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -20 }}
-      className="p-10"
+      className="p-8"
     >
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
@@ -1689,7 +1689,7 @@ export const Screen3Value: React.FC = () => {
                 className="p-6"
               >
                 <div className="flex justify-center mb-4">
-                  <Icon size={32} className="text-primary" />
+                  <Icon size={32} className="text-brand-600" />
                 </div>
                 <h3 className="font-semibold text-gray-900 mb-2 text-center">{type.name}</h3>
                 <p className="text-sm text-gray-600 text-center">{type.desc}</p>
@@ -1699,8 +1699,8 @@ export const Screen3Value: React.FC = () => {
         </div>
 
         {/* Value Configuration */}
-        <Card className="p-6 mb-8">
-          <h3 className="text-xl font-semibold mb-6">
+        <Card className="p-5 mb-8">
+          <h3 className="text-xl font-semibold mb-5">
             {valueTypes.find(t => t.id === valueType)?.name} Configuration
           </h3>
           {renderValueConfigForm()}
@@ -1715,9 +1715,9 @@ export const Screen3Value: React.FC = () => {
         </Card>
 
         {/* Earning Calculation Settings */}
-        <Card className="p-6 mb-8">
-          <h3 className="text-xl font-semibold mb-6">Earning Calculation Settings</h3>
-          <div className="grid grid-cols-2 gap-6">
+        <Card className="p-5 mb-8">
+          <h3 className="text-xl font-semibold mb-5">Earning Calculation Settings</h3>
+          <div className="grid grid-cols-2 gap-5">
             <div>
               <label className="block font-semibold mb-2 text-sm">Calculation Method</label>
               <p className="text-xs text-gray-600 mb-2">How to handle fractional values when calculating rewards</p>
@@ -1747,14 +1747,14 @@ export const Screen3Value: React.FC = () => {
               </select>
             </div>
           </div>
-          <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-900">
+          <div className="mt-4 p-3 bg-gray-50 border border-blue-200 rounded-lg text-sm text-blue-900">
             <strong>Note:</strong> These settings apply to all earning calculations across your loyalty program.
           </div>
         </Card>
 
         {/* Tier Configuration */}
-        <Card className="p-6 mb-8">
-          <div className="flex justify-between items-center mb-6">
+        <Card className="p-5 mb-8">
+          <div className="flex justify-between items-center mb-5">
             <div>
               <h3 className="text-xl font-semibold">Customer Segmentation</h3>
               <p className="text-sm text-gray-600 mt-1">
@@ -1806,13 +1806,13 @@ export const Screen3Value: React.FC = () => {
                         <div className="flex gap-2">
                           <button
                             onClick={() => setExpandedTier(expandedTier === tier.id ? null : tier.id)}
-                            className="p-2 text-gray-600 hover:text-primary transition-colors"
+                            className="p-2 text-gray-600 hover:text-brand-600 transition-colors"
                           >
                             {expandedTier === tier.id ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                           </button>
                           <button
                             onClick={() => handleEditTier(tier)}
-                            className="p-2 text-gray-600 hover:text-primary transition-colors"
+                            className="p-2 text-gray-600 hover:text-brand-600 transition-colors"
                           >
                             <Edit2 size={16} />
                           </button>
@@ -1853,8 +1853,8 @@ export const Screen3Value: React.FC = () => {
 
         {/* Global Earning Rules (Only when tiers are disabled) */}
         {!useTiers && (
-          <Card className="p-6">
-            <h3 className="text-xl font-semibold mb-6">Program-Wide Earning Rules</h3>
+          <Card className="p-5">
+            <h3 className="text-xl font-semibold mb-5">Program-Wide Earning Rules</h3>
             <EarningRulesEditor
               rules={earningRules}
               onUpdate={updateEarningRules}
@@ -1908,7 +1908,7 @@ export const Screen3Value: React.FC = () => {
                 <button
                   key={color.value}
                   onClick={() => setTierForm({ ...tierForm, color: color.value })}
-                  className={`p-3 rounded-lg border-2 transition-all ${
+                  className={`p-3 rounded-lg border transition-all ${
                     tierForm.color === color.value ? 'border-primary' : 'border-gray-200'
                   }`}
                 >
@@ -1922,7 +1922,7 @@ export const Screen3Value: React.FC = () => {
           <div>
             <div className="flex justify-between items-center mb-2">
               <label className="block text-sm font-medium">Benefits</label>
-              <button onClick={addBenefit} className="text-sm text-primary hover:underline">
+              <button onClick={addBenefit} className="text-sm text-brand-600 hover:underline">
                 + Add Benefit
               </button>
             </div>
@@ -1949,7 +1949,7 @@ export const Screen3Value: React.FC = () => {
             </div>
           </div>
 
-          <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-900">
+          <div className="p-3 bg-gray-50 border border-blue-200 rounded-lg text-sm text-blue-900">
             After creating the tier, expand it to configure its specific earning rules.
           </div>
 

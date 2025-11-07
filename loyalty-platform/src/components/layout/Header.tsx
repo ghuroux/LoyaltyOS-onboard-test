@@ -50,35 +50,35 @@ export const Header: React.FC<HeaderProps> = ({
   const StatusIcon = saveStatusConfig[saveStatus].icon;
 
   return (
-    <div className="bg-white border-b border-gray-200 px-10 py-4">
+    <div className="bg-white border-b border-gray-200 px-8 py-3.5">
       <div className="flex justify-between items-center">
         {/* Left: Logo & Client Context */}
         <div className="flex items-center gap-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-bold text-lg shadow-md">
+            <div className="w-9 h-9 bg-gradient-to-br from-brand-500 to-brand-600 rounded-lg flex items-center justify-center text-white font-bold text-base shadow-sm">
               S
             </div>
             <div>
-              <div className="text-lg font-bold text-gray-900">StratOS Configurator</div>
+              <div className="text-base font-semibold text-gray-900">StratOS Configurator</div>
               <div className="text-xs text-gray-500">Loyalty Platform Builder</div>
             </div>
           </div>
 
           {/* Client Context */}
-          <div className="pl-6 border-l border-gray-300">
-            <div className="text-xs text-gray-500">Configuring for:</div>
-            <div className="font-semibold text-gray-900">{clientName}</div>
+          <div className="pl-6 border-l border-gray-200">
+            <div className="text-xs text-gray-500 font-medium">Configuring for:</div>
+            <div className="font-semibold text-sm text-gray-900">{clientName}</div>
             <div className="text-xs text-gray-500">ID: {clientId}</div>
           </div>
         </div>
 
         {/* Right: Environment, Save Status, User */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           {/* Quick Nav to Dashboard */}
           {showDashboardButton && (
             <button
               onClick={onNavigateToDashboard}
-              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all shadow-md hover:shadow-lg font-medium text-sm"
+              className="flex items-center gap-2 px-3.5 py-2 bg-brand-500 text-white rounded-lg hover:bg-brand-600 transition-colors shadow-sm font-medium text-sm"
               title="Go to Configuration Dashboard"
             >
               <LayoutDashboard size={16} />

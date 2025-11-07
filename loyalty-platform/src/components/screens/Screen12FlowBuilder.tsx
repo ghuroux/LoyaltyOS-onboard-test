@@ -59,14 +59,14 @@ export const Screen12FlowBuilder: React.FC = () => {
   );
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-10">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">🎨 Flow Orchestration Builder</h1>
           <p className="text-gray-600 text-lg">Design custom business processes with drag-and-drop interface</p>
         </div>
 
-        <div className="grid grid-cols-4 gap-6">
+        <div className="grid grid-cols-4 gap-5">
           {/* Toolbox */}
           <Card className="p-4 h-[600px] overflow-y-auto">
             <h3 className="font-semibold mb-4 text-sm">Toolbox</h3>

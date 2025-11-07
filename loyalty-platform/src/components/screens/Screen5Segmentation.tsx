@@ -14,7 +14,7 @@ const segmentationMethods = [
 
 const colorOptions = [
   { value: 'green', class: 'bg-green-500' },
-  { value: 'blue', class: 'bg-blue-500' },
+  { value: 'blue', class: 'bg-gray-500' },
   { value: 'cyan', class: 'bg-cyan-500' },
   { value: 'purple', class: 'bg-purple-500' },
   { value: 'indigo', class: 'bg-indigo-500' },
@@ -66,7 +66,7 @@ export const Screen5Segmentation: React.FC = () => {
   };
 
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-10">
+    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Customer Segmentation Strategy</h1>
@@ -74,7 +74,7 @@ export const Screen5Segmentation: React.FC = () => {
         </div>
 
         {/* Segmentation Method Selection */}
-        <Card className="p-6 mb-8">
+        <Card className="p-5 mb-8">
           <h3 className="text-xl font-semibold mb-4">Segmentation Method</h3>
           <div className="grid grid-cols-3 gap-4">
             {segmentationMethods.map((method) => {
@@ -83,13 +83,13 @@ export const Screen5Segmentation: React.FC = () => {
                 <div
                   key={method.id}
                   onClick={() => setSegmentationMethod(method.id as any)}
-                  className={`p-6 border-2 rounded-lg cursor-pointer transition-all ${
+                  className={`p-6 border rounded-lg cursor-pointer transition-all ${
                     segmentationMethod === method.id
                       ? 'border-primary bg-primary-50'
                       : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
-                  <Icon size={32} className="text-primary mb-3" />
+                  <Icon size={32} className="text-brand-600 mb-3" />
                   <h4 className="font-semibold text-gray-900 mb-1">{method.name}</h4>
                   <p className="text-sm text-gray-600">{method.desc}</p>
                 </div>
@@ -100,14 +100,14 @@ export const Screen5Segmentation: React.FC = () => {
 
         {/* RFM Configuration */}
         {segmentationMethod === 'rfm' && (
-          <Card className="p-6 mb-8">
+          <Card className="p-5 mb-8">
             <h3 className="text-xl font-semibold mb-4">RFM Threshold Configuration</h3>
-            <p className="text-sm text-gray-600 mb-6">
+            <p className="text-sm text-gray-600 mb-5">
               Configure the thresholds that determine how customers are scored on Recency, Frequency, and Monetary dimensions.
               Scores range from 1 (low) to 5 (high).
             </p>
 
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-3 gap-5">
               {/* Recency */}
               <div className="p-4 bg-gray-50 rounded-lg">
                 <h4 className="font-semibold text-gray-900 mb-3">Recency (Days)</h4>
@@ -205,7 +205,7 @@ export const Screen5Segmentation: React.FC = () => {
               </div>
             </div>
 
-            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-900">
+            <div className="mt-4 p-3 bg-gray-50 border border-blue-200 rounded-lg text-sm text-blue-900">
               <strong>Note:</strong> RFM scores are automatically calculated based on these thresholds. Scores 2-4 are distributed between the high and low values.
             </div>
           </Card>
@@ -213,18 +213,18 @@ export const Screen5Segmentation: React.FC = () => {
 
         {/* Demographic Configuration */}
         {segmentationMethod === 'demographic' && (
-          <Card className="p-6 mb-8">
+          <Card className="p-5 mb-8">
             <h3 className="text-xl font-semibold mb-4">Demographic Segmentation Configuration</h3>
-            <p className="text-sm text-gray-600 mb-6">
+            <p className="text-sm text-gray-600 mb-5">
               Demographic segments are based on customer attributes configured in the Organization screen.
               Select which demographic dimensions to use for segmentation.
             </p>
 
-            <div className="grid grid-cols-3 gap-6">
+            <div className="grid grid-cols-3 gap-5">
               {/* Age Groups */}
               <div className="p-4 bg-gray-50 rounded-lg">
                 <label className="flex items-center gap-2 mb-3">
-                  <input type="checkbox" className="w-4 h-4 text-primary rounded" defaultChecked />
+                  <input type="checkbox" className="w-4 h-4 text-brand-600 rounded" defaultChecked />
                   <span className="font-semibold text-gray-900">Age Groups</span>
                 </label>
                 <p className="text-xs text-gray-600 mb-3">Segment by customer age ranges</p>
@@ -239,7 +239,7 @@ export const Screen5Segmentation: React.FC = () => {
               {/* Income Brackets */}
               <div className="p-4 bg-gray-50 rounded-lg">
                 <label className="flex items-center gap-2 mb-3">
-                  <input type="checkbox" className="w-4 h-4 text-primary rounded" defaultChecked />
+                  <input type="checkbox" className="w-4 h-4 text-brand-600 rounded" defaultChecked />
                   <span className="font-semibold text-gray-900">Income Brackets</span>
                 </label>
                 <p className="text-xs text-gray-600 mb-3">Segment by income levels</p>
@@ -253,7 +253,7 @@ export const Screen5Segmentation: React.FC = () => {
               {/* Location Type */}
               <div className="p-4 bg-gray-50 rounded-lg">
                 <label className="flex items-center gap-2 mb-3">
-                  <input type="checkbox" className="w-4 h-4 text-primary rounded" defaultChecked />
+                  <input type="checkbox" className="w-4 h-4 text-brand-600 rounded" defaultChecked />
                   <span className="font-semibold text-gray-900">Location Type</span>
                 </label>
                 <p className="text-xs text-gray-600 mb-3">Segment by geographic area</p>
@@ -265,7 +265,7 @@ export const Screen5Segmentation: React.FC = () => {
               </div>
             </div>
 
-            <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-900">
+            <div className="mt-4 p-3 bg-gray-50 border border-blue-200 rounded-lg text-sm text-blue-900">
               <strong>Note:</strong> Demographic data will be collected during customer registration and enriched through third-party data providers.
             </div>
           </Card>
@@ -273,16 +273,16 @@ export const Screen5Segmentation: React.FC = () => {
 
         {/* Custom Rules Configuration */}
         {segmentationMethod === 'custom' && (
-          <Card className="p-6 mb-8">
+          <Card className="p-5 mb-8">
             <h3 className="text-xl font-semibold mb-4">Custom Rule Builder</h3>
-            <p className="text-sm text-gray-600 mb-6">
+            <p className="text-sm text-gray-600 mb-5">
               Build custom segments by combining multiple criteria with AND/OR logic.
               Create sophisticated segments tailored to your specific business needs.
             </p>
 
             <div className="space-y-4">
               {/* Example Rule Builder UI */}
-              <div className="p-4 border-2 border-dashed border-gray-300 rounded-lg">
+              <div className="p-4 border border-dashed border-gray-300 rounded-lg">
                 <div className="flex items-center gap-3 mb-3">
                   <span className="text-sm font-semibold text-gray-700">IF</span>
                   <select className="px-3 py-2 border border-gray-300 rounded-lg text-sm">
@@ -338,7 +338,7 @@ export const Screen5Segmentation: React.FC = () => {
         )}
 
         {/* Segment List */}
-        <Card className="p-6 mb-8">
+        <Card className="p-5 mb-8">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-xl font-semibold">Customer Segments</h3>
             {segments.length > 0 && (
@@ -352,7 +352,7 @@ export const Screen5Segmentation: React.FC = () => {
                 <div
                   key={segment.id}
                   onClick={() => handleEditSegment(segment)}
-                  className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                  className={`p-4 border rounded-lg cursor-pointer transition-all ${
                     segment.enabled
                       ? 'border-gray-200 hover:border-primary bg-white'
                       : 'border-gray-100 bg-gray-50 opacity-60'
@@ -381,7 +381,7 @@ export const Screen5Segmentation: React.FC = () => {
                         e.stopPropagation();
                         updateSegment(segment.id, { enabled: e.target.checked });
                       }}
-                      className="w-4 h-4 text-primary rounded"
+                      className="w-4 h-4 text-brand-600 rounded"
                     />
                   </div>
                 </div>
@@ -400,13 +400,13 @@ export const Screen5Segmentation: React.FC = () => {
         </Card>
 
         {/* ML Subsegments */}
-        <Card className="p-6">
+        <Card className="p-5">
           <div className="flex items-start gap-4">
             <input
               type="checkbox"
               checked={enableMLSubsegments}
               onChange={(e) => setEnableMLSubsegments(e.target.checked)}
-              className="w-5 h-5 text-primary rounded mt-1"
+              className="w-5 h-5 text-brand-600 rounded mt-1"
             />
             <div className="flex-1">
               <h3 className="text-lg font-semibold text-gray-900 mb-1">Enable ML-Powered Micro-Segmentation</h3>
@@ -453,7 +453,7 @@ export const Screen5Segmentation: React.FC = () => {
                 <button
                   key={color.value}
                   onClick={() => setSegmentForm({ ...segmentForm, color: color.value })}
-                  className={`w-full h-10 rounded border-2 transition-all ${
+                  className={`w-full h-10 rounded border transition-all ${
                     segmentForm.color === color.value ? 'border-primary' : 'border-gray-200'
                   }`}
                 >
@@ -468,7 +468,7 @@ export const Screen5Segmentation: React.FC = () => {
               type="checkbox"
               checked={segmentForm.enabled !== false}
               onChange={(e) => setSegmentForm({ ...segmentForm, enabled: e.target.checked })}
-              className="w-4 h-4 text-primary rounded"
+              className="w-4 h-4 text-brand-600 rounded"
             />
             <span className="text-sm text-gray-700">Enable this segment</span>
           </div>
