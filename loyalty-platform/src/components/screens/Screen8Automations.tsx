@@ -2,6 +2,21 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { useOnboardingStore } from '../../store/onboardingStore';
+import {
+  RefreshCw,
+  Target,
+  Moon,
+  Cake,
+  Clock,
+  Star,
+  Mail,
+  MessageSquare,
+  Ticket,
+  Bell,
+  Megaphone,
+  Award,
+  Tag
+} from 'lucide-react';
 
 type TriggerType = 'segment' | 'milestone' | 'inactivity' | 'birthday' | 'expiry' | 'threshold';
 
@@ -11,23 +26,23 @@ export const Screen8Automations: React.FC = () => {
   const [expandedAutomation, setExpandedAutomation] = useState<string | null>(null);
 
   const triggerTabs = [
-    { id: 'segment' as TriggerType, icon: '🔄', label: 'Segment Transitions', desc: 'When customer moves between segments' },
-    { id: 'milestone' as TriggerType, icon: '🎯', label: 'Milestones', desc: 'Purchase count, spend thresholds' },
-    { id: 'inactivity' as TriggerType, icon: '😴', label: 'Inactivity', desc: 'No visits for X days' },
-    { id: 'birthday' as TriggerType, icon: '🎂', label: 'Birthday', desc: 'Customer birthday rewards' },
-    { id: 'expiry' as TriggerType, icon: '⏰', label: 'Points Expiry', desc: 'Points about to expire' },
-    { id: 'threshold' as TriggerType, icon: '⭐', label: 'Tier Changes', desc: 'Tier upgrades/downgrades' },
+    { id: 'segment' as TriggerType, icon: RefreshCw, label: 'Segment Transitions', desc: 'When customer moves between segments' },
+    { id: 'milestone' as TriggerType, icon: Target, label: 'Milestones', desc: 'Purchase count, spend thresholds' },
+    { id: 'inactivity' as TriggerType, icon: Moon, label: 'Inactivity', desc: 'No visits for X days' },
+    { id: 'birthday' as TriggerType, icon: Cake, label: 'Birthday', desc: 'Customer birthday rewards' },
+    { id: 'expiry' as TriggerType, icon: Clock, label: 'Points Expiry', desc: 'Points about to expire' },
+    { id: 'threshold' as TriggerType, icon: Star, label: 'Tier Changes', desc: 'Tier upgrades/downgrades' },
   ];
 
   const actionOptions = [
-    { id: 'email', icon: '📧', label: 'Send Email', hasTemplate: true },
-    { id: 'sms', icon: '💬', label: 'Send SMS', hasTemplate: true },
-    { id: 'voucher', icon: '🎟️', label: 'Issue Voucher', hasAmount: true },
-    { id: 'points', icon: '⭐', label: 'Award Bonus Points', hasAmount: true },
-    { id: 'alert', icon: '🔔', label: 'Alert Account Manager', hasRecipient: true },
-    { id: 'campaign', icon: '📢', label: 'Add to Campaign', hasCampaign: true },
-    { id: 'tier-adjust', icon: '🎖️', label: 'Adjust Tier Status', hasTier: true },
-    { id: 'tag', icon: '🏷️', label: 'Add Customer Tag', hasTag: true },
+    { id: 'email', icon: Mail, label: 'Send Email', hasTemplate: true },
+    { id: 'sms', icon: MessageSquare, label: 'Send SMS', hasTemplate: true },
+    { id: 'voucher', icon: Ticket, label: 'Issue Voucher', hasAmount: true },
+    { id: 'points', icon: Star, label: 'Award Bonus Points', hasAmount: true },
+    { id: 'alert', icon: Bell, label: 'Alert Account Manager', hasRecipient: true },
+    { id: 'campaign', icon: Megaphone, label: 'Add to Campaign', hasCampaign: true },
+    { id: 'tier-adjust', icon: Award, label: 'Adjust Tier Status', hasTier: true },
+    { id: 'tag', icon: Tag, label: 'Add Customer Tag', hasTag: true },
   ];
 
   const currentAutomations = automations?.filter((a) => a.triggerType === activeTab) || [];
@@ -286,7 +301,7 @@ export const Screen8Automations: React.FC = () => {
                         />
                         <div className="flex-1">
                           <div className="flex items-center gap-2 mb-2">
-                            <span className="text-lg">{actionOption.icon}</span>
+                            <actionOption.icon size={18} className="text-gray-700" />
                             <span className="font-medium text-sm">{actionOption.label}</span>
                           </div>
 
@@ -547,7 +562,9 @@ export const Screen8Automations: React.FC = () => {
                   : 'border-gray-200 bg-white hover:border-gray-300'
               }`}
             >
-              <div className="text-3xl mb-2">{tab.icon}</div>
+              <div className="mb-2">
+                <tab.icon size={32} className={activeTab === tab.id ? 'text-brand-600' : 'text-gray-700'} />
+              </div>
               <div className={`text-sm font-semibold mb-1 ${activeTab === tab.id ? 'text-brand-600' : 'text-gray-900'}`}>
                 {tab.label}
               </div>
