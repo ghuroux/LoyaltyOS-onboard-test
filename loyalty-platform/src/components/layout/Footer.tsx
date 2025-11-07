@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button } from '../ui/Button';
-import { Save, CheckCircle, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Save, CheckCircle, ArrowLeft, ArrowRight, FileText } from 'lucide-react';
 
 interface FooterProps {
   currentScreen: number;
@@ -9,6 +9,8 @@ interface FooterProps {
   onPrevious: () => void;
   onSaveDraft?: () => void;
   onValidate?: () => void;
+  onViewSpec?: () => void;
+  hasSpec?: boolean;
   canProceed?: boolean;
   validationErrors?: number;
 }
@@ -39,6 +41,8 @@ export const Footer: React.FC<FooterProps> = ({
   onPrevious,
   onSaveDraft,
   onValidate,
+  onViewSpec,
+  hasSpec = false,
   canProceed = true,
   validationErrors = 0,
 }) => {
@@ -78,6 +82,19 @@ export const Footer: React.FC<FooterProps> = ({
                   {validationErrors}
                 </span>
               )}
+            </Button>
+          )}
+
+          {/* View Spec */}
+          {hasSpec && onViewSpec && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={onViewSpec}
+              className="border-blue-300 text-blue-700 hover:bg-blue-50"
+            >
+              <FileText size={16} className="mr-1.5" />
+              View Spec
             </Button>
           )}
 

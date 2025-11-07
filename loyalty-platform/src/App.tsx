@@ -22,6 +22,9 @@ import { Screen13Analytics } from './components/screens/Screen13Analytics';
 import { Screen14FlowBuilder } from './components/screens/Screen14FlowBuilder';
 import { Screen15Deployment } from './components/screens/Screen15Deployment';
 
+// Spec screen imports
+import { Spec4Organization } from './components/screens/Spec4Organization';
+
 const screens = [
   Screen0Discovery,      // 0 - Industry & Template Selection
   Screen1Dashboard,      // 1 - Configuration Dashboard
@@ -41,24 +44,54 @@ const screens = [
   Screen15Deployment,    // 15 - Deployment
 ];
 
+// Map of which screens have spec pages (screen number -> spec component)
+const specScreens: { [key: number]: React.ComponentType<{ onNavigate: (screenId: number) => void }> } = {
+  4: Spec4Organization,
+};
+
+// Check if current screen has a spec page
+const hasSpecPage = (screenNumber: number): boolean => {
+  return screenNumber in specScreens;
+};
+
 function App() {
   const { currentScreen, nextScreen, previousScreen, setCurrentScreen } = useOnboardingStore();
-  const CurrentScreenComponent = screens[currentScreen];
+
+  // Determine if we're viewing a spec page (screen numbers 100+)
+  const isSpecPage = currentScreen >= 100;
+  const actualScreen = isSpecPage ? currentScreen - 100 : currentScreen;
+
+  // Get the appropriate component
+  const CurrentScreenComponent = isSpecPage
+    ? specScreens[actualScreen]
+    : screens[currentScreen];
+
+  // Handler for viewing spec
+  const handleViewSpec = () => {
+    if (hasSpecPage(currentScreen)) {
+      setCurrentScreen(100 + currentScreen);
+    }
+  };
 
   return (
     <div className="min-h-screen app-background flex items-center justify-center p-6">
       <div className="w-full max-w-[1600px] bg-white rounded-xl shadow-xl border border-gray-200 flex flex-col" style={{ minHeight: '900px' }}>
-        <Header
-          clientName="Acme Coffee Chain"
-          clientId="ACC-2025"
-          environment="dev"
-          saveStatus="saved"
-          userName="John Smith"
-          userEmail="john@partner.com"
-          currentScreen={currentScreen}
-          onNavigateToDashboard={() => setCurrentScreen(1)}
-        />
-        <ProgressBar currentScreen={currentScreen} onNavigate={setCurrentScreen} />
+        {/* Hide header/progress/footer when viewing spec pages */}
+        {!isSpecPage && (
+          <>
+            <Header
+              clientName="Acme Coffee Chain"
+              clientId="ACC-2025"
+              environment="dev"
+              saveStatus="saved"
+              userName="John Smith"
+              userEmail="john@partner.com"
+              currentScreen={currentScreen}
+              onNavigateToDashboard={() => setCurrentScreen(1)}
+            />
+            <ProgressBar currentScreen={currentScreen} onNavigate={setCurrentScreen} />
+          </>
+        )}
 
         <div className="flex-1 overflow-y-auto bg-gray-50">
           <AnimatePresence mode="wait">
@@ -66,16 +99,21 @@ function App() {
           </AnimatePresence>
         </div>
 
-        <Footer
-          currentScreen={currentScreen}
-          totalScreens={screens.length}
-          onNext={nextScreen}
-          onPrevious={previousScreen}
-          onSaveDraft={() => console.log('Save draft')}
-          onValidate={() => console.log('Validate')}
-          canProceed={true}
-          validationErrors={0}
-        />
+        {/* Show footer only for regular screens */}
+        {!isSpecPage && (
+          <Footer
+            currentScreen={currentScreen}
+            totalScreens={screens.length}
+            onNext={nextScreen}
+            onPrevious={previousScreen}
+            onSaveDraft={() => console.log('Save draft')}
+            onValidate={() => console.log('Validate')}
+            onViewSpec={handleViewSpec}
+            hasSpec={hasSpecPage(currentScreen)}
+            canProceed={true}
+            validationErrors={0}
+          />
+        )}
       </div>
     </div>
   );
