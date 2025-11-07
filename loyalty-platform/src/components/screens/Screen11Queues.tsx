@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { Toggle } from '../ui/Toggle';
 import { useOnboardingStore } from '../../store/onboardingStore';
+import { Star, Check, Bot } from 'lucide-react';
 
 export const Screen11Queues: React.FC = () => {
   const { queues, updateQueue } = useOnboardingStore();
@@ -11,7 +12,10 @@ export const Screen11Queues: React.FC = () => {
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">⭐ Queue Intelligence Configuration</h1>
+          <div className="flex items-center gap-3 mb-2">
+            <Star className="text-brand-600" size={32} />
+            <h1 className="text-3xl font-bold text-gray-900">Queue Intelligence Configuration</h1>
+          </div>
           <p className="text-gray-600 text-lg">Configure queue-based operational intelligence (key differentiator)</p>
         </div>
 
@@ -42,7 +46,7 @@ export const Screen11Queues: React.FC = () => {
                 <div className="space-y-1">
                   {queue.actions.map((action) => (
                     <div key={action} className="text-sm text-gray-700 flex items-center gap-2">
-                      <span className="text-green-500">✓</span>
+                      <Check className="text-green-500" size={16} />
                       {action}
                     </div>
                   ))}
@@ -62,7 +66,10 @@ export const Screen11Queues: React.FC = () => {
         </div>
 
         <Card className="mt-5 p-5 bg-gray-50 border border-gray-200">
-          <h3 className="text-lg font-semibold mb-3">🤖 Intelligence Level</h3>
+          <div className="flex items-center gap-2 mb-3">
+            <Bot size={20} className="text-brand-600" />
+            <h3 className="text-lg font-semibold">Intelligence Level</h3>
+          </div>
           <p className="text-sm text-gray-700 mb-4">
             Queues continuously learn from your data and become more accurate over time. The system will start conservative and gradually increase confidence.
           </p>
