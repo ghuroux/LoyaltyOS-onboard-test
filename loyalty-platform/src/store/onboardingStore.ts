@@ -28,6 +28,24 @@ export interface Template {
   description: string;
 }
 
+export interface SignalTemplate {
+  id: string;
+  name: string;
+  description: string;
+  enabled: boolean;
+  metric: string; // What to measure (revenue, churn_rate, transaction_count, etc.)
+  operator: 'trend' | 'absolute' | 'percentage_change' | 'threshold_breach' | 'anomaly'; // How to measure
+  period: '24h' | '7d' | '30d' | '90d' | 'custom'; // Time period
+  customPeriodDays?: number;
+  condition: 'greater_than' | 'less_than' | 'equals' | 'between'; // Comparison
+  threshold: number; // Value to compare
+  thresholdMax?: number; // For 'between' condition
+  unit: 'percentage' | 'absolute' | 'count' | 'currency'; // Unit of threshold
+  priority: 'critical' | 'high' | 'medium' | 'low';
+  actions: string[]; // Actions when signal triggers
+  cooldownHours?: number; // Minimum hours between triggers
+}
+
 export interface Queue {
   id: string;
   name: string;
@@ -36,6 +54,7 @@ export interface Queue {
   patterns: string[];
   actions: string[];
   threshold?: number;
+  signals?: SignalTemplate[]; // Signal templates for this queue
 }
 
 export interface Tier {
@@ -329,6 +348,9 @@ interface OnboardingState {
   removeAutomation: (id: string) => void;
   updateCampaignSettings: (settings: any) => void;
   updateQueue: (id: string, updates: Partial<Queue>) => void;
+  addSignal: (queueId: string, signal: SignalTemplate) => void;
+  updateSignal: (queueId: string, signalId: string, updates: Partial<SignalTemplate>) => void;
+  removeSignal: (queueId: string, signalId: string) => void;
   updateSafeguardSettings: (settings: Partial<SafeguardSettings>) => void;
   nextScreen: () => void;
   previousScreen: () => void;
@@ -382,6 +404,53 @@ const initialQueues: Queue[] = [
     enabled: true,
     patterns: ['Churn risk signals', 'LTV changes', 'Behavior anomalies', 'Segment transitions'],
     actions: ['Send targeted campaigns', 'Alert account manager', 'Adjust rewards'],
+    signals: [
+      {
+        id: 'churn_risk_increase',
+        name: 'Churn Risk Spike',
+        description: 'Detect when churn risk percentage increases significantly',
+        enabled: true,
+        metric: 'churn_risk_percentage',
+        operator: 'percentage_change',
+        period: '7d',
+        condition: 'greater_than',
+        threshold: 15,
+        unit: 'percentage',
+        priority: 'critical',
+        actions: ['Alert account manager', 'Trigger win-back campaign', 'Add to high-priority queue'],
+        cooldownHours: 24,
+      },
+      {
+        id: 'ltv_decline',
+        name: 'Customer LTV Declining',
+        description: 'Alert when customer lifetime value trends downward',
+        enabled: true,
+        metric: 'customer_ltv',
+        operator: 'trend',
+        period: '30d',
+        condition: 'less_than',
+        threshold: -10,
+        unit: 'percentage',
+        priority: 'high',
+        actions: ['Add to engagement campaign', 'Review recent interactions', 'Offer personalized incentive'],
+        cooldownHours: 72,
+      },
+      {
+        id: 'segment_downgrade',
+        name: 'Segment Downgrade (Champions → At Risk)',
+        description: 'Customer moved from Champions to At Risk segment',
+        enabled: true,
+        metric: 'segment_transition',
+        operator: 'absolute',
+        period: '24h',
+        condition: 'equals',
+        threshold: 1,
+        unit: 'count',
+        priority: 'critical',
+        actions: ['Immediate intervention campaign', 'Personal outreach', 'Special retention offer'],
+        cooldownHours: 168,
+      },
+    ],
   },
   {
     id: 'store_performance',
@@ -390,6 +459,53 @@ const initialQueues: Queue[] = [
     enabled: true,
     patterns: ['Comparative analysis', 'Anomaly detection', 'Opportunity identification'],
     actions: ['Generate reports', 'Notify managers', 'Suggest optimizations'],
+    signals: [
+      {
+        id: 'revenue_drop',
+        name: 'Store Revenue Drop',
+        description: 'Revenue declining compared to historical average',
+        enabled: true,
+        metric: 'store_revenue',
+        operator: 'trend',
+        period: '7d',
+        condition: 'less_than',
+        threshold: -20,
+        unit: 'percentage',
+        priority: 'high',
+        actions: ['Alert store manager', 'Compare with peer stores', 'Generate diagnostic report'],
+        cooldownHours: 48,
+      },
+      {
+        id: 'transaction_count_low',
+        name: 'Transaction Count Below Threshold',
+        description: 'Daily transaction count falls below expected range',
+        enabled: true,
+        metric: 'transaction_count',
+        operator: 'threshold_breach',
+        period: '24h',
+        condition: 'less_than',
+        threshold: 100,
+        unit: 'count',
+        priority: 'medium',
+        actions: ['Notify manager', 'Review staffing levels', 'Check for technical issues'],
+        cooldownHours: 24,
+      },
+      {
+        id: 'basket_size_increase',
+        name: 'Average Basket Size Increasing',
+        description: 'Positive trend in average transaction value',
+        enabled: false,
+        metric: 'avg_basket_size',
+        operator: 'trend',
+        period: '30d',
+        condition: 'greater_than',
+        threshold: 15,
+        unit: 'percentage',
+        priority: 'low',
+        actions: ['Recognize store team', 'Document best practices', 'Share with other stores'],
+        cooldownHours: 168,
+      },
+    ],
   },
   {
     id: 'campaign_intelligence',
@@ -398,6 +514,53 @@ const initialQueues: Queue[] = [
     enabled: true,
     patterns: ['Performance monitoring', 'Optimization opportunities', 'Conflict detection'],
     actions: ['Auto-adjust budgets', 'Pause underperforming', 'A/B test variants'],
+    signals: [
+      {
+        id: 'campaign_underperforming',
+        name: 'Campaign Underperformance',
+        description: 'ROI below target threshold',
+        enabled: true,
+        metric: 'campaign_roi',
+        operator: 'threshold_breach',
+        period: '7d',
+        condition: 'less_than',
+        threshold: 2.0,
+        unit: 'absolute',
+        priority: 'high',
+        actions: ['Pause campaign', 'Alert marketing team', 'Suggest A/B test'],
+        cooldownHours: 12,
+      },
+      {
+        id: 'budget_burn_fast',
+        name: 'Campaign Budget Burning Fast',
+        description: 'Budget consumption rate exceeds plan',
+        enabled: true,
+        metric: 'budget_burn_rate',
+        operator: 'percentage_change',
+        period: '24h',
+        condition: 'greater_than',
+        threshold: 50,
+        unit: 'percentage',
+        priority: 'critical',
+        actions: ['Throttle campaign', 'Adjust targeting', 'Alert campaign owner'],
+        cooldownHours: 6,
+      },
+      {
+        id: 'engagement_spike',
+        name: 'Engagement Rate Spike',
+        description: 'Unusually high engagement - potential for scaling',
+        enabled: true,
+        metric: 'engagement_rate',
+        operator: 'anomaly',
+        period: '24h',
+        condition: 'greater_than',
+        threshold: 200,
+        unit: 'percentage',
+        priority: 'medium',
+        actions: ['Increase budget allocation', 'Expand to similar segments', 'Document success factors'],
+        cooldownHours: 24,
+      },
+    ],
   },
   {
     id: 'fraud_risk',
@@ -406,6 +569,53 @@ const initialQueues: Queue[] = [
     enabled: true,
     patterns: ['Unusual patterns', 'Velocity checks', 'Geographic anomalies'],
     actions: ['Flag for review', 'Temporary suspend', 'Request verification'],
+    signals: [
+      {
+        id: 'redemption_velocity',
+        name: 'High Redemption Velocity',
+        description: 'Unusual number of redemptions in short time period',
+        enabled: true,
+        metric: 'redemptions_per_hour',
+        operator: 'threshold_breach',
+        period: '24h',
+        condition: 'greater_than',
+        threshold: 10,
+        unit: 'count',
+        priority: 'critical',
+        actions: ['Flag account', 'Temporary hold', 'Manual review required'],
+        cooldownHours: 1,
+      },
+      {
+        id: 'points_anomaly',
+        name: 'Points Balance Anomaly',
+        description: 'Sudden large increase in points balance',
+        enabled: true,
+        metric: 'points_balance_change',
+        operator: 'anomaly',
+        period: '24h',
+        condition: 'greater_than',
+        threshold: 500,
+        unit: 'percentage',
+        priority: 'critical',
+        actions: ['Freeze account', 'Alert fraud team', 'Audit transaction history'],
+        cooldownHours: 0,
+      },
+      {
+        id: 'geographic_anomaly',
+        name: 'Geographic Location Anomaly',
+        description: 'Transactions from unusual or multiple locations',
+        enabled: true,
+        metric: 'geographic_distance',
+        operator: 'threshold_breach',
+        period: '24h',
+        condition: 'greater_than',
+        threshold: 500,
+        unit: 'absolute',
+        priority: 'high',
+        actions: ['Request verification', 'Flag for review', 'Monitor closely'],
+        cooldownHours: 12,
+      },
+    ],
   },
 ];
 
@@ -793,6 +1003,38 @@ export const useOnboardingStore = create<OnboardingState>((set, get) => ({
   updateQueue: (id, updates) => set((state) => ({
     queues: state.queues.map((queue) =>
       queue.id === id ? { ...queue, ...updates } : queue
+    ),
+  })),
+
+  addSignal: (queueId, signal) => set((state) => ({
+    queues: state.queues.map((queue) =>
+      queue.id === queueId
+        ? { ...queue, signals: [...(queue.signals || []), signal] }
+        : queue
+    ),
+  })),
+
+  updateSignal: (queueId, signalId, updates) => set((state) => ({
+    queues: state.queues.map((queue) =>
+      queue.id === queueId
+        ? {
+            ...queue,
+            signals: (queue.signals || []).map((signal) =>
+              signal.id === signalId ? { ...signal, ...updates } : signal
+            ),
+          }
+        : queue
+    ),
+  })),
+
+  removeSignal: (queueId, signalId) => set((state) => ({
+    queues: state.queues.map((queue) =>
+      queue.id === queueId
+        ? {
+            ...queue,
+            signals: (queue.signals || []).filter((signal) => signal.id !== signalId),
+          }
+        : queue
     ),
   })),
 
