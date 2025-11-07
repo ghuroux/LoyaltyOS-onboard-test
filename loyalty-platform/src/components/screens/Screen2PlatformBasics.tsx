@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
-import { Globe, DollarSign, Clock, Calendar, User, Mail, Phone, Building2, Palette, Image } from 'lucide-react';
+import { Globe, DollarSign, Clock, Calendar, User, Mail, Phone, Building2, Palette, Image, Monitor, Store, Users } from 'lucide-react';
 
 export const Screen2PlatformBasics: React.FC = () => {
   // Program Scope
@@ -40,6 +40,11 @@ export const Screen2PlatformBasics: React.FC = () => {
   const [brandLogoUrl, setBrandLogoUrl] = useState('');
   const [primaryBrandColor, setPrimaryBrandColor] = useState('#0ea5e9');
   const [secondaryBrandColor, setSecondaryBrandColor] = useState('#8b5cf6');
+
+  // Program Channels
+  const [channelOnline, setChannelOnline] = useState(true);
+  const [channelInStore, setChannelInStore] = useState(true);
+  const [channelPartner, setChannelPartner] = useState(false);
 
   const currencies = [
     { code: 'USD', name: 'US Dollar', symbol: '$' },
@@ -256,6 +261,99 @@ export const Screen2PlatformBasics: React.FC = () => {
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg text-base focus:border-brand-500 focus:outline-none"
                   />
                 </div>
+              </div>
+            </div>
+          </Card>
+
+          {/* Program Channels */}
+          <Card className="shadow-lg">
+            <div className="p-5">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="p-3 bg-success-500 rounded-lg">
+                  <Monitor className="text-white" size={24} />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900">Program Channels</h2>
+                  <p className="text-gray-600 text-sm">Where will customers interact with your loyalty program?</p>
+                </div>
+              </div>
+
+              <div className="space-y-3">
+                {/* Online Channel */}
+                <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                  <label className="flex items-start cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={channelOnline}
+                      onChange={(e) => setChannelOnline(e.target.checked)}
+                      className="mt-1 w-5 h-5 text-brand-500 border-gray-300 rounded focus:ring-brand-500"
+                    />
+                    <div className="ml-3 flex-1">
+                      <div className="flex items-center gap-2">
+                        <Monitor size={18} className="text-brand-500" />
+                        <span className="font-semibold text-gray-900">Online / Digital</span>
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1">
+                        eCommerce website, mobile app, customer portal. Members earn and redeem through digital touchpoints.
+                      </p>
+                    </div>
+                  </label>
+                </div>
+
+                {/* In-Store Channel */}
+                <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                  <label className="flex items-start cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={channelInStore}
+                      onChange={(e) => setChannelInStore(e.target.checked)}
+                      className="mt-1 w-5 h-5 text-brand-500 border-gray-300 rounded focus:ring-brand-500"
+                    />
+                    <div className="ml-3 flex-1">
+                      <div className="flex items-center gap-2">
+                        <Store size={18} className="text-brand-500" />
+                        <span className="font-semibold text-gray-900">In-Store / Physical Locations</span>
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Brick-and-mortar retail stores, restaurants, or service locations with POS systems. Members identify themselves at checkout.
+                      </p>
+                    </div>
+                  </label>
+                </div>
+
+                {/* Partner Channel */}
+                <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                  <label className="flex items-start cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={channelPartner}
+                      onChange={(e) => setChannelPartner(e.target.checked)}
+                      className="mt-1 w-5 h-5 text-brand-500 border-gray-300 rounded focus:ring-brand-500"
+                    />
+                    <div className="ml-3 flex-1">
+                      <div className="flex items-center gap-2">
+                        <Users size={18} className="text-brand-500" />
+                        <span className="font-semibold text-gray-900">Partner Locations</span>
+                      </div>
+                      <p className="text-sm text-gray-600 mt-1">
+                        Third-party merchants, coalition partners, or affiliate networks where members can earn or redeem.
+                      </p>
+                    </div>
+                  </label>
+                </div>
+
+                {/* Contextual Help */}
+                {(channelOnline || channelInStore || channelPartner) && (
+                  <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                    <div className="flex gap-3">
+                      <div className="text-blue-600 mt-0.5">ℹ️</div>
+                      <div className="text-sm text-blue-900">
+                        <strong>Note:</strong> Your channel selection will influence available member identification methods
+                        (e.g., in-store programs can use QR codes, barcodes, and POS integrations).
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
           </Card>

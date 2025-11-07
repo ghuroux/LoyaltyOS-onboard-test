@@ -14,7 +14,11 @@ import {
   Plug,
   BarChart3,
   FileText,
-  Layers
+  Layers,
+  Hash,
+  Mail,
+  Phone,
+  Database
 } from 'lucide-react';
 
 type FieldType = 'text' | 'textarea' | 'number' | 'date' | 'boolean' | 'dropdown' | 'email' | 'phone' | 'uuid';
@@ -703,6 +707,9 @@ export const Screen1Organization: React.FC = () => {
     required: false,
     placeholder: '',
   });
+
+  // Primary Identifier for member identification
+  const [primaryIdentifier, setPrimaryIdentifier] = useState<'membership-number' | 'email' | 'phone' | 'external-id'>('membership-number');
 
   // Relationships
   const [enableRelationships, setEnableRelationships] = useState(true);
@@ -1455,6 +1462,144 @@ export const Screen1Organization: React.FC = () => {
         {/* Section 2: Primary Customer Profile Builder */}
         <Section id="customer-profile" title="Primary Customer Profile" icon={User}>
           <div className="space-y-6">
+            {/* Primary Identifier Selection */}
+            <div className="p-5 bg-gradient-to-br from-brand-50 to-blue-50 border-2 border-brand-200 rounded-lg">
+              <h4 className="font-bold text-gray-900 mb-2 flex items-center gap-2">
+                <Hash className="text-brand-600" size={20} />
+                Primary Member Identifier
+              </h4>
+              <p className="text-sm text-gray-600 mb-4">
+                Choose the primary field used to uniquely identify members across all touchpoints (POS, mobile, web, etc.)
+              </p>
+
+              <div className="space-y-3">
+                {/* Auto-generated Membership Number */}
+                <div
+                  onClick={() => setPrimaryIdentifier('membership-number')}
+                  className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                    primaryIdentifier === 'membership-number'
+                      ? 'border-brand-500 bg-white shadow-md'
+                      : 'border-gray-200 bg-white hover:border-gray-300'
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="radio"
+                      checked={primaryIdentifier === 'membership-number'}
+                      onChange={() => setPrimaryIdentifier('membership-number')}
+                      className="mt-1 w-4 h-4 text-brand-500 focus:ring-brand-500"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Hash size={16} className="text-brand-500" />
+                        <span className="font-semibold text-gray-900">Auto-generated Membership Number</span>
+                        <span className="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full">
+                          Recommended
+                        </span>
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        System generates unique member IDs (e.g., M-12345678). Provides universal identification independent of contact info changes.
+                        Can be encoded in QR codes, barcodes, and digital wallets.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Email Address */}
+                <div
+                  onClick={() => setPrimaryIdentifier('email')}
+                  className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                    primaryIdentifier === 'email'
+                      ? 'border-brand-500 bg-white shadow-md'
+                      : 'border-gray-200 bg-white hover:border-gray-300'
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="radio"
+                      checked={primaryIdentifier === 'email'}
+                      onChange={() => setPrimaryIdentifier('email')}
+                      className="mt-1 w-4 h-4 text-brand-500 focus:ring-brand-500"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Mail size={16} className="text-brand-500" />
+                        <span className="font-semibold text-gray-900">Email Address</span>
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        Use email as the primary lookup field. Best for digital-first programs. Note: Members changing emails requires account migration.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Phone Number */}
+                <div
+                  onClick={() => setPrimaryIdentifier('phone')}
+                  className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                    primaryIdentifier === 'phone'
+                      ? 'border-brand-500 bg-white shadow-md'
+                      : 'border-gray-200 bg-white hover:border-gray-300'
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="radio"
+                      checked={primaryIdentifier === 'phone'}
+                      onChange={() => setPrimaryIdentifier('phone')}
+                      className="mt-1 w-4 h-4 text-brand-500 focus:ring-brand-500"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Phone size={16} className="text-brand-500" />
+                        <span className="font-semibold text-gray-900">Phone Number</span>
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        Use phone number for member lookup (common in restaurant/retail POS). Supports SMS engagement. Requires phone number validation.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* External System ID */}
+                <div
+                  onClick={() => setPrimaryIdentifier('external-id')}
+                  className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
+                    primaryIdentifier === 'external-id'
+                      ? 'border-brand-500 bg-white shadow-md'
+                      : 'border-gray-200 bg-white hover:border-gray-300'
+                  }`}
+                >
+                  <div className="flex items-start gap-3">
+                    <input
+                      type="radio"
+                      checked={primaryIdentifier === 'external-id'}
+                      onChange={() => setPrimaryIdentifier('external-id')}
+                      className="mt-1 w-4 h-4 text-brand-500 focus:ring-brand-500"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Database size={16} className="text-brand-500" />
+                        <span className="font-semibold text-gray-900">External System ID</span>
+                      </div>
+                      <p className="text-sm text-gray-600">
+                        Use an existing customer ID from your CRM, ERP, or POS system. Ideal when loyalty is an add-on to existing customer management.
+                        Requires integration mapping.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Contextual Help */}
+              <div className="mt-4 p-3 bg-blue-100 border border-blue-300 rounded-lg">
+                <p className="text-xs text-blue-900">
+                  <strong>💡 Note:</strong> This identifier will be used to generate QR codes, barcodes, digital wallet passes,
+                  and for POS lookups. You can still collect all other fields, but this will be the primary key for member identification.
+                </p>
+              </div>
+            </div>
+
             <div>
               <h4 className="font-semibold mb-4 flex items-center gap-2">
                 <Check className="text-green-600" size={18} />
