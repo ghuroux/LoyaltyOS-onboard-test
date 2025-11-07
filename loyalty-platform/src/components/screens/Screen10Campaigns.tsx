@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { useOnboardingStore } from '../../store/onboardingStore';
 import { CampaignTemplateBuilder } from '../campaign/CampaignTemplateBuilder';
-import { Clock, Infinity, Zap, DollarSign } from 'lucide-react';
+import { Clock, Infinity, Zap, DollarSign, Megaphone, BarChart, CheckCircle, Lightbulb } from 'lucide-react';
 
 type CampaignType = 'time-based' | 'long-living' | 'trigger-based' | 'one-off';
 
@@ -156,7 +156,10 @@ export const Screen10Campaigns: React.FC = () => {
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">📢 Campaign Templates & Framework</h1>
+          <div className="flex items-center gap-3 mb-2">
+            <Megaphone className="text-brand-600" size={32} />
+            <h1 className="text-3xl font-bold text-gray-900">Campaign Templates & Framework</h1>
+          </div>
           <p className="text-gray-600 text-lg">Configure campaign templates for your program (create actual campaigns later)</p>
         </div>
 
@@ -303,7 +306,10 @@ export const Screen10Campaigns: React.FC = () => {
 
         {/* Program-Wide Campaign Controls */}
         <Card className="p-5 mb-5">
-          <h3 className="text-lg font-semibold mb-4">📊 Program-Wide Campaign Controls</h3>
+          <div className="flex items-center gap-2 mb-4">
+            <BarChart size={20} className="text-brand-600" />
+            <h3 className="text-lg font-semibold">Program-Wide Campaign Controls</h3>
+          </div>
           <div className="grid grid-cols-2 gap-4">
             <div className="p-4 bg-gray-50 rounded-lg">
               <label className="block text-sm font-semibold mb-2">Maximum Budget per Campaign</label>
@@ -363,7 +369,10 @@ export const Screen10Campaigns: React.FC = () => {
 
         {/* Campaign Approval Workflow */}
         <Card className="p-5">
-          <h3 className="text-lg font-semibold mb-4">✅ Campaign Approval Workflow</h3>
+          <div className="flex items-center gap-2 mb-4">
+            <CheckCircle size={20} className="text-brand-600" />
+            <h3 className="text-lg font-semibold">Campaign Approval Workflow</h3>
+          </div>
           <p className="text-sm text-gray-600 mb-4">Define who can create and approve campaigns</p>
 
           <div className="space-y-3">
@@ -418,7 +427,7 @@ export const Screen10Campaigns: React.FC = () => {
         {/* Info Box */}
         <Card className="p-5 mt-8 bg-gray-50 border border-gray-200">
           <div className="flex items-start gap-3">
-            <span className="text-2xl">💡</span>
+            <Lightbulb className="text-amber-500 flex-shrink-0" size={24} />
             <div>
               <h3 className="font-semibold text-gray-900 mb-2">Campaign Templates vs. Active Campaigns</h3>
               <p className="text-sm text-gray-700 mb-2">
