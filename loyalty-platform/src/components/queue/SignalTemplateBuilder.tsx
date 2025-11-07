@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Card } from '../ui/Card';
 import { Activity, TrendingUp, AlertTriangle, Target, Zap, Bell, CheckCircle, X, GitCompare } from 'lucide-react';
 import type { SignalTemplate } from '../../store/onboardingStore';
+import { useOnboardingStore } from '../../store/onboardingStore';
 
 type BuilderStep = 'metric' | 'operator' | 'conditions' | 'actions' | 'review';
 
@@ -22,6 +23,7 @@ export const SignalTemplateBuilder: React.FC<SignalBuilderProps> = ({
   existingSignal,
   onSave,
 }) => {
+  const { selectedTemplate } = useOnboardingStore();
   const [currentStep, setCurrentStep] = useState<BuilderStep>('metric');
   const [signalData, setSignalData] = useState<Partial<SignalTemplate>>({
     id: existingSignal?.id || `signal_${Date.now()}`,
@@ -41,6 +43,10 @@ export const SignalTemplateBuilder: React.FC<SignalBuilderProps> = ({
     cooldownHours: existingSignal?.cooldownHours || 24,
   });
 
+  // Determine if this is a restaurant/hospitality template
+  const isRestaurantTemplate = selectedTemplate?.name?.toLowerCase().includes('restaurant') ||
+                                selectedTemplate?.name?.toLowerCase().includes('qsr');
+
   const steps: { id: BuilderStep; label: string; icon: React.ElementType }[] = [
     { id: 'metric', label: 'Metric', icon: Activity },
     { id: 'operator', label: 'Operator', icon: TrendingUp },
@@ -51,7 +57,8 @@ export const SignalTemplateBuilder: React.FC<SignalBuilderProps> = ({
 
   const currentStepIndex = steps.findIndex((s) => s.id === currentStep);
 
-  const metricOptions = [
+  // Base metrics available to all industries
+  const baseMetricOptions = [
     // Revenue & Financial
     { value: 'revenue', label: 'Revenue', category: 'Financial', description: 'Total revenue amount' },
     { value: 'avg_basket_size', label: 'Average Basket Size', category: 'Financial', description: 'Average transaction value' },
@@ -73,6 +80,21 @@ export const SignalTemplateBuilder: React.FC<SignalBuilderProps> = ({
     { value: 'points_balance_change', label: 'Points Balance Change', category: 'Risk', description: 'Sudden points balance changes' },
     { value: 'geographic_distance', label: 'Geographic Distance', category: 'Risk', description: 'Distance between transactions' },
   ];
+
+  // Restaurant-specific metrics (shown only for restaurant templates)
+  const restaurantMetrics = [
+    { value: 'table_turnover_rate', label: 'Table Turnover Rate', category: 'Restaurant Operations', description: 'Average tables served per hour' },
+    { value: 'avg_dining_duration', label: 'Average Dining Duration', category: 'Restaurant Operations', description: 'Time from seating to checkout' },
+    { value: 'reservation_noshow_rate', label: 'Reservation No-Show Rate', category: 'Restaurant Operations', description: 'Percentage of missed reservations' },
+    { value: 'kitchen_ticket_time', label: 'Kitchen Ticket Time', category: 'Restaurant Operations', description: 'Average time to prepare orders' },
+    { value: 'dinein_delivery_ratio', label: 'Dine-in vs Delivery Ratio', category: 'Restaurant Operations', description: 'Mix of service types' },
+    { value: 'peak_hour_capacity', label: 'Peak Hour Capacity Utilization', category: 'Restaurant Operations', description: 'Seating capacity during rush hours' },
+  ];
+
+  // Combine metrics based on template
+  const metricOptions = isRestaurantTemplate
+    ? [...baseMetricOptions, ...restaurantMetrics]
+    : baseMetricOptions;
 
   const operatorOptions = [
     { value: 'trend', label: 'Trend Analysis', description: 'Detect upward or downward trends over time', icon: TrendingUp },
@@ -281,29 +303,41 @@ export const SignalTemplateBuilder: React.FC<SignalBuilderProps> = ({
 
               <div className="space-y-2">
                 <label className="block text-sm font-semibold text-gray-700 mb-3">Choose Metric</label>
-                {['Financial', 'Customer', 'Operations', 'Campaign', 'Risk'].map((category) => (
-                  <div key={category}>
-                    <h4 className="text-xs font-semibold text-gray-500 uppercase mb-2 mt-4">{category}</h4>
-                    <div className="grid grid-cols-2 gap-3">
-                      {metricOptions
-                        .filter((m) => m.category === category)
-                        .map((metric) => (
-                          <button
-                            key={metric.value}
-                            onClick={() => setSignalData({ ...signalData, metric: metric.value })}
-                            className={`p-4 rounded-lg border-2 text-left transition-all hover:shadow-md ${
-                              signalData.metric === metric.value
-                                ? 'border-brand-500 bg-brand-50'
-                                : 'border-gray-200 hover:border-gray-300'
-                            }`}
-                          >
-                            <div className="font-semibold text-sm text-gray-900">{metric.label}</div>
-                            <div className="text-xs text-gray-600 mt-1">{metric.description}</div>
-                          </button>
-                        ))}
+                {/* Get unique categories from available metrics */}
+                {Array.from(new Set(metricOptions.map(m => m.category))).map((category) => {
+                  const isIndustrySpecific = category.includes('Restaurant') || category.includes('Retail') || category.includes('Hotel');
+
+                  return (
+                    <div key={category}>
+                      <div className="flex items-center gap-2 mb-2 mt-4">
+                        <h4 className="text-xs font-semibold text-gray-500 uppercase">{category}</h4>
+                        {isIndustrySpecific && (
+                          <span className="px-2 py-0.5 bg-purple-100 text-purple-700 text-xs rounded-full font-medium">
+                            Industry-Specific
+                          </span>
+                        )}
+                      </div>
+                      <div className="grid grid-cols-2 gap-3">
+                        {metricOptions
+                          .filter((m) => m.category === category)
+                          .map((metric) => (
+                            <button
+                              key={metric.value}
+                              onClick={() => setSignalData({ ...signalData, metric: metric.value })}
+                              className={`p-4 rounded-lg border-2 text-left transition-all hover:shadow-md ${
+                                signalData.metric === metric.value
+                                  ? 'border-brand-500 bg-brand-50'
+                                  : 'border-gray-200 hover:border-gray-300'
+                              }`}
+                            >
+                              <div className="font-semibold text-sm text-gray-900">{metric.label}</div>
+                              <div className="text-xs text-gray-600 mt-1">{metric.description}</div>
+                            </button>
+                          ))}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
