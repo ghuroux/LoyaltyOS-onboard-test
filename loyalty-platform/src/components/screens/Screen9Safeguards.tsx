@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { useOnboardingStore } from '../../store/onboardingStore';
-import { Mail, MessageSquare, Bell, Smartphone } from 'lucide-react';
+import { Mail, MessageSquare, Bell, Smartphone, Shield, ShieldX, Megaphone, Lock, Clock, Target, AlertTriangle, Pause, BarChart } from 'lucide-react';
 
 export const Screen9Safeguards: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'anti-gaming' | 'communication' | 'overrides'>('anti-gaming');
@@ -12,7 +12,10 @@ export const Screen9Safeguards: React.FC = () => {
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-8">
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">🛡️ Automation Safeguards</h1>
+          <div className="flex items-center gap-3 mb-2">
+            <Shield className="text-brand-600" size={32} />
+            <h1 className="text-3xl font-bold text-gray-900">Automation Safeguards</h1>
+          </div>
           <p className="text-gray-600 text-lg">Protect your program from gaming and maintain customer experience quality</p>
         </div>
 
@@ -20,33 +23,36 @@ export const Screen9Safeguards: React.FC = () => {
         <div className="flex gap-2 mb-8 border-b border-gray-200">
           <button
             onClick={() => setActiveTab('anti-gaming')}
-            className={`px-6 py-3 font-semibold border-b-2 transition-colors ${
+            className={`px-6 py-3 font-semibold border-b-2 transition-colors flex items-center gap-2 ${
               activeTab === 'anti-gaming'
                 ? 'border-primary text-brand-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
           >
-            🚫 Anti-Gaming Rules
+            <ShieldX size={18} />
+            Anti-Gaming Rules
           </button>
           <button
             onClick={() => setActiveTab('communication')}
-            className={`px-6 py-3 font-semibold border-b-2 transition-colors ${
+            className={`px-6 py-3 font-semibold border-b-2 transition-colors flex items-center gap-2 ${
               activeTab === 'communication'
                 ? 'border-primary text-brand-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
           >
-            📢 Communication Limits
+            <Megaphone size={18} />
+            Communication Limits
           </button>
           <button
             onClick={() => setActiveTab('overrides')}
-            className={`px-6 py-3 font-semibold border-b-2 transition-colors ${
+            className={`px-6 py-3 font-semibold border-b-2 transition-colors flex items-center gap-2 ${
               activeTab === 'overrides'
                 ? 'border-primary text-brand-600'
                 : 'border-transparent text-gray-500 hover:text-gray-700'
             }`}
           >
-            🔐 Override Controls
+            <Lock size={18} />
+            Override Controls
           </button>
         </div>
 
@@ -57,7 +63,10 @@ export const Screen9Safeguards: React.FC = () => {
             <Card className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h3 className="text-lg font-semibold mb-1">⏱️ Cooldown Periods</h3>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Clock size={20} className="text-brand-600" />
+                    <h3 className="text-lg font-semibold">Cooldown Periods</h3>
+                  </div>
                   <p className="text-sm text-gray-600">Prevent customers from repeatedly triggering the same automation</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
@@ -144,7 +153,10 @@ export const Screen9Safeguards: React.FC = () => {
             <Card className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h3 className="text-lg font-semibold mb-1">🎯 Maximum Benefit Caps</h3>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Target size={20} className="text-brand-600" />
+                    <h3 className="text-lg font-semibold">Maximum Benefit Caps</h3>
+                  </div>
                   <p className="text-sm text-gray-600">Limit how many times a customer can benefit from automations</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
@@ -209,7 +221,7 @@ export const Screen9Safeguards: React.FC = () => {
 
                   <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
                     <div className="flex items-start gap-2">
-                      <span className="text-yellow-600">⚠️</span>
+                      <AlertTriangle size={18} className="text-yellow-600" />
                       <div>
                         <p className="text-sm font-medium text-yellow-800">Cap Period Behavior</p>
                         <p className="text-xs text-yellow-700 mt-1">
@@ -540,7 +552,10 @@ export const Screen9Safeguards: React.FC = () => {
             <Card className="p-5">
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h3 className="text-lg font-semibold mb-1">🎯 Communication Priority System</h3>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Target size={20} className="text-brand-600" />
+                    <h3 className="text-lg font-semibold">Communication Priority System</h3>
+                  </div>
                   <p className="text-sm text-gray-600">When limits are reached, prioritize the most important communications</p>
                 </div>
                 <label className="relative inline-flex items-center cursor-pointer">
@@ -889,7 +904,7 @@ export const Screen9Safeguards: React.FC = () => {
 
                 <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
                   <div className="flex items-start gap-2">
-                    <span className="text-red-600 text-lg">⚠️</span>
+                    <AlertTriangle size={18} className="text-red-600" />
                     <div>
                       <p className="text-sm font-medium text-red-800">Override Audit Trail</p>
                       <p className="text-xs text-red-700 mt-1">
@@ -905,7 +920,10 @@ export const Screen9Safeguards: React.FC = () => {
             <Card className="p-5 border border-red-200">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-lg font-semibold text-red-700 mb-1">⏸️ Pause All Automations</h3>
+                  <div className="flex items-center gap-2 mb-1">
+                    <Pause size={20} className="text-red-700" />
+                    <h3 className="text-lg font-semibold text-red-700">Pause All Automations</h3>
+                  </div>
                   <p className="text-sm text-gray-600">Emergency stop for all automated processes</p>
                 </div>
                 <button className="px-6 py-3 bg-red-600 text-white rounded-lg font-semibold hover:bg-red-700 transition-colors">
@@ -921,7 +939,10 @@ export const Screen9Safeguards: React.FC = () => {
 
         {/* Summary Card */}
         <Card className="p-5 mt-8 bg-gray-50 border border-gray-200">
-          <h3 className="text-lg font-semibold mb-3">📊 Safeguards Summary</h3>
+          <div className="flex items-center gap-2 mb-3">
+            <BarChart size={20} className="text-brand-600" />
+            <h3 className="text-lg font-semibold">Safeguards Summary</h3>
+          </div>
           <div className="grid grid-cols-3 gap-4">
             <div className="bg-white p-4 rounded-lg">
               <div className="text-2xl font-bold text-brand-600">

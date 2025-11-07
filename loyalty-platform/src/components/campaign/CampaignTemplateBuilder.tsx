@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Card } from '../ui/Card';
+import { ClipboardList, Target, Users, Gift, MapPin, Clock, Megaphone, Settings, CheckCircle, Star, DollarSign, Mail, MessageSquare, Bell, Infinity, Zap, ShoppingCart, ShoppingBag, User, Hand, Lightbulb, Percent, Ticket, X, Package } from 'lucide-react';
 
 type CampaignType = 'time-based' | 'long-living' | 'trigger-based' | 'one-off';
 type TemplateStep = 'type' | 'trigger' | 'who' | 'what' | 'where' | 'when' | 'how' | 'controls' | 'review';
@@ -97,16 +98,16 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
     minRoi: 0,
   });
 
-  const steps: { id: TemplateStep; label: string; icon: string }[] = [
-    { id: 'type', label: 'Type', icon: '📋' },
-    { id: 'trigger', label: 'Trigger', icon: '🎯' },
-    { id: 'who', label: 'Who', icon: '👥' },
-    { id: 'what', label: 'What', icon: '🎁' },
-    { id: 'where', label: 'Where', icon: '📍' },
-    { id: 'when', label: 'When', icon: '⏰' },
-    { id: 'how', label: 'How', icon: '📢' },
-    { id: 'controls', label: 'Controls', icon: '⚙️' },
-    { id: 'review', label: 'Review', icon: '✅' },
+  const steps: { id: TemplateStep; label: string; icon: React.ElementType }[] = [
+    { id: 'type', label: 'Type', icon: ClipboardList },
+    { id: 'trigger', label: 'Trigger', icon: Target },
+    { id: 'who', label: 'Who', icon: Users },
+    { id: 'what', label: 'What', icon: Gift },
+    { id: 'where', label: 'Where', icon: MapPin },
+    { id: 'when', label: 'When', icon: Clock },
+    { id: 'how', label: 'How', icon: Megaphone },
+    { id: 'controls', label: 'Controls', icon: Settings },
+    { id: 'review', label: 'Review', icon: CheckCircle },
   ];
 
   const currentStepIndex = steps.findIndex((s) => s.id === currentStep);
@@ -174,7 +175,11 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
                         : 'bg-gray-200 text-gray-500'
                     }`}
                   >
-                    {index < currentStepIndex ? '✓' : step.icon}
+                    {index < currentStepIndex ? (
+                      <CheckCircle size={20} />
+                    ) : (
+                      <step.icon size={20} />
+                    )}
                   </div>
                   <span className="text-xs font-medium">{step.label}</span>
                 </button>
@@ -196,25 +201,25 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
                 {[
                   {
                     id: 'time-based',
-                    icon: '⏰',
+                    icon: Clock,
                     name: 'Time-Based Campaign',
                     desc: 'Limited duration promotions with specific start and end dates',
                   },
                   {
                     id: 'long-living',
-                    icon: '♾️',
+                    icon: Infinity,
                     name: 'Long-Living Campaign',
                     desc: 'Always-on campaigns triggered by customer actions',
                   },
                   {
                     id: 'trigger-based',
-                    icon: '⚡',
+                    icon: Zap,
                     name: 'Event-Based Campaign',
                     desc: 'Event-driven campaigns based on external triggers',
                   },
                   {
                     id: 'one-off',
-                    icon: '💰',
+                    icon: DollarSign,
                     name: 'One-Off Issue',
                     desc: 'Immediate, ad-hoc reward issuance to specific customers',
                   },
@@ -228,7 +233,9 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
-                    <div className="text-4xl mb-3">{type.icon}</div>
+                    <div className="mb-3">
+                      <type.icon size={40} className="text-brand-600" />
+                    </div>
                     <h4 className="font-semibold text-lg mb-2">{type.name}</h4>
                     <p className="text-sm text-gray-600">{type.desc}</p>
                   </button>
@@ -251,7 +258,7 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
           {/* Step 2: TRIGGER - What Activates the Offer */}
           {currentStep === 'trigger' && (
             <div className="space-y-6">
-              <h3 className="text-xl font-bold mb-4">🎯 Campaign Trigger</h3>
+              <div className="flex items-center gap-2 mb-4"><Target size={24} className="text-brand-600" /><h3 className="text-xl font-bold">Campaign Trigger</h3></div>
               <p className="text-sm text-gray-600 mb-4">
                 What action or event will activate this campaign for customers?
               </p>
@@ -270,7 +277,7 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
                       className="mt-1"
                     />
                     <div className="flex-1">
-                      <div className="font-medium">🛒 Purchase-Based</div>
+                      <div className="font-medium"><div className="flex items-center gap-2"><ShoppingCart size={18} /> Purchase-Based</div></div>
                       <div className="text-sm text-gray-600">Triggered when customer purchases specific item(s)</div>
 
                       {templateData.triggerCategory === 'purchase' && (
@@ -356,7 +363,7 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
                       className="mt-1"
                     />
                     <div className="flex-1">
-                      <div className="font-medium">🛍️ Cart-Based</div>
+                      <div className="font-medium"><div className="flex items-center gap-2"><ShoppingBag size={18} /> Cart-Based</div></div>
                       <div className="text-sm text-gray-600">Triggered when item is added to cart (before purchase)</div>
                       {templateData.triggerCategory === 'cart' && (
                         <div className="mt-3">
@@ -382,7 +389,7 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
                         className="mt-1"
                       />
                       <div className="flex-1">
-                        <div className="font-medium">👤 Customer Milestone</div>
+                        <div className="font-medium"><div className="flex items-center gap-2"><User size={18} /> Customer Milestone</div></div>
                         <div className="text-sm text-gray-600">Triggered by customer lifecycle events</div>
                         {templateData.triggerCategory === 'customer-action' && (
                           <div className="mt-3">
@@ -410,7 +417,7 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
                         className="mt-1"
                       />
                       <div className="flex-1">
-                        <div className="font-medium">⚡ External Event</div>
+                        <div className="font-medium"><div className="flex items-center gap-2"><Zap size={18} /> External Event</div></div>
                         <div className="text-sm text-gray-600">Triggered by external systems or conditions</div>
                         {templateData.triggerCategory === 'external-event' && (
                           <div className="mt-3">
@@ -439,7 +446,7 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
                         className="mt-1"
                       />
                       <div className="flex-1">
-                        <div className="font-medium">✋ Manual Issue</div>
+                        <div className="font-medium"><div className="flex items-center gap-2"><Hand size={18} /> Manual Issue</div></div>
                         <div className="text-sm text-gray-600">Manually triggered by administrator</div>
                       </div>
                     </label>
@@ -449,7 +456,7 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
 
               <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <p className="text-sm text-blue-800">
-                  <strong>💡 Tip:</strong> The trigger determines <em>what activates</em> the campaign.
+                  <strong><div className="flex items-center gap-2"><Lightbulb size={18} className="text-amber-600" /> Tip</div>:</strong> The trigger determines <em>what activates</em> the campaign.
                   The campaign type (time-based, long-living, etc.) determines <em>when and how long</em> it's available.
                 </p>
               </div>
@@ -459,7 +466,7 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
           {/* Step 3: WHO - Audience */}
           {currentStep === 'who' && (
             <div className="space-y-6">
-              <h3 className="text-xl font-bold mb-4">👥 Define Target Audience</h3>
+              <div className="flex items-center gap-2 mb-4"><Users size={24} className="text-brand-600" /><h3 className="text-xl font-bold">Define Target Audience</h3></div>
 
               <Card className="p-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-3">Targeting Method</label>
@@ -593,19 +600,19 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
           {/* Step 3: WHAT - Offer Configuration */}
           {currentStep === 'what' && (
             <div className="space-y-6">
-              <h3 className="text-xl font-bold mb-4">🎁 Configure Offer</h3>
+              <div className="flex items-center gap-2 mb-4"><Gift size={24} className="text-brand-600" /><h3 className="text-xl font-bold">Configure Offer</h3></div>
 
               <Card className="p-4">
                 <label className="block text-sm font-semibold text-gray-700 mb-3">Reward Type</label>
                 <div className="grid grid-cols-2 gap-3">
                   {[
-                    { id: 'discount', label: 'Discount', icon: '💸' },
-                    { id: 'points', label: 'Bonus Points', icon: '⭐' },
-                    { id: 'voucher', label: 'Voucher', icon: '🎟️' },
-                    { id: 'free-item', label: 'Free Item', icon: '🎁' },
-                    { id: 'credit', label: 'Store Credit', icon: '💰' },
-                    { id: 'multiplier', label: 'Points Multiplier', icon: '✖️' },
-                    { id: 'bundle', label: 'Bundle Offer', icon: '📦' },
+                    { id: 'discount', label: 'Discount', icon: Percent },
+                    { id: 'points', label: 'Bonus Points', icon: Star },
+                    { id: 'voucher', label: 'Voucher', icon: Ticket },
+                    { id: 'free-item', label: 'Free Item', icon: Gift },
+                    { id: 'credit', label: 'Store Credit', icon: DollarSign },
+                    { id: 'multiplier', label: 'Points Multiplier', icon: X },
+                    { id: 'bundle', label: 'Bundle Offer', icon: Package },
                   ].map((type) => (
                     <button
                       key={type.id}
@@ -614,8 +621,10 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
                         templateData.rewardType === type.id ? 'border-primary bg-blue-50' : 'border-gray-200'
                       }`}
                     >
-                      <span className="text-2xl mr-2">{type.icon}</span>
-                      <span className="font-medium text-sm">{type.label}</span>
+                      <div className="flex items-center gap-2">
+                        <type.icon size={24} className="text-gray-700" />
+                        <span className="font-medium text-sm">{type.label}</span>
+                      </div>
                     </button>
                   ))}
                 </div>
@@ -1367,7 +1376,7 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-lg">📧</span>
+                        <Mail size={18} className="text-gray-700" />
                         <span className="font-medium">Email</span>
                       </div>
                       {templateData.sendEmail && (
@@ -1413,7 +1422,7 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-lg">💬</span>
+                        <MessageSquare size={18} className="text-gray-700" />
                         <span className="font-medium">SMS</span>
                       </div>
                       {templateData.sendSms && (
@@ -1455,7 +1464,7 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
                     />
                     <div className="flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-lg">🔔</span>
+                        <Bell size={18} className="text-gray-700" />
                         <span className="font-medium">Push Notification</span>
                       </div>
                       {templateData.sendPush && (
@@ -1542,7 +1551,7 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
                 </Card>
 
                 <Card className="p-4">
-                  <h4 className="font-semibold text-sm text-gray-700 mb-3">🎯 Trigger</h4>
+                  <div className="flex items-center gap-2 mb-3"><Target size={16} className="text-brand-600" /><h4 className="font-semibold text-sm text-gray-700">Trigger</h4></div>
                   <div className="space-y-2 text-sm">
                     <div><span className="text-gray-600">Activation:</span> <strong className="capitalize">{templateData.triggerCategory.replace('-', ' ')}</strong></div>
                     {templateData.triggerCategory === 'purchase' && templateData.purchaseTriggerCondition === 'specific-sku' && (
@@ -1555,7 +1564,7 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
                 </Card>
 
                 <Card className="p-4">
-                  <h4 className="font-semibold text-sm text-gray-700 mb-3">👥 Audience</h4>
+                  <div className="flex items-center gap-2 mb-3"><Users size={16} className="text-brand-600" /><h4 className="font-semibold text-sm text-gray-700">Audience</h4></div>
                   <div className="space-y-2 text-sm">
                     <div><span className="text-gray-600">Targeting:</span> <strong className="capitalize">{templateData.audienceType}</strong></div>
                     {templateData.audienceType === 'segment' && (
@@ -1565,7 +1574,7 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
                 </Card>
 
                 <Card className="p-4">
-                  <h4 className="font-semibold text-sm text-gray-700 mb-3">🎁 Offer</h4>
+                  <div className="flex items-center gap-2 mb-3"><Gift size={16} className="text-brand-600" /><h4 className="font-semibold text-sm text-gray-700">Offer</h4></div>
                   <div className="space-y-2 text-sm">
                     <div><span className="text-gray-600">Reward:</span> <strong className="capitalize">{templateData.rewardType.replace('-', ' ')}</strong></div>
                     {templateData.rewardType === 'discount' && (
@@ -1575,7 +1584,7 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
                 </Card>
 
                 <Card className="p-4">
-                  <h4 className="font-semibold text-sm text-gray-700 mb-3">📍 Redemption</h4>
+                  <div className="flex items-center gap-2 mb-3"><MapPin size={16} className="text-brand-600" /><h4 className="font-semibold text-sm text-gray-700">Redemption</h4></div>
                   <div className="space-y-2 text-sm">
                     <div><span className="text-gray-600">Location:</span> <strong className="capitalize">{templateData.redemptionLocation.replace('-', ' ')}</strong></div>
                     <div><span className="text-gray-600">Channel:</span> <strong className="capitalize">{templateData.redemptionChannel}</strong></div>
@@ -1583,21 +1592,21 @@ export const CampaignTemplateBuilder: React.FC<TemplateBuilderProps> = ({
                 </Card>
 
                 <Card className="p-4">
-                  <h4 className="font-semibold text-sm text-gray-700 mb-3">📢 Communication</h4>
+                  <div className="flex items-center gap-2 mb-3"><Megaphone size={16} className="text-brand-600" /><h4 className="font-semibold text-sm text-gray-700">Communication</h4></div>
                   <div className="space-y-2 text-sm">
                     {templateData.sendEmail && (
                       <div>
-                        <span className="text-gray-600">📧 Email via:</span> <strong className="capitalize">{templateData.emailService}</strong>
+                        <span className="text-gray-600"><div className="flex items-center gap-2"><Mail size={14} /> Email via</div>:</span> <strong className="capitalize">{templateData.emailService}</strong>
                       </div>
                     )}
                     {templateData.sendSms && (
                       <div>
-                        <span className="text-gray-600">💬 SMS via:</span> <strong className="capitalize">{templateData.smsService}</strong>
+                        <span className="text-gray-600"><div className="flex items-center gap-2"><MessageSquare size={14} /> SMS via</div>:</span> <strong className="capitalize">{templateData.smsService}</strong>
                       </div>
                     )}
                     {templateData.sendPush && (
                       <div>
-                        <span className="text-gray-600">🔔 Push Notification</span>
+                        <span className="text-gray-600"><div className="flex items-center gap-2"><Bell size={14} /> Push Notification</div></span>
                       </div>
                     )}
                     {!templateData.sendEmail && !templateData.sendSms && !templateData.sendPush && (
