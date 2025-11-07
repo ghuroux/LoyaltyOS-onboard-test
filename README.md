@@ -1,38 +1,51 @@
-# StratOS Loyalty Platform - Interactive React Prototype
+# Enterprise Loyalty Platform - Interactive Specification
 
-An enterprise loyalty platform prototype that positions itself as an **"Operational Intelligence Platform"** rather than just a loyalty system. Built for StratGroup as a distribution-ready platform for partners like Sitecore to white-label for enterprise clients.
+An interactive specification and demonstrator for an enterprise loyalty platform configurator. This tool is designed to act as a **visual specification** for development teams while also serving as a compelling demo for channel partners (like Sitecore) who want to offer white-labeled loyalty solutions to their enterprise clients.
 
-## 🎯 Overview
+## 🎯 Purpose
 
-This interactive prototype demonstrates a comprehensive 13-screen onboarding flow that showcases the platform's intelligence-first approach. Every configuration decision immediately shows what analytics, KPIs, and AI capabilities it enables.
+This repository serves dual purposes:
 
-### Key Differentiator: Queue-Based Intelligence
+1. **Product Specification** - A detailed, interactive spec for our product and development teams to understand the vision and build the actual platform
+2. **Partner Demonstration** - A compelling demo for distribution partners to visualize the platform's capabilities and intelligence-first approach
 
-The platform uses queue-based operational intelligence to surface insights and automate decisions - moving beyond simple loyalty mechanics to full business intelligence.
+> **Note:** This is an interactive prototype/specification, not a production-ready application. It demonstrates the complete user journey and feature set without requiring backend integration.
 
-## ✨ Features
+## ✨ Key Differentiator: Operational Intelligence
 
-### Intelligence-First Design
-- **Real-time KPI Calculation** - See analytics impact as you configure attributes
-- **Progressive Disclosure** - Start simple, reveal complexity as needed
-- **Template-Based Setup** - Industry-specific templates accelerate configuration
-- **Queue Intelligence** - Automated operational decision-making
+Unlike traditional loyalty platforms, this system positions itself as an **Operational Intelligence Platform** that uses loyalty mechanics as the foundation for comprehensive business intelligence:
 
-### All 13 Screens Implemented
+- **Queue-Based Intelligence** - Automated decision-making through intelligent queues
+- **Real-time KPI Impact** - Every configuration choice shows its analytics impact
+- **Attribute-to-Insight Mapping** - Data collection directly tied to business intelligence capabilities
 
-1. **Business Discovery** - Industry and template selection with success metrics
-2. **Organization Structure** - 4 tabs including entity configuration with live KPI tracking
-3. **Value Mechanisms** - Points, cashback, credits, or hybrid configuration
-4. **Customer Segmentation** - Tier-based and AI-driven behavioral segments
-5. **Earning Rules** - Base rules, category multipliers, behavioral bonuses
-6. **Redemption Rules** - Multiple redemption types with AI optimization
-7. **Campaign Framework** - Outcome-based campaigns with progressive automation
-8. **Queue Intelligence** ⭐ - 4 operational queues (Customer, Store, Campaign, Fraud)
-9. **Data Strategy** - ETL configuration with learning timeline visualization
-10. **Integrations** - POS, payment gateways, communication systems
-11. **Analytics & KPIs** - Dynamic KPI selection with dashboard designer
-12. **Flow Orchestration** - Drag-and-drop visual flow builder (like Zapier/n8n)
-13. **Deployment** - Rollout strategy and intelligence activation settings
+## 📋 Complete Flow (16 Screens)
+
+The configurator implements a comprehensive 16-screen onboarding flow:
+
+### Discovery & Setup (Screens 0-3)
+0. **Discovery** - Industry selection and template-based quick-start
+1. **Dashboard** - Configuration overview with progress tracking and quick navigation
+2. **Platform Basics** - Program name, currency, timezone, and core settings
+3. **Integrations** - External system connections (POS, CRM, payment gateways)
+
+### Structure & Value (Screens 4-6)
+4. **Organization & Customer Structure** - Multi-level business hierarchy with real-time KPI tracking
+5. **Value & Currency** - Points, cashback, credits, vouchers, or hybrid models with tier management
+6. **Redemption & Rewards** - Reward catalog configuration and redemption rules
+
+### Intelligence & Automation (Screens 7-11)
+7. **Segmentation** - RFM analysis, demographic segments, or custom ML-powered segmentation
+8. **Automations** - Trigger-based workflows for segment transitions, milestones, and lifecycle events
+9. **Safeguards** - Anti-gaming controls, communication limits, and override management
+10. **Campaigns** - Template-based campaign framework with budget and ROI controls
+11. **Intelligence Queues** ⭐ - Four operational queues (Customer, Store Performance, Campaign, Fraud & Risk)
+
+### Infrastructure & Deployment (Screens 12-15)
+12. **Data Strategy** - ETL configuration and data governance
+13. **Analytics & KPIs** - Dynamic KPI selection based on configured attributes
+14. **Flow Builder** - Visual workflow designer with drag-and-drop interface (React Flow)
+15. **Deployment** - Rollout strategy (pilot, phased, big bang)
 
 ## 🚀 Getting Started
 
@@ -44,7 +57,7 @@ The platform uses queue-based operational intelligence to surface insights and a
 ### Installation
 
 ```bash
-# Navigate to the project directory
+# Navigate to the loyalty-platform directory
 cd loyalty-platform
 
 # Install dependencies
@@ -52,28 +65,20 @@ npm install
 
 # Start development server
 npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
 ```
-
-### Development Server
 
 Once running, open [http://localhost:5173](http://localhost:5173) in your browser.
 
 ## 🏗️ Tech Stack
 
 - **React 18** - UI framework
-- **TypeScript** - Type safety
-- **Vite** - Fast build tool
-- **Tailwind CSS** - Utility-first styling
-- **Zustand** - Lightweight state management
-- **Framer Motion** - Smooth animations
-- **React Flow** - Flow builder for Screen 11
-- **Lucide React** - Icon library
+- **TypeScript** - Type safety and developer experience
+- **Vite** - Fast build tool and development server
+- **Tailwind CSS** - Utility-first styling with custom design system
+- **Zustand** - Lightweight state management (811 lines of comprehensive state)
+- **Framer Motion** - Smooth animations and transitions
+- **React Flow** - Visual workflow builder (Screen 14)
+- **Lucide React** - Consistent icon system
 
 ## 📁 Project Structure
 
@@ -81,67 +86,157 @@ Once running, open [http://localhost:5173](http://localhost:5173) in your browse
 loyalty-platform/
 ├── src/
 │   ├── components/
-│   │   ├── layout/           # Header, Footer, ProgressBar
-│   │   ├── screens/          # All 13 screen components
-│   │   └── ui/               # Reusable UI components
+│   │   ├── layout/              # Header, Footer, ProgressBar
+│   │   ├── screens/             # 16 screen components (Screen0-15)
+│   │   │   ├── Screen0Discovery.tsx
+│   │   │   ├── Screen1Dashboard.tsx
+│   │   │   ├── Screen2PlatformBasics.tsx
+│   │   │   └── ... (Screen3-15)
+│   │   ├── ui/                  # Card, Button, Modal, Toggle
+│   │   └── campaign/            # CampaignTemplateBuilder
 │   ├── store/
-│   │   └── onboardingStore.ts # Zustand state management
-│   ├── App.tsx               # Main app component
-│   ├── main.tsx              # Entry point
-│   └── index.css             # Global styles
-├── public/                   # Static assets
+│   │   └── onboardingStore.ts   # Zustand state (comprehensive data models)
+│   ├── App.tsx                  # Main routing and screen management
+│   ├── main.tsx                 # Entry point
+│   └── index.css                # Global styles & Tailwind config
 └── package.json
 ```
 
 ## 🎨 Design Principles
 
-1. **Progressive Disclosure** - Start simple, reveal complexity as needed
-2. **Intelligence-First** - Show KPI/analytics impact of every decision in real-time
-3. **Template-Based** - Industry templates accelerate setup
-4. **Non-Developer Friendly** - Technical details hidden but accessible via "Developer View"
-5. **Analytics-Ready by Design** - Every configuration feeds the ML/AI engine
+1. **Intelligence-First** - Every configuration decision shows real-time KPI and analytics impact
+2. **Progressive Disclosure** - Start simple, reveal complexity as users need it
+3. **Template-Driven** - Industry-specific templates accelerate initial configuration
+4. **Operator-Focused** - Built for business analysts and administrators (internal staff and channel partners)
+5. **Specification-Grade Detail** - Rich enough to serve as development spec, polished enough for demos
 
-## 🔧 Key Components
+## 🔑 Standout Features
 
-### State Management (Zustand)
+### 1. Real-time KPI Tracking (Screen 4)
+As users configure entity attributes, the system dynamically calculates:
+- **Total KPIs** available based on selected attributes
+- **Analytics features** enabled by the configuration
+- **AI capabilities** unlocked by data collection choices
 
-The app uses Zustand for lightweight, performant state management:
+Example: Adding "Square Footage" attribute enables "Sales per Sq Ft", "Space Utilization", and "Heat Mapping" analytics.
+
+### 2. Queue-Based Intelligence (Screen 11)
+Four intelligent operational queues that differentiate the platform:
+
+- **Customer Intelligence Queue** - Churn risk, LTV changes, behavior anomalies, segment transitions
+- **Store Performance Queue** - Comparative analysis, anomaly detection, opportunity identification
+- **Campaign Intelligence Queue** - Performance monitoring, auto-optimization, conflict detection
+- **Fraud & Risk Queue** - Pattern detection, velocity checks, geographic anomalies
+
+### 3. Comprehensive Earning Rules (Screen 5)
+Sophisticated multi-dimensional earning configurations:
+- Base rates with category multipliers
+- Threshold-based earning (for credits/vouchers)
+- SKU-level tracking (punch card mechanics)
+- Behavioral bonuses (frequency, thresholds, birthdays, first purchase)
+- Tier-specific overrides
+
+### 4. Visual Flow Builder (Screen 14)
+React Flow-powered workflow designer for creating custom automation flows with:
+- Drag-and-drop interface
+- Triggers, actions, and decision nodes
+- Auto-generated API endpoints
+- Real-time flow visualization
+
+## 💾 State Management
+
+The application uses Zustand with a comprehensive 811-line state store including:
 
 ```typescript
-const { currentScreen, nextScreen, previousScreen, kpiCounts } = useOnboardingStore();
+interface OnboardingState {
+  // Navigation
+  currentScreen: number;
+
+  // Business Context
+  selectedIndustry: string;
+  selectedTemplate: Template;
+
+  // Organization (Screen 4)
+  organizationHierarchy: HierarchyLevel[];
+  customerHierarchy: HierarchyLevel[];
+  entityAttributes: AttributeConfig;
+  kpiCounts: { total, analytics, ai };
+
+  // Value & Rewards (Screens 5-6)
+  valueType: 'points' | 'cashback' | 'credits' | 'vouchers' | 'hybrid';
+  valueConfig: ValueConfig;
+  tiers: Tier[];
+  earningRules: EarningRules;
+  redemptionRules: any;
+
+  // Intelligence (Screens 7-11)
+  segmentationMethod: 'rfm' | 'demographic' | 'custom';
+  segments: Segment[];
+  automations: Automation[];
+  safeguardSettings: SafeguardSettings;
+  campaignSettings: CampaignSettings;
+  queues: Queue[];
+
+  // Infrastructure (Screens 12-15)
+  integrations: Integration[];
+  flowDesigns: FlowDesign[];
+  deploymentStrategy: string;
+}
 ```
 
-### Real-time KPI Tracking
-
-As users select/deselect entity attributes, the system immediately calculates and displays:
-- Total KPIs available
-- Analytics features enabled
-- AI capabilities unlocked
-
-### Queue Intelligence
-
-Four operational intelligence queues:
-- **Customer Intelligence** - Churn detection, LTV changes, behavior anomalies
-- **Store Performance** - Comparative analysis, anomaly detection
-- **Campaign Intelligence** - Performance optimization, conflict detection
-- **Fraud & Risk** - Unusual patterns, velocity checks
+All state is local (no backend) - perfect for demonstration and specification purposes.
 
 ## 🎯 For Distribution Partners
 
-This prototype is designed to be:
-- **White-labelable** - Easy to rebrand for different partners
-- **Industry-Adaptive** - Templates for retail, hospitality, airlines, banking, etc.
-- **Intelligence-Focused** - Positions loyalty as an entry point to full BI/automation
-- **Demo-Ready** - Impressive flow builder and queue intelligence features
+This configurator is designed to be:
+
+- **White-labelable** - Easy to rebrand for different channel partners
+- **Industry-Adaptive** - Templates for retail, hospitality, airlines, banking, telecom, and more
+- **Intelligence-Focused** - Positions loyalty as an entry point to comprehensive BI/automation
+- **Demo-Ready** - Polished UI with impressive features (flow builder, queue intelligence, real-time KPI tracking)
+- **Specification-Complete** - Detailed enough for partners to understand implementation requirements
+
+### Target Distribution Partners
+- **CMS/DXP Platforms** - Sitecore, Adobe, etc.
+- **E-commerce Platforms** - Shopify Plus, commercetools, etc.
+- **System Integrators** - Accenture, Deloitte Digital, etc.
+- **POS Vendors** - Toast, Square, Lightspeed, etc.
+
+## 🛠️ For Development Teams
+
+### Using This as a Specification
+
+This repository demonstrates:
+
+1. **Complete data models** - See `src/store/onboardingStore.ts` for comprehensive TypeScript interfaces
+2. **User flows** - 16 screens show the complete configuration journey
+3. **Feature interactions** - How different configurations affect each other (e.g., value type affects earning rules)
+4. **UI/UX patterns** - Progressive disclosure, modal interactions, form validation approaches
+5. **Business logic** - Tier systems, earning calculations, segment definitions, queue configurations
+
+### What's Intentionally Missing
+
+Since this is a specification/demo tool, it intentionally does not include:
+
+- Backend API integration (all state is local)
+- Authentication/authorization
+- Data persistence beyond browser session
+- Production-grade error handling
+- Complete CRUD operations on all entities
+- ETL mapping tools
+- Real-time collaboration features
+- Version control and rollback
+
+These features are documented in the UX specifications but not implemented in this prototype.
 
 ## 📄 License
 
 Proprietary - StratGroup
 
-## 🤝 Contributing
+## 🤝 Contact
 
-This is a prototype for demonstration purposes. For production implementation or customization, contact StratGroup.
+This is a specification and demonstration tool. For production implementation, white-label partnership opportunities, or customization inquiries, contact StratGroup.
 
 ---
 
-Built with ❤️ for StratGroup's enterprise clients
+**Built for enterprise loyalty at scale** | StratGroup © 2025
