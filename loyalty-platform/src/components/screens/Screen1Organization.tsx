@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
-import { ChevronDown, ChevronUp, Plus, Trash2, Check, Edit2, X } from 'lucide-react';
+import { ChevronDown, Plus, Trash2, Check, Edit2, X } from 'lucide-react';
 
 type FieldType = 'text' | 'textarea' | 'number' | 'date' | 'boolean' | 'dropdown' | 'email' | 'phone' | 'uuid';
 type RelationshipType = 'parent-of' | 'child-of' | 'spouse-of' | 'partner-of' | 'guardian-of' | 'sibling-of';
@@ -47,14 +47,6 @@ interface EntityLevel {
   // State management for runtime
   stateManagementEnabled: boolean;
   states: EntityState[];
-}
-
-interface SeedUser {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  role: string;
 }
 
 export const Screen1Organization: React.FC = () => {
@@ -455,14 +447,6 @@ export const Screen1Organization: React.FC = () => {
       ],
     },
   ]);
-
-  const [seedUser, setSeedUser] = useState<SeedUser>({
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    role: 'System Administrator',
-  });
 
   const [showAddAttributeModal, setShowAddAttributeModal] = useState(false);
   const [editingEntityId, setEditingEntityId] = useState<string | null>(null);
@@ -1037,64 +1021,6 @@ export const Screen1Organization: React.FC = () => {
                 <span className="mr-2">📋</span>
                 Load from Template
               </Button>
-            </div>
-
-            {/* Seed User for Franchisor */}
-            <div className="p-5 bg-blue-50 border-2 border-blue-200 rounded-lg">
-              <h4 className="font-semibold mb-3 text-blue-900 flex items-center gap-2">
-                <span>👤</span> Seed User (Franchisor Level)
-              </h4>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">First Name *</label>
-                  <input
-                    type="text"
-                    value={seedUser.firstName}
-                    onChange={(e) => setSeedUser({ ...seedUser, firstName: e.target.value })}
-                    placeholder="John"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Last Name *</label>
-                  <input
-                    type="text"
-                    value={seedUser.lastName}
-                    onChange={(e) => setSeedUser({ ...seedUser, lastName: e.target.value })}
-                    placeholder="Smith"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Email *</label>
-                  <input
-                    type="email"
-                    value={seedUser.email}
-                    onChange={(e) => setSeedUser({ ...seedUser, email: e.target.value })}
-                    placeholder="john.smith@company.com"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                  />
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Phone *</label>
-                  <input
-                    type="tel"
-                    value={seedUser.phone}
-                    onChange={(e) => setSeedUser({ ...seedUser, phone: e.target.value })}
-                    placeholder="+1-555-0123"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                  />
-                </div>
-                <div className="col-span-2">
-                  <label className="block text-xs font-semibold text-gray-700 mb-1">Role</label>
-                  <input
-                    type="text"
-                    value={seedUser.role}
-                    onChange={(e) => setSeedUser({ ...seedUser, role: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-                  />
-                </div>
-              </div>
             </div>
 
             {/* Entity Levels */}
@@ -1794,13 +1720,6 @@ export const Screen1Organization: React.FC = () => {
               <pre className="bg-gray-900 text-gray-100 p-4 rounded-lg text-sm overflow-x-auto">
 {`{
   "organizationId": "ORG_123456",
-  "seedUser": {
-    "firstName": "${seedUser.firstName || 'John'}",
-    "lastName": "${seedUser.lastName || 'Smith'}",
-    "email": "${seedUser.email || 'john.smith@company.com'}",
-    "phone": "${seedUser.phone || '+1-555-0123'}",
-    "role": "${seedUser.role}"
-  },
   "hierarchy": {${entityLevels.filter(e => e.enabled).map((entity, idx) => `
     "${entity.id}": {
       "name": "${entity.name}",

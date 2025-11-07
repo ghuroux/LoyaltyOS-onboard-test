@@ -3,12 +3,10 @@ import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { Button } from '../ui/Button';
 import {
-  LayoutDashboard,
   Settings,
   Link2,
   Building2,
   Coins,
-  Trophy,
   TrendingUp,
   Gift,
   Megaphone,
@@ -37,25 +35,14 @@ interface Screen {
 
 interface DashboardProps {
   onNavigate: (screenId: number) => void;
-  currentScreen?: number;
 }
 
 export const Screen0Dashboard: React.FC<DashboardProps> = ({
   onNavigate,
-  currentScreen = 0,
 }) => {
   const screens: Screen[] = [
     {
-      id: 0,
-      name: 'Configuration Dashboard',
-      description: 'Overview and navigation hub',
-      icon: LayoutDashboard,
-      status: 'complete',
-      progress: 100,
-      estimatedTime: '1 min',
-    },
-    {
-      id: 1,
+      id: 2,
       name: 'Platform Basics',
       description: 'Program name, currency, timezone, and basic settings',
       icon: Settings,
@@ -66,7 +53,7 @@ export const Screen0Dashboard: React.FC<DashboardProps> = ({
       completedFields: 0,
     },
     {
-      id: 2,
+      id: 3,
       name: 'External Integrations',
       description: 'Connect CRM, POS, payment systems, and marketing tools',
       icon: Link2,
@@ -77,7 +64,7 @@ export const Screen0Dashboard: React.FC<DashboardProps> = ({
       completedFields: 0,
     },
     {
-      id: 3,
+      id: 4,
       name: 'Organization & Customer Structure',
       description: 'Define business hierarchy, customer categories, and profiles',
       icon: Building2,
@@ -88,7 +75,7 @@ export const Screen0Dashboard: React.FC<DashboardProps> = ({
       completedFields: 8,
     },
     {
-      id: 4,
+      id: 5,
       name: 'Points & Currency',
       description: 'Configure point values, expiration, and conversion rules',
       icon: Coins,
@@ -99,29 +86,7 @@ export const Screen0Dashboard: React.FC<DashboardProps> = ({
       completedFields: 0,
     },
     {
-      id: 5,
-      name: 'Tier & Status Levels',
-      description: 'Create membership tiers, benefits, and upgrade criteria',
-      icon: Trophy,
-      status: 'not-started',
-      progress: 0,
-      estimatedTime: '12 min',
-      requiredFields: 6,
-      completedFields: 0,
-    },
-    {
       id: 6,
-      name: 'Earning Rules',
-      description: 'Define how customers earn points through transactions',
-      icon: TrendingUp,
-      status: 'not-started',
-      progress: 0,
-      estimatedTime: '15 min',
-      requiredFields: 15,
-      completedFields: 0,
-    },
-    {
-      id: 7,
       name: 'Redemption & Rewards',
       description: 'Set up reward catalog and redemption rules',
       icon: Gift,
@@ -132,7 +97,40 @@ export const Screen0Dashboard: React.FC<DashboardProps> = ({
       completedFields: 0,
     },
     {
+      id: 7,
+      name: 'Customer Segmentation',
+      description: 'Define customer segments and behavioral groups',
+      icon: TrendingUp,
+      status: 'not-started',
+      progress: 0,
+      estimatedTime: '12 min',
+      requiredFields: 8,
+      completedFields: 0,
+    },
+    {
       id: 8,
+      name: 'Automations & Triggers',
+      description: 'Set up automated campaigns and event triggers',
+      icon: Workflow,
+      status: 'not-started',
+      progress: 0,
+      estimatedTime: '15 min',
+      requiredFields: 10,
+      completedFields: 0,
+    },
+    {
+      id: 9,
+      name: 'Safeguards & Controls',
+      description: 'Configure fraud prevention and spending controls',
+      icon: AlertCircle,
+      status: 'not-started',
+      progress: 0,
+      estimatedTime: '10 min',
+      requiredFields: 8,
+      completedFields: 0,
+    },
+    {
+      id: 10,
       name: 'Campaign Templates',
       description: 'Create promotional campaigns and targeted offers',
       icon: Megaphone,
@@ -143,21 +141,10 @@ export const Screen0Dashboard: React.FC<DashboardProps> = ({
       completedFields: 0,
     },
     {
-      id: 9,
-      name: 'Member Portal Configuration',
-      description: 'Customize member-facing portal and mobile app',
-      icon: Globe,
-      status: 'not-started',
-      progress: 0,
-      estimatedTime: '10 min',
-      requiredFields: 8,
-      completedFields: 0,
-    },
-    {
-      id: 10,
-      name: 'Analytics & Reporting',
-      description: 'Configure dashboards, KPIs, and reporting schedules',
-      icon: BarChart3,
+      id: 11,
+      name: 'Intelligence Queues',
+      description: 'Configure AI-powered insights and monitoring',
+      icon: Bell,
       status: 'not-started',
       progress: 0,
       estimatedTime: '8 min',
@@ -165,29 +152,40 @@ export const Screen0Dashboard: React.FC<DashboardProps> = ({
       completedFields: 0,
     },
     {
-      id: 11,
-      name: 'Notification Templates',
-      description: 'Set up email, SMS, and push notification templates',
-      icon: Bell,
+      id: 12,
+      name: 'Data Strategy',
+      description: 'Define data collection, storage, and retention policies',
+      icon: Globe,
       status: 'not-started',
       progress: 0,
       estimatedTime: '12 min',
-      requiredFields: 10,
-      completedFields: 0,
-    },
-    {
-      id: 12,
-      name: 'Workflow & Automation',
-      description: 'Define automated processes and business rules',
-      icon: Workflow,
-      status: 'not-started',
-      progress: 0,
-      estimatedTime: '15 min',
-      requiredFields: 8,
+      requiredFields: 6,
       completedFields: 0,
     },
     {
       id: 13,
+      name: 'Analytics & KPIs',
+      description: 'Configure dashboards, KPIs, and reporting schedules',
+      icon: BarChart3,
+      status: 'not-started',
+      progress: 0,
+      estimatedTime: '10 min',
+      requiredFields: 8,
+      completedFields: 0,
+    },
+    {
+      id: 14,
+      name: 'Flow Orchestration',
+      description: 'Design end-to-end customer journey flows',
+      icon: Workflow,
+      status: 'not-started',
+      progress: 0,
+      estimatedTime: '15 min',
+      requiredFields: 10,
+      completedFields: 0,
+    },
+    {
+      id: 15,
       name: 'Review & Deploy',
       description: 'Validate configuration and deploy to production',
       icon: Rocket,
@@ -308,7 +306,7 @@ export const Screen0Dashboard: React.FC<DashboardProps> = ({
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          {screens.slice(1).map((screen, index) => {
+          {screens.slice(1).map((screen) => {
             const Icon = screen.icon;
             return (
               <Card

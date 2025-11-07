@@ -25,8 +25,8 @@ export const Header: React.FC<HeaderProps> = ({
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showEnvMenu, setShowEnvMenu] = useState(false);
 
-  // Show dashboard button if not on Discovery (0) or Dashboard (1) screens
-  const showDashboardButton = currentScreen >= 2 && onNavigateToDashboard;
+  // Show dashboard button if not on Discovery (0), Dashboard (1), or Platform Basics (2) screens
+  const showDashboardButton = currentScreen >= 3 && onNavigateToDashboard;
 
   const environmentColors = {
     dev: 'bg-blue-500',
