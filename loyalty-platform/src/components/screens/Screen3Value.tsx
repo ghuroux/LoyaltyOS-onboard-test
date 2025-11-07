@@ -1722,7 +1722,7 @@ export const Screen3Value: React.FC = () => {
         </div>
 
         {/* Value Configuration */}
-        <Card className="p-5 mb-8">
+        <Card className="p-6 mb-6 shadow-lg border border-gray-200">
           <h3 className="text-xl font-semibold mb-5">
             {valueTypes.find(t => t.id === valueType)?.name} Configuration
           </h3>
@@ -1738,7 +1738,7 @@ export const Screen3Value: React.FC = () => {
         </Card>
 
         {/* Earning Calculation Settings */}
-        <Card className="p-5 mb-8">
+        <Card className="p-6 mb-6 shadow-lg border border-gray-200">
           <h3 className="text-xl font-semibold mb-5">Earning Calculation Settings</h3>
           <div className="grid grid-cols-2 gap-5">
             <div>
@@ -1776,7 +1776,7 @@ export const Screen3Value: React.FC = () => {
         </Card>
 
         {/* Tier Configuration */}
-        <Card className="p-5 mb-8">
+        <Card className="p-6 mb-6 shadow-lg border border-gray-200">
           <div className="flex justify-between items-center mb-5">
             <div>
               <h3 className="text-xl font-semibold">Customer Segmentation</h3>
@@ -1876,7 +1876,7 @@ export const Screen3Value: React.FC = () => {
 
         {/* Global Earning Rules (Only when tiers are disabled) */}
         {!useTiers && (
-          <Card className="p-5">
+          <Card className="p-6 mb-6 shadow-lg border border-gray-200">
             <h3 className="text-xl font-semibold mb-5">Program-Wide Earning Rules</h3>
             <EarningRulesEditor
               rules={earningRules}
@@ -1888,7 +1888,7 @@ export const Screen3Value: React.FC = () => {
         )}
 
         {/* Member Identification Methods */}
-        <Card className="p-6 shadow-lg border-2 border-brand-200">
+        <Card className="p-6 mb-6 shadow-lg border border-gray-200">
           <div className="mb-5">
             <div className="flex items-center gap-3 mb-2">
               <div className="p-2.5 bg-brand-500 rounded-lg">

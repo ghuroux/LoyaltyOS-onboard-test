@@ -158,8 +158,8 @@ export const Screen4Redemption: React.FC = () => {
         {/* Points Redemption */}
         {valueType === 'points' && (
           <>
-            <Card className="p-5 mb-5">
-              <h3 className="text-xl font-semibold mb-4">Redemption Methods</h3>
+            <Card className="p-6 mb-6 shadow-lg border border-gray-200">
+              <h3 className="text-xl font-semibold mb-5">Redemption Methods</h3>
               <div className="grid grid-cols-3 gap-4">
                 {[
                   { icon: '💳', name: 'Instant Discount', desc: 'Apply points as discount at POS' },
@@ -182,8 +182,8 @@ export const Screen4Redemption: React.FC = () => {
               </div>
             </Card>
 
-            <Card className="p-5">
-              <h3 className="text-xl font-semibold mb-4">Redemption Rules</h3>
+            <Card className="p-6 mb-6 shadow-lg border border-gray-200">
+              <h3 className="text-xl font-semibold mb-5">Redemption Rules</h3>
               <div className="grid grid-cols-2 gap-5">
                 <div>
                   <label className="block font-semibold mb-2 text-sm">Minimum Redemption</label>
@@ -234,8 +234,8 @@ export const Screen4Redemption: React.FC = () => {
         {/* Cashback Redemption */}
         {valueType === 'cashback' && (
           <>
-            <Card className="p-5 mb-5">
-              <h3 className="text-xl font-semibold mb-4">Cashback Redemption Methods</h3>
+            <Card className="p-6 mb-6 shadow-lg border border-gray-200">
+              <h3 className="text-xl font-semibold mb-5">Cashback Redemption Methods</h3>
               <div className="grid grid-cols-2 gap-4">
                 <label className="flex items-start gap-3 p-4 border border-gray-200 rounded-lg cursor-pointer hover:border-primary transition-colors">
                   <input type="checkbox" className="w-5 h-5 text-brand-600 rounded mt-1" defaultChecked />
@@ -268,8 +268,8 @@ export const Screen4Redemption: React.FC = () => {
               </div>
             </Card>
 
-            <Card className="p-5">
-              <h3 className="text-xl font-semibold mb-4">Cashback Rules</h3>
+            <Card className="p-6 mb-6 shadow-lg border border-gray-200">
+              <h3 className="text-xl font-semibold mb-5">Cashback Rules</h3>
               <div className="grid grid-cols-2 gap-5">
                 <div>
                   <label className="block font-semibold mb-2 text-sm">Minimum Withdrawal</label>
@@ -310,8 +310,8 @@ export const Screen4Redemption: React.FC = () => {
 
         {/* Credits Redemption */}
         {valueType === 'credits' && (
-          <Card className="p-5">
-            <h3 className="text-xl font-semibold mb-4">Store Credit Redemption</h3>
+          <Card className="p-6 mb-6 shadow-lg border border-gray-200">
+            <h3 className="text-xl font-semibold mb-5">Store Credit Redemption</h3>
             <p className="text-gray-600 mb-5">
               Store credits are already in the customer's wallet and can be applied at checkout.
               Configure how credits can be used below.
@@ -367,8 +367,8 @@ export const Screen4Redemption: React.FC = () => {
 
         {/* Vouchers Redemption */}
         {valueType === 'vouchers' && (
-          <Card className="p-5">
-            <h3 className="text-xl font-semibold mb-4">Voucher Redemption</h3>
+          <Card className="p-6 mb-6 shadow-lg border border-gray-200">
+            <h3 className="text-xl font-semibold mb-5">Voucher Redemption</h3>
             <p className="text-gray-600 mb-5">
               Vouchers are fixed-value rewards earned through the loyalty program.
               Configure how customers can redeem their vouchers.
@@ -420,8 +420,8 @@ export const Screen4Redemption: React.FC = () => {
 
         {/* Hybrid Redemption */}
         {valueType === 'hybrid' && (
-          <Card className="p-5">
-            <h3 className="text-xl font-semibold mb-4">Hybrid Redemption Options</h3>
+          <Card className="p-6 mb-6 shadow-lg border border-gray-200">
+            <h3 className="text-xl font-semibold mb-5">Hybrid Redemption Options</h3>
             <p className="text-gray-600 mb-5">
               With a hybrid model, customers have multiple value types. Configure redemption rules for each type below.
             </p>
