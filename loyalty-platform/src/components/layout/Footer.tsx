@@ -16,6 +16,7 @@ interface FooterProps {
 const screenLabels = [
   'Industry & Template Selection',
   'Configuration Dashboard',
+  'Platform Basics',
   'External Integrations',
   'Organization & Customer Structure',
   'Points & Currency / Tiers',

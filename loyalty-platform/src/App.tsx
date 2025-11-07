@@ -7,6 +7,7 @@ import { useOnboardingStore } from './store/onboardingStore';
 // Screen imports
 import { Screen0Discovery } from './components/screens/Screen0Discovery';
 import { Screen0Dashboard } from './components/screens/Screen0Dashboard';
+import { Screen2PlatformBasics } from './components/screens/Screen2PlatformBasics';
 import { Screen1Organization } from './components/screens/Screen1Organization';
 import { Screen2Integrations } from './components/screens/Screen2Integrations';
 import { Screen3Value } from './components/screens/Screen3Value';
@@ -24,19 +25,20 @@ import { Screen13Deployment } from './components/screens/Screen13Deployment';
 const screens = [
   Screen0Discovery,      // 0 - Industry & Template Selection
   Screen0Dashboard,      // 1 - Configuration Dashboard
-  Screen2Integrations,   // 2 - External Integrations
-  Screen1Organization,   // 3 - Organization & Customer Structure
-  Screen3Value,          // 4 - Points & Currency
-  Screen4Redemption,     // 5 - Redemption & Rewards
-  Screen5Segmentation,   // 6 - Segmentation
-  Screen6Automations,    // 7 - Automations
-  Screen7SafeguardsAutomation, // 8 - Safeguards
-  Screen8Campaigns,      // 9 - Campaigns
-  Screen9Queues,         // 10 - Queues
-  Screen10Data,          // 11 - Data
-  Screen11Analytics,     // 12 - Analytics
-  Screen12FlowBuilder,   // 13 - Flow Builder
-  Screen13Deployment,    // 14 - Deployment
+  Screen2PlatformBasics, // 2 - Platform Basics
+  Screen2Integrations,   // 3 - External Integrations
+  Screen1Organization,   // 4 - Organization & Customer Structure
+  Screen3Value,          // 5 - Points & Currency
+  Screen4Redemption,     // 6 - Redemption & Rewards
+  Screen5Segmentation,   // 7 - Segmentation
+  Screen6Automations,    // 8 - Automations
+  Screen7SafeguardsAutomation, // 9 - Safeguards
+  Screen8Campaigns,      // 10 - Campaigns
+  Screen9Queues,         // 11 - Queues
+  Screen10Data,          // 12 - Data
+  Screen11Analytics,     // 13 - Analytics
+  Screen12FlowBuilder,   // 14 - Flow Builder
+  Screen13Deployment,    // 15 - Deployment
 ];
 
 function App() {
