@@ -6,39 +6,39 @@ import { useOnboardingStore } from './store/onboardingStore';
 
 // Screen imports
 import { Screen0Discovery } from './components/screens/Screen0Discovery';
-import { Screen0Dashboard } from './components/screens/Screen0Dashboard';
+import { Screen1Dashboard } from './components/screens/Screen1Dashboard';
 import { Screen2PlatformBasics } from './components/screens/Screen2PlatformBasics';
-import { Screen1Organization } from './components/screens/Screen1Organization';
-import { Screen2Integrations } from './components/screens/Screen2Integrations';
-import { Screen3Value } from './components/screens/Screen3Value';
-import { Screen4Redemption } from './components/screens/Screen4Redemption';
-import { Screen5Segmentation } from './components/screens/Screen5Segmentation';
-import { Screen6Automations } from './components/screens/Screen6Automations';
-import { Screen7SafeguardsAutomation } from './components/screens/Screen7SafeguardsAutomation';
-import { Screen8Campaigns } from './components/screens/Screen8Campaigns';
-import { Screen9Queues } from './components/screens/Screen9Queues';
-import { Screen10Data } from './components/screens/Screen10Data';
-import { Screen11Analytics } from './components/screens/Screen11Analytics';
-import { Screen12FlowBuilder } from './components/screens/Screen12FlowBuilder';
-import { Screen13Deployment } from './components/screens/Screen13Deployment';
+import { Screen3Integrations } from './components/screens/Screen3Integrations';
+import { Screen4Organization } from './components/screens/Screen4Organization';
+import { Screen5Value } from './components/screens/Screen5Value';
+import { Screen6Redemption } from './components/screens/Screen6Redemption';
+import { Screen7Segmentation } from './components/screens/Screen7Segmentation';
+import { Screen8Automations } from './components/screens/Screen8Automations';
+import { Screen9Safeguards } from './components/screens/Screen9Safeguards';
+import { Screen10Campaigns } from './components/screens/Screen10Campaigns';
+import { Screen11Queues } from './components/screens/Screen11Queues';
+import { Screen12Data } from './components/screens/Screen12Data';
+import { Screen13Analytics } from './components/screens/Screen13Analytics';
+import { Screen14FlowBuilder } from './components/screens/Screen14FlowBuilder';
+import { Screen15Deployment } from './components/screens/Screen15Deployment';
 
 const screens = [
   Screen0Discovery,      // 0 - Industry & Template Selection
-  Screen0Dashboard,      // 1 - Configuration Dashboard
+  Screen1Dashboard,      // 1 - Configuration Dashboard
   Screen2PlatformBasics, // 2 - Platform Basics
-  Screen2Integrations,   // 3 - External Integrations
-  Screen1Organization,   // 4 - Organization & Customer Structure
-  Screen3Value,          // 5 - Points & Currency
-  Screen4Redemption,     // 6 - Redemption & Rewards
-  Screen5Segmentation,   // 7 - Segmentation
-  Screen6Automations,    // 8 - Automations
-  Screen7SafeguardsAutomation, // 9 - Safeguards
-  Screen8Campaigns,      // 10 - Campaigns
-  Screen9Queues,         // 11 - Queues
-  Screen10Data,          // 12 - Data
-  Screen11Analytics,     // 13 - Analytics
-  Screen12FlowBuilder,   // 14 - Flow Builder
-  Screen13Deployment,    // 15 - Deployment
+  Screen3Integrations,   // 3 - External Integrations
+  Screen4Organization,   // 4 - Organization & Customer Structure
+  Screen5Value,          // 5 - Points & Currency
+  Screen6Redemption,     // 6 - Redemption & Rewards
+  Screen7Segmentation,   // 7 - Segmentation
+  Screen8Automations,    // 8 - Automations
+  Screen9Safeguards,     // 9 - Safeguards
+  Screen10Campaigns,     // 10 - Campaigns
+  Screen11Queues,        // 11 - Queues
+  Screen12Data,          // 12 - Data
+  Screen13Analytics,     // 13 - Analytics
+  Screen14FlowBuilder,   // 14 - Flow Builder
+  Screen15Deployment,    // 15 - Deployment
 ];
 
 function App() {

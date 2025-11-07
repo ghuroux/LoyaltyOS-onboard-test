@@ -26,7 +26,7 @@ const colorOptions = [
   { value: 'slate', class: 'bg-slate-500' },
 ];
 
-export const Screen5Segmentation: React.FC = () => {
+export const Screen7Segmentation: React.FC = () => {
   const {
     segmentationMethod,
     rfmThresholds,

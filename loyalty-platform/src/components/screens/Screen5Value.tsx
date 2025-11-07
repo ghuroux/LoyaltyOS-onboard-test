@@ -962,7 +962,7 @@ const EarningRulesEditor: React.FC<EarningRulesEditorProps> = ({ rules, onUpdate
   );
 };
 
-export const Screen3Value: React.FC = () => {
+export const Screen5Value: React.FC = () => {
   const {
     valueType,
     valueConfig,

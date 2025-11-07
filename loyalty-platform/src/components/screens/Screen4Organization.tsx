@@ -99,7 +99,7 @@ interface EntityLevel {
   states: EntityState[];
 }
 
-export const Screen1Organization: React.FC = () => {
+export const Screen4Organization: React.FC = () => {
   const [expandedSections, setExpandedSections] = useState<string[]>(['business-hierarchy', 'client-categories']);
   const [expandedEntities, setExpandedEntities] = useState<string[]>([]);
 

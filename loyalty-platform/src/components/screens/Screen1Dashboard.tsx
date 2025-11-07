@@ -37,7 +37,7 @@ interface DashboardProps {
   onNavigate: (screenId: number) => void;
 }
 
-export const Screen0Dashboard: React.FC<DashboardProps> = ({
+export const Screen1Dashboard: React.FC<DashboardProps> = ({
   onNavigate,
 }) => {
   const screens: Screen[] = [

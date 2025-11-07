@@ -5,7 +5,7 @@ import { Button } from '../ui/Button';
 import { useOnboardingStore } from '../../store/onboardingStore';
 import { QrCode, Smartphone, CreditCard, Phone, Bell, ExternalLink, Check, Gift, Ticket, Sparkles, Handshake, Heart, Percent } from 'lucide-react';
 
-export const Screen4Redemption: React.FC = () => {
+export const Screen6Redemption: React.FC = () => {
   const { valueType, valueConfig, updateValueConfig } = useOnboardingStore();
 
   // Mock identification methods inherited from Earning Rules (Step 3)
