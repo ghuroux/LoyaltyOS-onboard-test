@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { Toggle } from '../ui/Toggle';
 import { useOnboardingStore } from '../../store/onboardingStore';
-import { Star, Check, Bot, Plus, Settings, Trash2, AlertCircle, TrendingUp, Activity } from 'lucide-react';
+import { Star, Check, Bot, Plus, Settings, Trash2, AlertCircle, TrendingUp, Activity, GitCompare, Zap } from 'lucide-react';
 import { SignalTemplateBuilder } from '../queue/SignalTemplateBuilder';
 import type { SignalTemplate } from '../../store/onboardingStore';
 
@@ -68,10 +68,15 @@ export const Screen11Queues: React.FC = () => {
       case 'trend':
         return TrendingUp;
       case 'percentage_change':
-      case 'anomaly':
         return Activity;
-      default:
+      case 'comparative':
+        return GitCompare;
+      case 'anomaly':
+        return Zap;
+      case 'threshold_breach':
         return AlertCircle;
+      default:
+        return Activity;
     }
   };
 
@@ -255,34 +260,66 @@ export const Screen11Queues: React.FC = () => {
                   </div>
                 )}
 
-                {/* Queue Patterns (Original Data) */}
+                {/* Active Signals Overview (Collapsed View) */}
                 {!isExpanded && (
                   <div className="p-5">
                     <div className="mb-4">
-                      <h4 className="font-semibold text-sm mb-2">Pattern Categories:</h4>
-                      <div className="flex flex-wrap gap-2">
-                        {queue.patterns.map((pattern) => (
-                          <span key={pattern} className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
-                            {pattern}
-                          </span>
-                        ))}
-                      </div>
+                      <h4 className="font-semibold text-sm mb-2">Active Signals ({enabledSignalCount}):</h4>
+                      {enabledSignalCount > 0 ? (
+                        <div className="flex flex-wrap gap-2">
+                          {queue.signals
+                            ?.filter((s) => s.enabled)
+                            .map((signal) => (
+                              <span
+                                key={signal.id}
+                                className="px-3 py-1 bg-brand-100 text-brand-700 rounded-full text-xs font-medium flex items-center gap-1"
+                              >
+                                <div className={`w-1.5 h-1.5 rounded-full ${getPriorityColor(signal.priority)}`}></div>
+                                {signal.name}
+                              </span>
+                            ))}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-500 italic">No active signals - click "Build Signal" to create</p>
+                      )}
                     </div>
 
                     <div className="mb-4">
-                      <h4 className="font-semibold text-sm mb-2">Automated Actions:</h4>
-                      <div className="space-y-1">
-                        {queue.actions.map((action) => (
-                          <div key={action} className="text-sm text-gray-700 flex items-center gap-2">
-                            <Check className="text-green-500" size={16} />
-                            {action}
+                      <h4 className="font-semibold text-sm mb-2">Automation Readiness:</h4>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div className="flex items-center gap-2 text-sm">
+                            <div className="w-2 h-2 rounded-full bg-blue-500"></div>
+                            <span className="text-gray-700">Phase 1: Signal Detection</span>
                           </div>
-                        ))}
+                          <span className="text-xs font-semibold text-blue-600">{enabledSignalCount} Active</span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div className="flex items-center gap-2 text-sm">
+                            <div className="w-2 h-2 rounded-full bg-amber-500"></div>
+                            <span className="text-gray-700">Phase 2: ML Pattern Analysis</span>
+                          </div>
+                          <span className="text-xs font-semibold text-gray-500">Pending Data</span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div className="flex items-center gap-2 text-sm">
+                            <div className="w-2 h-2 rounded-full bg-purple-500"></div>
+                            <span className="text-gray-700">Phase 3: Human Validation</span>
+                          </div>
+                          <span className="text-xs font-semibold text-gray-500">0 In Review</span>
+                        </div>
+                        <div className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                          <div className="flex items-center gap-2 text-sm">
+                            <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                            <span className="text-gray-700">Phase 4: Full Automation</span>
+                          </div>
+                          <span className="text-xs font-semibold text-gray-500">0 Automated</span>
+                        </div>
                       </div>
                     </div>
 
                     <div className="p-3 bg-gray-50 rounded-lg">
-                      <label className="block text-xs font-semibold mb-2 text-gray-700">Detection Threshold</label>
+                      <label className="block text-xs font-semibold mb-2 text-gray-700">Detection Sensitivity</label>
                       <input type="range" min="1" max="100" defaultValue="70" className="w-full" />
                       <div className="flex justify-between text-xs text-gray-500 mt-1">
                         <span>Conservative</span>

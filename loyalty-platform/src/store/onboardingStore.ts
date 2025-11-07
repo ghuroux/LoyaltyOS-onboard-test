@@ -34,7 +34,7 @@ export interface SignalTemplate {
   description: string;
   enabled: boolean;
   metric: string; // What to measure (revenue, churn_rate, transaction_count, etc.)
-  operator: 'trend' | 'absolute' | 'percentage_change' | 'threshold_breach' | 'anomaly'; // How to measure
+  operator: 'trend' | 'absolute' | 'percentage_change' | 'threshold_breach' | 'anomaly' | 'comparative'; // How to measure
   period: '24h' | '7d' | '30d' | '90d' | 'custom'; // Time period
   customPeriodDays?: number;
   condition: 'greater_than' | 'less_than' | 'equals' | 'between'; // Comparison
@@ -503,6 +503,21 @@ const initialQueues: Queue[] = [
         unit: 'percentage',
         priority: 'low',
         actions: ['Recognize store team', 'Document best practices', 'Share with other stores'],
+        cooldownHours: 168,
+      },
+      {
+        id: 'underperforming_vs_peers',
+        name: 'Store Underperforming vs Similar Stores',
+        description: 'Revenue or traffic below average of similar stores (by size/region)',
+        enabled: true,
+        metric: 'store_revenue',
+        operator: 'comparative',
+        period: '30d',
+        condition: 'less_than',
+        threshold: -15,
+        unit: 'percentage',
+        priority: 'high',
+        actions: ['Alert regional manager', 'Generate peer comparison report', 'Schedule store visit', 'Review operational differences'],
         cooldownHours: 168,
       },
     ],

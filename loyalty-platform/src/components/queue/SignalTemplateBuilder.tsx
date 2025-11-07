@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Card } from '../ui/Card';
-import { Activity, TrendingUp, AlertTriangle, Target, Zap, Bell, CheckCircle, X } from 'lucide-react';
+import { Activity, TrendingUp, AlertTriangle, Target, Zap, Bell, CheckCircle, X, GitCompare } from 'lucide-react';
 import type { SignalTemplate } from '../../store/onboardingStore';
 
 type BuilderStep = 'metric' | 'operator' | 'conditions' | 'actions' | 'review';
@@ -78,6 +78,7 @@ export const SignalTemplateBuilder: React.FC<SignalBuilderProps> = ({
     { value: 'trend', label: 'Trend Analysis', description: 'Detect upward or downward trends over time', icon: TrendingUp },
     { value: 'percentage_change', label: 'Percentage Change', description: 'Measure relative change from baseline', icon: Activity },
     { value: 'threshold_breach', label: 'Threshold Breach', description: 'Alert when value crosses a threshold', icon: AlertTriangle },
+    { value: 'comparative', label: 'Peer Comparison', description: 'Compare against similar entities (stores, regions, segments)', icon: GitCompare },
     { value: 'anomaly', label: 'Anomaly Detection', description: 'Detect unusual patterns using ML', icon: Zap },
     { value: 'absolute', label: 'Absolute Value', description: 'Compare exact value', icon: Target },
   ];
