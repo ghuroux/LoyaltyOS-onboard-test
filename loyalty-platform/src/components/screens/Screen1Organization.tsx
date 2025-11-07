@@ -18,8 +18,41 @@ import {
   Hash,
   Mail,
   Phone,
-  Database
+  Database,
+  Building2,
+  Tag,
+  Globe,
+  Handshake,
+  Building,
+  Store,
+  Package,
+  UtensilsCrossed,
+  Coffee,
+  Users,
+  Tv,
+  Link
 } from 'lucide-react';
+
+// Icon mapper function
+const getIconComponent = (iconName: string) => {
+  const iconMap: { [key: string]: React.ElementType } = {
+    'Building2': Building2,
+    'Tag': Tag,
+    'Globe': Globe,
+    'Handshake': Handshake,
+    'Building': Building,
+    'Store': Store,
+    'Package': Package,
+    'UtensilsCrossed': UtensilsCrossed,
+    'Coffee': Coffee,
+    'User': User,
+    'Users': Users,
+    'Tv': Tv,
+    'Link': Link,
+    'Target': Target,
+  };
+  return iconMap[iconName] || Building2;
+};
 
 type FieldType = 'text' | 'textarea' | 'number' | 'date' | 'boolean' | 'dropdown' | 'email' | 'phone' | 'uuid';
 type RelationshipType = 'parent-of' | 'child-of' | 'spouse-of' | 'partner-of' | 'guardian-of' | 'sibling-of';
@@ -342,7 +375,7 @@ export const Screen1Organization: React.FC = () => {
     {
       id: 'franchisor',
       name: 'Franchisor',
-      icon: '🏢',
+      icon: 'Building2',
       level: 1,
       enabled: true,
       optional: false,
@@ -359,7 +392,7 @@ export const Screen1Organization: React.FC = () => {
     {
       id: 'brand',
       name: 'Brand',
-      icon: '🏷️',
+      icon: 'Tag',
       level: 2,
       enabled: false,
       optional: true,
@@ -376,7 +409,7 @@ export const Screen1Organization: React.FC = () => {
     {
       id: 'master-franchise',
       name: 'Master Franchise',
-      icon: '🌍',
+      icon: 'Globe',
       level: 3,
       enabled: false,
       optional: true,
@@ -393,7 +426,7 @@ export const Screen1Organization: React.FC = () => {
     {
       id: 'franchisee',
       name: 'Franchisee',
-      icon: '🤝',
+      icon: 'Handshake',
       level: 4,
       enabled: true,
       optional: false,
@@ -410,7 +443,7 @@ export const Screen1Organization: React.FC = () => {
     {
       id: 'corporate-store',
       name: 'Corporate Store',
-      icon: '🏬',
+      icon: 'Building',
       level: 5,
       enabled: false,
       optional: true,
@@ -430,7 +463,7 @@ export const Screen1Organization: React.FC = () => {
     {
       id: 'store',
       name: 'Store / Restaurant',
-      icon: '🏪',
+      icon: 'Store',
       level: 6,
       enabled: true,
       optional: false,
@@ -450,7 +483,7 @@ export const Screen1Organization: React.FC = () => {
     {
       id: 'department',
       name: 'Department',
-      icon: '📦',
+      icon: 'Package',
       level: 7,
       enabled: false,
       optional: true,
@@ -533,7 +566,7 @@ export const Screen1Organization: React.FC = () => {
       id: 'single-restaurant',
       name: 'Single Restaurant',
       description: 'Simple setup for a standalone restaurant or café',
-      icon: '🍽️',
+      icon: 'UtensilsCrossed',
       industry: 'Food & Beverage',
       enabledEntities: ['franchisor', 'store'],
     },
@@ -541,7 +574,7 @@ export const Screen1Organization: React.FC = () => {
       id: 'coffee-chain',
       name: 'Coffee Chain',
       description: 'Multi-location coffee shop franchise',
-      icon: '☕',
+      icon: 'Coffee',
       industry: 'Food & Beverage',
       enabledEntities: ['franchisor', 'franchisee', 'store'],
     },
@@ -549,7 +582,7 @@ export const Screen1Organization: React.FC = () => {
       id: 'hotel-group',
       name: 'Hotel Group',
       description: 'Multi-brand hotel or hospitality group',
-      icon: '🏨',
+      icon: 'Building',
       industry: 'Hospitality',
       enabledEntities: ['franchisor', 'brand', 'corporate-store', 'store'],
     },
@@ -557,7 +590,7 @@ export const Screen1Organization: React.FC = () => {
       id: 'retail-franchise',
       name: 'Retail Franchise',
       description: 'Retail chain with franchise and corporate stores',
-      icon: '🏬',
+      icon: 'Store',
       industry: 'Retail',
       enabledEntities: ['franchisor', 'master-franchise', 'franchisee', 'corporate-store', 'store', 'department'],
     },
@@ -565,7 +598,7 @@ export const Screen1Organization: React.FC = () => {
       id: 'enterprise-complex',
       name: 'Enterprise (Complex)',
       description: 'Full hierarchy with all entity levels',
-      icon: '🏢',
+      icon: 'Building2',
       industry: 'Multi-Industry',
       enabledEntities: ['franchisor', 'brand', 'master-franchise', 'franchisee', 'corporate-store', 'store', 'department'],
     },
@@ -598,7 +631,7 @@ export const Screen1Organization: React.FC = () => {
     {
       id: 'individual',
       name: 'Individual Customers',
-      icon: '👤',
+      icon: 'User',
       description: 'Regular loyalty members earning and redeeming rewards',
       type: 'B2C',
       enabled: true,
@@ -609,7 +642,7 @@ export const Screen1Organization: React.FC = () => {
     {
       id: 'household',
       name: 'Household Accounts',
-      icon: '👨‍👩‍👧‍👦',
+      icon: 'Users',
       description: 'Family memberships with shared or pooled benefits',
       type: 'B2C',
       enabled: true,
@@ -620,7 +653,7 @@ export const Screen1Organization: React.FC = () => {
     {
       id: 'corporate',
       name: 'Corporate Clients',
-      icon: '🏢',
+      icon: 'Building2',
       description: 'Employee rewards programs and bulk memberships',
       type: 'B2B',
       enabled: false,
@@ -631,7 +664,7 @@ export const Screen1Organization: React.FC = () => {
     {
       id: 'sponsors',
       name: 'Sponsors',
-      icon: '🤝',
+      icon: 'Handshake',
       description: 'Brands funding campaigns, rewards, and co-marketing partners',
       type: 'B2B',
       enabled: false,
@@ -642,7 +675,7 @@ export const Screen1Organization: React.FC = () => {
     {
       id: 'retail-media',
       name: 'Retail Media Clients',
-      icon: '📺',
+      icon: 'Tv',
       description: 'Advertisers using loyalty platform for promotions',
       type: 'B2B',
       enabled: false,
@@ -653,7 +686,7 @@ export const Screen1Organization: React.FC = () => {
     {
       id: 'coalition',
       name: 'Coalition Partners',
-      icon: '🔗',
+      icon: 'Link',
       description: 'Other businesses in loyalty network for cross-brand earning/redemption',
       type: 'B2B',
       enabled: false,
@@ -1070,7 +1103,9 @@ export const Screen1Organization: React.FC = () => {
                         disabled={!entity.optional}
                         className="h-5 w-5 text-brand-500 rounded"
                       />
-                      <span className="text-2xl">{entity.icon}</span>
+                      <div className="p-2 bg-brand-500 rounded-lg">
+                        {React.createElement(getIconComponent(entity.icon), { className: 'text-white', size: 20 })}
+                      </div>
                       <div className="flex-1">
                         {editingEntityName === entity.id ? (
                           <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
@@ -1332,7 +1367,9 @@ export const Screen1Organization: React.FC = () => {
                         )}
                         <div className="flex-1 p-3 bg-white border border-gray-300 rounded-lg shadow-sm">
                           <div className="flex items-center gap-2">
-                            <span className="text-xl">{entity.icon}</span>
+                            <div className="p-1.5 bg-brand-500 rounded">
+                              {React.createElement(getIconComponent(entity.icon), { className: 'text-white', size: 16 })}
+                            </div>
                             <div className="flex-1">
                               <div className="font-semibold text-sm text-gray-900">
                                 {entity.customLabel || entity.name}
@@ -1374,7 +1411,9 @@ export const Screen1Organization: React.FC = () => {
                           onChange={() => toggleClientType(client.id)}
                           className="h-5 w-5 text-brand-600 rounded"
                         />
-                        <span className="text-3xl">{client.icon}</span>
+                        <div className="p-2.5 bg-blue-500 rounded-lg">
+                          {React.createElement(getIconComponent(client.icon), { className: 'text-white', size: 22 })}
+                        </div>
                         <div className="flex-1">
                           <h5 className="font-semibold text-gray-900">{client.name}</h5>
                           <p className="text-xs text-gray-600">{client.description}</p>
@@ -1400,7 +1439,9 @@ export const Screen1Organization: React.FC = () => {
                           onChange={() => toggleClientType(client.id)}
                           className="h-5 w-5 text-brand-600 rounded"
                         />
-                        <span className="text-2xl">{client.icon}</span>
+                        <div className="p-2 bg-orange-500 rounded-lg">
+                          {React.createElement(getIconComponent(client.icon), { className: 'text-white', size: 20 })}
+                        </div>
                         <div className="flex-1">
                           <h5 className="font-semibold text-gray-900">{client.name}</h5>
                           <p className="text-xs text-gray-600">{client.description}</p>
@@ -2286,7 +2327,9 @@ export const Screen1Organization: React.FC = () => {
                   className="p-5 text-left border border-gray-200 rounded-xl hover:bg-gray-500 hover:bg-gray-50 transition-all group"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="text-4xl">{template.icon}</div>
+                    <div className="p-3 bg-purple-500 rounded-lg">
+                      {React.createElement(getIconComponent(template.icon), { className: 'text-white', size: 28 })}
+                    </div>
                     <div className="flex-1">
                       <h4 className="font-bold text-lg text-gray-900 group-hover:text-blue-700 mb-1">
                         {template.name}
@@ -2306,9 +2349,10 @@ export const Screen1Organization: React.FC = () => {
                           return entity ? (
                             <span
                               key={entityId}
-                              className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs"
+                              className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-xs flex items-center gap-1"
                             >
-                              {entity.icon} {entity.name}
+                              {React.createElement(getIconComponent(entity.icon), { size: 12 })}
+                              {entity.name}
                             </span>
                           ) : null;
                         })}

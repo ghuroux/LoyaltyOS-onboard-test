@@ -2,11 +2,12 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { useOnboardingStore } from '../../store/onboardingStore';
+import { TestTube, BarChart, Zap } from 'lucide-react';
 
 const deploymentOptions = [
-  { id: 'pilot', icon: '🧪', name: 'Pilot Approach', desc: 'Test with select locations before full rollout' },
-  { id: 'phased', icon: '📊', name: 'Phased Rollout', desc: 'Gradual expansion across regions or features' },
-  { id: 'big-bang', icon: '💥', name: 'Big Bang', desc: 'Launch everywhere at once' },
+  { id: 'pilot', icon: TestTube, name: 'Pilot Approach', desc: 'Test with select locations before full rollout', color: 'bg-blue-500' },
+  { id: 'phased', icon: BarChart, name: 'Phased Rollout', desc: 'Gradual expansion across regions or features', color: 'bg-green-500' },
+  { id: 'big-bang', icon: Zap, name: 'Big Bang', desc: 'Launch everywhere at once', color: 'bg-red-500' },
 ];
 
 export const Screen13Deployment: React.FC = () => {
@@ -21,13 +22,20 @@ export const Screen13Deployment: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-3 gap-5 mb-8">
-          {deploymentOptions.map((option) => (
-            <Card key={option.id} clickable selected={deploymentStrategy === option.id} className="p-5 text-center">
-              <div className="text-5xl mb-4">{option.icon}</div>
-              <h3 className="font-semibold text-lg mb-2">{option.name}</h3>
-              <p className="text-sm text-gray-600">{option.desc}</p>
-            </Card>
-          ))}
+          {deploymentOptions.map((option) => {
+            const IconComponent = option.icon;
+            return (
+              <Card key={option.id} clickable selected={deploymentStrategy === option.id} className="p-5 text-center">
+                <div className="flex justify-center mb-4">
+                  <div className={`p-4 ${option.color} rounded-lg`}>
+                    <IconComponent className="text-white" size={32} />
+                  </div>
+                </div>
+                <h3 className="font-semibold text-lg mb-2">{option.name}</h3>
+                <p className="text-sm text-gray-600">{option.desc}</p>
+              </Card>
+            );
+          })}
         </div>
 
         <div className="grid grid-cols-2 gap-5 mb-5">

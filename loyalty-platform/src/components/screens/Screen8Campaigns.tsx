@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
 import { useOnboardingStore } from '../../store/onboardingStore';
 import { CampaignTemplateBuilder } from '../campaign/CampaignTemplateBuilder';
+import { Clock, Infinity, Zap, DollarSign } from 'lucide-react';
 
 type CampaignType = 'time-based' | 'long-living' | 'trigger-based' | 'one-off';
 
@@ -15,31 +16,35 @@ export const Screen8Campaigns: React.FC = () => {
   const campaignTypes = [
     {
       id: 'time-based' as CampaignType,
-      icon: '⏰',
+      icon: Clock,
       name: 'Time-Based Campaigns',
       desc: 'Limited duration promotions',
       examples: ['Seasonal Sales', 'Holiday Campaigns', 'Product Launches', 'Competitions', 'Flash Sales'],
+      color: 'bg-blue-500',
     },
     {
       id: 'long-living' as CampaignType,
-      icon: '♾️',
+      icon: Infinity,
       name: 'Long-Living Campaigns',
       desc: 'Always-on, ongoing promotions',
       examples: ['Welcome Series', 'Referral Programs', 'Category Promotions', 'Brand Partnerships'],
+      color: 'bg-green-500',
     },
     {
       id: 'trigger-based' as CampaignType,
-      icon: '⚡',
+      icon: Zap,
       name: 'Event-Based Campaigns',
       desc: 'Event-driven, always ready',
       examples: ['Weather Triggers', 'Location Events', 'Inventory Alerts', 'Social Media', 'Cart Abandonment'],
+      color: 'bg-amber-500',
     },
     {
       id: 'one-off' as CampaignType,
-      icon: '💰',
+      icon: DollarSign,
       name: 'One-Off Issue',
       desc: 'Immediate, ad-hoc rewards',
       examples: ['Customer Service Recovery', 'VIP Appreciation', 'Special Recognition', 'Contest Winners'],
+      color: 'bg-purple-500',
     },
   ];
 
@@ -157,26 +162,33 @@ export const Screen8Campaigns: React.FC = () => {
 
         {/* Campaign Type Selection */}
         <div className="grid grid-cols-4 gap-4 mb-8">
-          {campaignTypes.map((type) => (
-            <button
-              key={type.id}
-              onClick={() => setActiveType(type.id)}
-              className={`p-6 rounded-lg border transition-all text-left ${
-                activeType === type.id
-                  ? 'border-primary bg-gray-50 shadow-lg'
-                  : 'border-gray-200 bg-white hover:border-gray-300'
-              }`}
-            >
-              <div className="text-4xl mb-3">{type.icon}</div>
-              <h3 className={`font-semibold text-lg mb-2 ${activeType === type.id ? 'text-brand-600' : 'text-gray-900'}`}>
-                {type.name}
-              </h3>
-              <p className="text-sm text-gray-600 mb-3">{type.desc}</p>
-              <div className="text-xs text-gray-500">
-                <strong>Examples:</strong> {type.examples.slice(0, 2).join(', ')}
-              </div>
-            </button>
-          ))}
+          {campaignTypes.map((type) => {
+            const IconComponent = type.icon;
+            return (
+              <button
+                key={type.id}
+                onClick={() => setActiveType(type.id)}
+                className={`p-6 rounded-lg border transition-all text-left ${
+                  activeType === type.id
+                    ? 'border-primary bg-gray-50 shadow-lg'
+                    : 'border-gray-200 bg-white hover:border-gray-300'
+                }`}
+              >
+                <div className="flex justify-center mb-3">
+                  <div className={`p-3 ${type.color} rounded-lg`}>
+                    <IconComponent className="text-white" size={28} />
+                  </div>
+                </div>
+                <h3 className={`font-semibold text-lg mb-2 ${activeType === type.id ? 'text-brand-600' : 'text-gray-900'}`}>
+                  {type.name}
+                </h3>
+                <p className="text-sm text-gray-600 mb-3">{type.desc}</p>
+                <div className="text-xs text-gray-500">
+                  <strong>Examples:</strong> {type.examples.slice(0, 2).join(', ')}
+                </div>
+              </button>
+            );
+          })}
         </div>
 
         {/* Starter Templates */}
