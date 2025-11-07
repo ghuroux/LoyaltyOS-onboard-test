@@ -1,10 +1,23 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '../ui/Card';
+import { Button } from '../ui/Button';
 import { useOnboardingStore } from '../../store/onboardingStore';
+import { QrCode, Smartphone, CreditCard, Phone, Bell, ExternalLink, Check } from 'lucide-react';
 
 export const Screen4Redemption: React.FC = () => {
   const { valueType, valueConfig, updateValueConfig } = useOnboardingStore();
+
+  // Mock identification methods inherited from Earning Rules (Step 3)
+  // In a real app, this would come from global state/context
+  const [inheritedIdentificationMethods] = useState({
+    qrCode: true,
+    appleWallet: true,
+    googleWallet: true,
+    linearBarcode: false,
+    phoneLookup: true,
+    pushNotifications: false,
+  });
 
   // Helper to get value label
   const getValueLabel = () => {
@@ -20,6 +33,9 @@ export const Screen4Redemption: React.FC = () => {
   const valueLabel = getValueLabel();
   const currency = valueConfig.currency || 'USD';
 
+  // Count enabled methods
+  const enabledMethodsCount = Object.values(inheritedIdentificationMethods).filter(Boolean).length;
+
   return (
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }} className="p-8">
       <div className="max-w-7xl mx-auto">
@@ -27,6 +43,117 @@ export const Screen4Redemption: React.FC = () => {
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Redemption Configuration</h1>
           <p className="text-gray-600 text-lg">Configure how customers can use their {valueLabel}</p>
         </div>
+
+        {/* Inherited Member Identification Methods (Read-Only) */}
+        <Card className="p-6 mb-6 bg-gradient-to-br from-gray-50 to-blue-50 border-2 border-blue-200">
+          <div className="mb-4">
+            <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center gap-3">
+                <div className="p-2.5 bg-blue-500 rounded-lg">
+                  <QrCode className="text-white" size={20} />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900">Member Identification Methods</h3>
+                  <p className="text-sm text-gray-600">Configured in Earning Rules - applies to both earning and redemption</p>
+                </div>
+              </div>
+              <Button variant="secondary" size="sm">
+                <ExternalLink size={16} className="mr-2" />
+                Modify in Earning Rules
+              </Button>
+            </div>
+          </div>
+
+          {/* Enabled Methods Summary */}
+          <div className="mb-4 p-4 bg-white border border-blue-200 rounded-lg">
+            <div className="flex items-center gap-2 mb-3">
+              <Check className="text-green-600" size={18} />
+              <span className="font-semibold text-gray-900">{enabledMethodsCount} Identification Method{enabledMethodsCount !== 1 ? 's' : ''} Enabled</span>
+            </div>
+            <p className="text-sm text-gray-600 mb-3">
+              Members can use any of these methods to identify themselves during redemption transactions:
+            </p>
+
+            <div className="grid grid-cols-2 gap-3">
+              {/* QR Code */}
+              {inheritedIdentificationMethods.qrCode && (
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <QrCode size={18} className="text-brand-500" />
+                  <div>
+                    <div className="font-semibold text-sm text-gray-900">QR Code Scanning</div>
+                    <div className="text-xs text-gray-600">Display & scan at POS</div>
+                  </div>
+                </div>
+              )}
+
+              {/* Apple Wallet */}
+              {inheritedIdentificationMethods.appleWallet && (
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <Smartphone size={18} className="text-brand-500" />
+                  <div>
+                    <div className="font-semibold text-sm text-gray-900">Apple Wallet Pass</div>
+                    <div className="text-xs text-gray-600">iOS digital card</div>
+                  </div>
+                </div>
+              )}
+
+              {/* Google Wallet */}
+              {inheritedIdentificationMethods.googleWallet && (
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <Smartphone size={18} className="text-brand-500" />
+                  <div>
+                    <div className="font-semibold text-sm text-gray-900">Google Wallet Pass</div>
+                    <div className="text-xs text-gray-600">Android digital card</div>
+                  </div>
+                </div>
+              )}
+
+              {/* Linear Barcode */}
+              {inheritedIdentificationMethods.linearBarcode && (
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <CreditCard size={18} className="text-brand-500" />
+                  <div>
+                    <div className="font-semibold text-sm text-gray-900">Linear Barcode</div>
+                    <div className="text-xs text-gray-600">Physical card barcode</div>
+                  </div>
+                </div>
+              )}
+
+              {/* Phone Lookup */}
+              {inheritedIdentificationMethods.phoneLookup && (
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <Phone size={18} className="text-brand-500" />
+                  <div>
+                    <div className="font-semibold text-sm text-gray-900">Phone Lookup</div>
+                    <div className="text-xs text-gray-600">Manual POS lookup</div>
+                  </div>
+                </div>
+              )}
+
+              {/* Push Notifications */}
+              {inheritedIdentificationMethods.pushNotifications && (
+                <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border border-gray-200">
+                  <Bell size={18} className="text-brand-500" />
+                  <div>
+                    <div className="font-semibold text-sm text-gray-900">Push Check-In</div>
+                    <div className="text-xs text-gray-600">Location-based</div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Info Banner */}
+          <div className="p-3 bg-blue-100 border border-blue-300 rounded-lg">
+            <div className="flex gap-2">
+              <div className="text-blue-600 mt-0.5">ℹ️</div>
+              <div className="text-xs text-blue-900">
+                <strong>Note:</strong> These identification methods apply to both earning and redemption transactions.
+                To modify, update the settings in the <strong>Earning Rules</strong> page. Changes will automatically apply here.
+              </div>
+            </div>
+          </div>
+        </Card>
 
         {/* Points Redemption */}
         {valueType === 'points' && (
