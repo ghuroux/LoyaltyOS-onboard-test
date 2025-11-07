@@ -602,7 +602,12 @@ export const Screen8Automations: React.FC = () => {
 
           {currentAutomations.length === 0 ? (
             <Card className="p-12 text-center">
-              <div className="text-6xl mb-4">{triggerTabs.find((t) => t.id === activeTab)?.icon}</div>
+              <div className="mb-4 flex justify-center">
+                {(() => {
+                  const ActiveIcon = triggerTabs.find((t) => t.id === activeTab)?.icon;
+                  return ActiveIcon ? <ActiveIcon size={64} className="text-gray-400" /> : null;
+                })()}
+              </div>
               <h3 className="text-lg font-semibold text-gray-900 mb-2">No Automations Yet</h3>
               <p className="text-gray-600 mb-5">
                 Create your first {triggerTabs.find((t) => t.id === activeTab)?.label.toLowerCase()} automation to get started
