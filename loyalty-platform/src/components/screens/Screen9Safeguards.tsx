@@ -4,7 +4,7 @@ import { Card } from '../ui/Card';
 import { useOnboardingStore } from '../../store/onboardingStore';
 import { Mail, MessageSquare, Bell, Smartphone } from 'lucide-react';
 
-export const Screen7SafeguardsAutomation: React.FC = () => {
+export const Screen9Safeguards: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'anti-gaming' | 'communication' | 'overrides'>('anti-gaming');
   const { safeguardSettings, updateSafeguardSettings } = useOnboardingStore();
 
