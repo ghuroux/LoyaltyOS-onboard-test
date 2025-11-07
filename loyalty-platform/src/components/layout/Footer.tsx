@@ -14,19 +14,20 @@ interface FooterProps {
 }
 
 const screenLabels = [
+  'Industry & Template Selection',
   'Configuration Dashboard',
-  'Platform Basics',
   'External Integrations',
   'Organization & Customer Structure',
-  'Points & Currency',
-  'Tier & Status Levels',
-  'Earning Rules',
+  'Points & Currency / Tiers',
   'Redemption & Rewards',
+  'Customer Segmentation',
+  'Automations & Triggers',
+  'Safeguards & Controls',
   'Campaign Templates',
-  'Member Portal',
-  'Analytics & Reporting',
-  'Notifications',
-  'Workflow & Automation',
+  'Intelligence Queues',
+  'Data Strategy',
+  'Analytics & KPIs',
+  'Flow Orchestration',
   'Review & Deploy',
 ];
 

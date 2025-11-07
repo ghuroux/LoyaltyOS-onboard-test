@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ChevronDown, Save, Check, AlertCircle, User } from 'lucide-react';
+import { ChevronDown, Save, Check, AlertCircle, User, LayoutDashboard } from 'lucide-react';
 
 interface HeaderProps {
   clientName?: string;
@@ -8,6 +8,8 @@ interface HeaderProps {
   saveStatus?: 'saved' | 'saving' | 'unsaved' | 'error';
   userName?: string;
   userEmail?: string;
+  currentScreen?: number;
+  onNavigateToDashboard?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -17,9 +19,14 @@ export const Header: React.FC<HeaderProps> = ({
   saveStatus = 'saved',
   userName = 'Demo User',
   userEmail = 'demo@stratos.com',
+  currentScreen = 0,
+  onNavigateToDashboard,
 }) => {
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showEnvMenu, setShowEnvMenu] = useState(false);
+
+  // Show dashboard button if not on Discovery (0) or Dashboard (1) screens
+  const showDashboardButton = currentScreen >= 2 && onNavigateToDashboard;
 
   const environmentColors = {
     dev: 'bg-blue-500',
@@ -67,6 +74,18 @@ export const Header: React.FC<HeaderProps> = ({
 
         {/* Right: Environment, Save Status, User */}
         <div className="flex items-center gap-4">
+          {/* Quick Nav to Dashboard */}
+          {showDashboardButton && (
+            <button
+              onClick={onNavigateToDashboard}
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-lg hover:from-blue-600 hover:to-purple-600 transition-all shadow-md hover:shadow-lg font-medium text-sm"
+              title="Go to Configuration Dashboard"
+            >
+              <LayoutDashboard size={16} />
+              Dashboard
+            </button>
+          )}
+
           {/* Save Status */}
           <div className={`flex items-center gap-2 ${saveStatusConfig[saveStatus].color}`}>
             <StatusIcon size={16} />
