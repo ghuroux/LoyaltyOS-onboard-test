@@ -2351,10 +2351,10 @@ export const Screen14FlowBuilder: React.FC = () => {
         <div className="grid grid-cols-12 gap-6">
           {/* Left Panel - Test Scenarios */}
           <div className="col-span-4">
-            <Card className="p-5">
-              <h2 className="font-bold text-gray-900 mb-4">Test Scenarios</h2>
+            <Card className="p-5 h-[calc(100vh-280px)] flex flex-col">
+              <h2 className="font-bold text-gray-900 mb-4 flex-shrink-0">Test Scenarios</h2>
 
-              <div className="space-y-4 max-h-[calc(100vh-280px)] overflow-y-auto pr-2">
+              <div className="space-y-4 flex-1 overflow-y-auto pr-2">
                 {categories.map((category) => {
                   const CategoryIcon = getCategoryIcon(category);
                   const categoryTests = testScenarios.filter((t) => t.category === category);
@@ -2398,7 +2398,7 @@ export const Screen14FlowBuilder: React.FC = () => {
           </div>
 
           {/* Right Panel - Test Details */}
-          <div className="col-span-8 space-y-5">
+          <div className="col-span-8 h-[calc(100vh-280px)] overflow-y-auto space-y-5 pr-2">
             {selectedScenario && (
               <>
                 {/* Test Header */}
@@ -2460,7 +2460,13 @@ export const Screen14FlowBuilder: React.FC = () => {
                                 type={field.type}
                                 value={currentValue}
                                 onChange={(e) => {
-                                  const newValue = field.type === 'number' ? parseFloat(e.target.value) : e.target.value;
+                                  let newValue;
+                                  if (field.type === 'number') {
+                                    const parsed = parseFloat(e.target.value);
+                                    newValue = isNaN(parsed) ? 0 : parsed;
+                                  } else {
+                                    newValue = e.target.value;
+                                  }
                                   setEditedPayload({
                                     ...editedPayload,
                                     [selectedScenario.id]: {
