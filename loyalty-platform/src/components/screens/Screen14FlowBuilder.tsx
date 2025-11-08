@@ -22,6 +22,10 @@ import {
   Settings,
   Edit3,
   RotateCcw,
+  Clock,
+  BarChart3,
+  Mail,
+  Globe,
 } from 'lucide-react';
 
 type TestStatus = 'pass' | 'fail' | 'not-run' | 'warning';
@@ -599,6 +603,351 @@ export const Screen14FlowBuilder: React.FC = () => {
         },
       ],
     },
+    {
+      id: 'test-9',
+      category: 'Safeguards & Fraud',
+      name: 'Cooldown Period Enforcement',
+      description: 'Test win-back automation cooldown prevents repeated triggering',
+      status: 'not-run',
+      payload: {
+        customerId: 'CUST-77777',
+        lastWinBackDate: '2024-12-01',
+        currentDate: '2025-01-15',
+        inactiveDays: 35,
+      },
+      expectedOutcome: {
+        campaignsTriggered: [],
+        safeguardsPassed: false,
+        success: false,
+        message: 'Win-back campaign blocked: Customer received win-back 45 days ago (90-day cooldown not met)',
+      },
+      steps: [
+        {
+          id: 's1',
+          name: 'Inactivity Detection',
+          icon: Clock,
+          description: 'Customer inactive for 35 days',
+          configSource: 'Screen 8: Automations & Triggers',
+          status: 'pending',
+          outputValue: 'Inactive threshold met',
+        },
+        {
+          id: 's2',
+          name: 'Automation Match',
+          icon: Megaphone,
+          description: 'Match to win-back campaign',
+          configSource: 'Screen 10: Campaign Templates',
+          status: 'pending',
+          outputValue: 'Win-Back Campaign matched',
+        },
+        {
+          id: 's3',
+          name: 'Cooldown Check',
+          icon: Shield,
+          description: 'Verify 90-day cooldown period',
+          configSource: 'Screen 9: Safeguards & Controls',
+          status: 'pending',
+          inputValue: 'Last: 45 days ago',
+          outputValue: 'FAILED (requires 90 days)',
+        },
+        {
+          id: 's4',
+          name: 'Campaign Block',
+          icon: XCircle,
+          description: 'Block campaign due to cooldown',
+          configSource: 'Screen 9: Safeguards & Controls',
+          status: 'pending',
+          outputValue: 'BLOCKED - Cooldown not met',
+        },
+      ],
+    },
+    {
+      id: 'test-10',
+      category: 'Safeguards & Fraud',
+      name: 'Benefit Cap Reached',
+      description: 'Test maximum win-back offers per year limit',
+      status: 'not-run',
+      payload: {
+        customerId: 'CUST-88888',
+        winBackOffersThisYear: 3,
+        yearlyLimit: 3,
+        inactiveDays: 40,
+      },
+      expectedOutcome: {
+        campaignsTriggered: [],
+        safeguardsPassed: false,
+        success: false,
+        message: 'Campaign blocked: Customer has reached maximum win-back offers (3/3) for this year',
+      },
+      steps: [
+        {
+          id: 's1',
+          name: 'Automation Trigger',
+          icon: Zap,
+          description: 'Win-back automation triggered',
+          configSource: 'Screen 8: Automations & Triggers',
+          status: 'pending',
+        },
+        {
+          id: 's2',
+          name: 'Benefit History Check',
+          icon: BarChart3,
+          description: 'Check win-back offer history',
+          configSource: 'Screen 9: Safeguards & Controls',
+          status: 'pending',
+          inputValue: '3 offers received',
+          outputValue: 'Limit reached (3/3)',
+        },
+        {
+          id: 's3',
+          name: 'Benefit Cap Enforcement',
+          icon: Shield,
+          description: 'Enforce yearly benefit cap',
+          configSource: 'Screen 9: Safeguards & Controls',
+          status: 'pending',
+          outputValue: 'CAP EXCEEDED',
+        },
+        {
+          id: 's4',
+          name: 'Reward Denial',
+          icon: XCircle,
+          description: 'Block reward issuance',
+          configSource: 'Screen 9: Safeguards & Controls',
+          status: 'pending',
+          outputValue: 'BLOCKED - Annual cap reached',
+        },
+      ],
+    },
+    {
+      id: 'test-11',
+      category: 'Safeguards & Fraud',
+      name: 'Pattern Detection (Gaming Behavior)',
+      description: 'Detect and flag inactive-active-inactive cycling pattern',
+      status: 'not-run',
+      payload: {
+        customerId: 'CUST-99999',
+        behaviorPattern: 'Inactive → Win-back → Active → Inactive (3x in 6 months)',
+        patternSensitivity: 'moderate',
+      },
+      expectedOutcome: {
+        signalsTriggered: ['Gaming Pattern Detected'],
+        safeguardsPassed: false,
+        success: false,
+        message: 'Customer flagged: Repetitive inactive-active-inactive pattern detected (3 cycles). Manual review required.',
+      },
+      steps: [
+        {
+          id: 's1',
+          name: 'Behavior Analysis',
+          icon: TrendingUp,
+          description: 'Analyze customer behavior history',
+          configSource: 'Screen 9: Safeguards & Controls',
+          status: 'pending',
+        },
+        {
+          id: 's2',
+          name: 'Pattern Recognition',
+          icon: AlertCircle,
+          description: 'Detect repetitive pattern',
+          configSource: 'Screen 9: Safeguards & Controls',
+          status: 'pending',
+          inputValue: '3 cycle repetitions',
+          outputValue: 'PATTERN DETECTED',
+        },
+        {
+          id: 's3',
+          name: 'Sensitivity Check',
+          icon: Shield,
+          description: 'Moderate sensitivity (3+ cycles)',
+          configSource: 'Screen 9: Safeguards & Controls',
+          status: 'pending',
+          outputValue: 'Threshold met',
+        },
+        {
+          id: 's4',
+          name: 'Customer Flagging',
+          icon: AlertTriangle,
+          description: 'Flag for manual review',
+          configSource: 'Screen 9: Safeguards & Controls',
+          status: 'pending',
+          outputValue: 'FLAGGED - Manual review queue',
+        },
+      ],
+    },
+    {
+      id: 'test-12',
+      category: 'Safeguards & Fraud',
+      name: 'Communication Frequency Limit',
+      description: 'Block email when customer exceeds communication frequency cap',
+      status: 'not-run',
+      payload: {
+        customerId: 'CUST-10101',
+        emailsSent7Days: 3,
+        communicationLimit: 3,
+        automationTriggered: 'Birthday Campaign',
+      },
+      expectedOutcome: {
+        campaignsTriggered: [],
+        safeguardsPassed: false,
+        success: false,
+        message: 'Communication blocked: Customer has received 3 emails in past 7 days (limit: 3)',
+      },
+      steps: [
+        {
+          id: 's1',
+          name: 'Campaign Trigger',
+          icon: Megaphone,
+          description: 'Birthday campaign triggered',
+          configSource: 'Screen 8: Automations & Triggers',
+          status: 'pending',
+        },
+        {
+          id: 's2',
+          name: 'Communication History',
+          icon: Mail,
+          description: 'Check email history (7 days)',
+          configSource: 'Screen 9: Safeguards & Controls',
+          status: 'pending',
+          inputValue: '3 emails sent',
+          outputValue: 'Limit reached (3/3)',
+        },
+        {
+          id: 's3',
+          name: 'Frequency Limit Check',
+          icon: Shield,
+          description: 'Enforce 3 emails per 7 days limit',
+          configSource: 'Screen 9: Safeguards & Controls',
+          status: 'pending',
+          outputValue: 'LIMIT EXCEEDED',
+        },
+        {
+          id: 's4',
+          name: 'Email Suppression',
+          icon: XCircle,
+          description: 'Suppress email to prevent over-communication',
+          configSource: 'Screen 9: Safeguards & Controls',
+          status: 'pending',
+          outputValue: 'SUPPRESSED - Frequency cap',
+        },
+      ],
+    },
+    {
+      id: 'test-13',
+      category: 'Safeguards & Fraud',
+      name: 'Duplicate Transaction Detection',
+      description: 'Detect and block duplicate transaction submission',
+      status: 'not-run',
+      payload: {
+        customerId: 'CUST-11111',
+        transactionAmount: 75.00,
+        transactionTime: '2025-01-20 14:30:15',
+        storeId: 'STORE-003',
+        previousTransaction: 'Same amount/time/store 30 seconds ago',
+      },
+      expectedOutcome: {
+        pointsEarned: 0,
+        safeguardsPassed: false,
+        success: false,
+        message: 'Transaction blocked: Duplicate detected (same amount, location, and time within 60 seconds)',
+      },
+      steps: [
+        {
+          id: 's1',
+          name: 'Transaction Submission',
+          icon: ShoppingCart,
+          description: 'Process transaction request',
+          configSource: 'Screen 2: Platform Basics',
+          status: 'pending',
+        },
+        {
+          id: 's2',
+          name: 'Duplicate Detection',
+          icon: Shield,
+          description: 'Check recent transaction history',
+          configSource: 'Screen 9: Safeguards & Controls',
+          status: 'pending',
+          inputValue: '$75.00 at STORE-003',
+          outputValue: 'DUPLICATE FOUND (30s ago)',
+        },
+        {
+          id: 's3',
+          name: 'Fraud Analysis',
+          icon: AlertCircle,
+          description: 'Analyze duplicate pattern',
+          configSource: 'Screen 9: Safeguards & Controls',
+          status: 'pending',
+          outputValue: 'High confidence duplicate',
+        },
+        {
+          id: 's4',
+          name: 'Transaction Block',
+          icon: XCircle,
+          description: 'Block duplicate transaction',
+          configSource: 'Screen 9: Safeguards & Controls',
+          status: 'pending',
+          outputValue: 'BLOCKED - Duplicate submission',
+        },
+      ],
+    },
+    {
+      id: 'test-14',
+      category: 'Safeguards & Fraud',
+      name: 'Geographic Anomaly Detection',
+      description: 'Flag transaction from unusual location for review',
+      status: 'not-run',
+      payload: {
+        customerId: 'CUST-12121',
+        transactionAmount: 200.00,
+        transactionLocation: 'Tokyo, Japan',
+        usualLocations: 'New York, USA (90% of transactions)',
+        lastTransactionTime: '2 hours ago in New York',
+      },
+      expectedOutcome: {
+        pointsEarned: 200,
+        signalsTriggered: ['Geographic Anomaly'],
+        safeguardsPassed: false,
+        success: true,
+        message: 'Transaction processed but flagged: Unusual location detected (Tokyo vs typical New York). Points awarded pending manual review.',
+      },
+      steps: [
+        {
+          id: 's1',
+          name: 'Transaction Processing',
+          icon: ShoppingCart,
+          description: 'Process transaction from Tokyo',
+          configSource: 'Screen 2: Platform Basics',
+          status: 'pending',
+        },
+        {
+          id: 's2',
+          name: 'Location Analysis',
+          icon: Globe,
+          description: 'Analyze transaction geography',
+          configSource: 'Screen 9: Safeguards & Controls',
+          status: 'pending',
+          inputValue: 'Tokyo, Japan',
+          outputValue: 'ANOMALY (6,700 miles from usual)',
+        },
+        {
+          id: 's3',
+          name: 'Fraud Signal',
+          icon: AlertCircle,
+          description: 'Trigger geographic anomaly signal',
+          configSource: 'Screen 11: Queue Intelligence',
+          status: 'pending',
+          outputValue: 'Geographic Anomaly Signal',
+        },
+        {
+          id: 's4',
+          name: 'Conditional Processing',
+          icon: CheckCircle2,
+          description: 'Award points, flag for review',
+          configSource: 'Screen 9: Safeguards & Controls',
+          status: 'pending',
+          outputValue: 'PROCESSED + FLAGGED for review',
+        },
+      ],
+    },
   ];
 
   const selectedScenario = testScenarios.find((t) => t.id === selectedTest);
@@ -616,9 +965,24 @@ export const Screen14FlowBuilder: React.FC = () => {
       // Simulate processing time
       await new Promise((resolve) => setTimeout(resolve, 1200));
 
-      // For demonstration, all steps pass except in the velocity check test
+      // For demonstration, specific tests fail at specific steps to show different safeguard behaviors
       if (selectedScenario.id === 'test-6' && i === 3) {
         // Velocity check fails at the final step
+        selectedScenario.steps[i].status = 'fail';
+      } else if (selectedScenario.id === 'test-9' && i === 2) {
+        // Cooldown check fails at step 3
+        selectedScenario.steps[i].status = 'fail';
+      } else if (selectedScenario.id === 'test-10' && i === 2) {
+        // Benefit cap enforcement fails at step 3
+        selectedScenario.steps[i].status = 'fail';
+      } else if (selectedScenario.id === 'test-11' && i === 3) {
+        // Pattern detection flags at step 4
+        selectedScenario.steps[i].status = 'fail';
+      } else if (selectedScenario.id === 'test-12' && i === 2) {
+        // Communication frequency limit fails at step 3
+        selectedScenario.steps[i].status = 'fail';
+      } else if (selectedScenario.id === 'test-13' && i === 3) {
+        // Duplicate transaction block fails at step 4
         selectedScenario.steps[i].status = 'fail';
       } else {
         selectedScenario.steps[i].status = 'pass';
