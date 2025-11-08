@@ -90,6 +90,7 @@ export const Screen14FlowBuilder: React.FC = () => {
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(-1);
   const [editMode, setEditMode] = useState(false);
   const [editedPayload, setEditedPayload] = useState<Record<string, any>>({});
+  const [actualTestResult, setActualTestResult] = useState<boolean | null>(null);
 
   const testScenarios: TestScenario[] = [
     {
@@ -2209,6 +2210,7 @@ export const Screen14FlowBuilder: React.FC = () => {
 
     setIsRunning(true);
     setCurrentStepIndex(-1);
+    setActualTestResult(null);
 
     const testShouldFail = shouldTestFail(selectedScenario);
 
@@ -2236,6 +2238,10 @@ export const Screen14FlowBuilder: React.FC = () => {
       selectedScenario.steps[i].status = shouldFailAtThisStep ? 'fail' : 'pass';
     }
 
+    // Set actual test result based on whether any steps failed
+    const hasFailedSteps = selectedScenario.steps.some(step => step.status === 'fail');
+    setActualTestResult(!hasFailedSteps);
+
     setCurrentStepIndex(selectedScenario.steps.length);
     setIsRunning(false);
   };
@@ -2247,6 +2253,7 @@ export const Screen14FlowBuilder: React.FC = () => {
     });
     setCurrentStepIndex(-1);
     setIsRunning(false);
+    setActualTestResult(null);
   };
 
   const getStatusIcon = (status: TestStatus) => {
@@ -2351,10 +2358,10 @@ export const Screen14FlowBuilder: React.FC = () => {
         <div className="grid grid-cols-12 gap-6">
           {/* Left Panel - Test Scenarios */}
           <div className="col-span-4">
-            <Card className="p-5">
-              <h2 className="font-bold text-gray-900 mb-4">Test Scenarios</h2>
+            <Card className="p-5 h-[calc(100vh-280px)] flex flex-col">
+              <h2 className="font-bold text-gray-900 mb-4 flex-shrink-0">Test Scenarios</h2>
 
-              <div className="space-y-4 max-h-[calc(100vh-280px)] overflow-y-auto pr-2">
+              <div className="space-y-4 flex-1 overflow-y-auto pr-2">
                 {categories.map((category) => {
                   const CategoryIcon = getCategoryIcon(category);
                   const categoryTests = testScenarios.filter((t) => t.category === category);
@@ -2398,7 +2405,7 @@ export const Screen14FlowBuilder: React.FC = () => {
           </div>
 
           {/* Right Panel - Test Details */}
-          <div className="col-span-8 space-y-5">
+          <div className="col-span-8 h-[calc(100vh-280px)] overflow-y-auto space-y-5 pr-2">
             {selectedScenario && (
               <>
                 {/* Test Header */}
@@ -2460,7 +2467,13 @@ export const Screen14FlowBuilder: React.FC = () => {
                                 type={field.type}
                                 value={currentValue}
                                 onChange={(e) => {
-                                  const newValue = field.type === 'number' ? parseFloat(e.target.value) : e.target.value;
+                                  let newValue;
+                                  if (field.type === 'number') {
+                                    const parsed = parseFloat(e.target.value);
+                                    newValue = isNaN(parsed) ? 0 : parsed;
+                                  } else {
+                                    newValue = e.target.value;
+                                  }
                                   setEditedPayload({
                                     ...editedPayload,
                                     [selectedScenario.id]: {
@@ -2596,32 +2609,35 @@ export const Screen14FlowBuilder: React.FC = () => {
                 </Card>
 
                 {/* Test Results */}
-                {currentStepIndex >= selectedScenario.steps.length && (
+                {currentStepIndex >= selectedScenario.steps.length && actualTestResult !== null && (
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                   >
                     <Card className={`p-5 border-2 ${
-                      selectedScenario.expectedOutcome.success
+                      actualTestResult
                         ? 'bg-green-50 border-green-500'
                         : 'bg-red-50 border-red-500'
                     }`}>
                       <div className="flex items-start gap-3">
-                        {selectedScenario.expectedOutcome.success ? (
+                        {actualTestResult ? (
                           <CheckCircle2 size={24} className="text-green-600 flex-shrink-0" />
                         ) : (
                           <XCircle size={24} className="text-red-600 flex-shrink-0" />
                         )}
                         <div className="flex-1">
                           <h3 className={`font-bold text-lg mb-2 ${
-                            selectedScenario.expectedOutcome.success ? 'text-green-900' : 'text-red-900'
+                            actualTestResult ? 'text-green-900' : 'text-red-900'
                           }`}>
-                            {selectedScenario.expectedOutcome.success ? 'Test Passed ✓' : 'Test Failed ✗'}
+                            {actualTestResult ? 'Test Passed ✓' : 'Test Failed ✗'}
                           </h3>
                           <p className={`text-sm mb-4 ${
-                            selectedScenario.expectedOutcome.success ? 'text-green-800' : 'text-red-800'
+                            actualTestResult ? 'text-green-800' : 'text-red-800'
                           }`}>
-                            {selectedScenario.expectedOutcome.message}
+                            {actualTestResult
+                              ? `All validation checks passed successfully!${selectedScenario.editableFields ? ' (Try editing the parameters to make it fail)' : ''}`
+                              : `Validation failed: ${selectedScenario.expectedOutcome.message}`
+                            }
                           </p>
 
                           {/* Expected Outcome Details */}
