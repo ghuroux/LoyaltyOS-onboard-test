@@ -2358,7 +2358,7 @@ export const Screen14FlowBuilder: React.FC = () => {
         <div className="grid grid-cols-12 gap-6">
           {/* Left Panel - Test Scenarios */}
           <div className="col-span-4">
-            <Card className="p-5 h-[calc(100vh-280px)] flex flex-col">
+            <Card className="p-5 h-[calc(100vh-220px)] flex flex-col">
               <h2 className="font-bold text-gray-900 mb-4 flex-shrink-0">Test Scenarios</h2>
 
               <div className="space-y-4 flex-1 overflow-y-auto pr-2">
@@ -2405,7 +2405,7 @@ export const Screen14FlowBuilder: React.FC = () => {
           </div>
 
           {/* Right Panel - Test Details */}
-          <div className="col-span-8 h-[calc(100vh-280px)] overflow-y-auto space-y-5 pr-2">
+          <div className="col-span-8 h-[calc(100vh-220px)] overflow-y-auto space-y-5 pr-2">
             {selectedScenario && (
               <>
                 {/* Test Header */}
