@@ -175,13 +175,13 @@ export const Screen1Dashboard: React.FC<DashboardProps> = ({
     },
     {
       id: 14,
-      name: 'Flow Orchestration',
-      description: 'Design end-to-end customer journey flows',
+      name: 'Configuration Testing',
+      description: 'Test and validate all configurations with interactive scenarios',
       icon: Workflow,
       status: 'not-started',
       progress: 0,
       estimatedTime: '15 min',
-      requiredFields: 10,
+      requiredFields: 8,
       completedFields: 0,
     },
     {
