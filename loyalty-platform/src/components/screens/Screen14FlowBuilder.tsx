@@ -53,25 +53,23 @@ interface FlowStep {
   outputValue?: string;
 }
 
+interface EditableField {
+  key: string;
+  label: string;
+  type: 'number' | 'text';
+  passingValue: any;
+  failingValue: any;
+  helpText?: string;
+}
+
 interface TestScenario {
   id: string;
   category: string;
   name: string;
   description: string;
   status: TestStatus;
-  payload: {
-    customerId?: string;
-    transactionAmount?: number;
-    transactionDate?: string;
-    storeId?: string;
-    productCategory?: string;
-    pointsToRedeem?: number;
-    currentPoints?: number;
-    currentTier?: string;
-    memberSince?: string;
-    lastPurchaseDate?: string;
-    purchaseCount?: number;
-  };
+  payload: any;
+  editableFields?: EditableField[];
   expectedOutcome: {
     pointsEarned?: number;
     pointsRedeemed?: number;
@@ -91,7 +89,7 @@ export const Screen14FlowBuilder: React.FC = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [currentStepIndex, setCurrentStepIndex] = useState<number>(-1);
   const [editMode, setEditMode] = useState(false);
-  const [testPayload, setTestPayload] = useState<any>(null);
+  const [editedPayload, setEditedPayload] = useState<Record<string, any>>({});
 
   const testScenarios: TestScenario[] = [
     {
@@ -433,7 +431,18 @@ export const Screen14FlowBuilder: React.FC = () => {
         transactionDate: '2025-01-20 14:35:00',
         currentPoints: 800,
         purchaseCount: 45,
+        velocityCount: 4,
       },
+      editableFields: [
+        {
+          key: 'velocityCount',
+          label: 'Transactions in 10min',
+          type: 'number',
+          passingValue: 3,
+          failingValue: 4,
+          helpText: 'Limit is 3 transactions per 10 minutes. 4+ will fail.',
+        },
+      ],
       expectedOutcome: {
         safeguardsPassed: false,
         signalsTriggered: ['High Velocity Transaction'],
@@ -624,7 +633,18 @@ export const Screen14FlowBuilder: React.FC = () => {
         lastWinBackDate: '2024-12-01',
         currentDate: '2025-01-15',
         inactiveDays: 35,
+        daysSinceLastWinBack: 45,
       },
+      editableFields: [
+        {
+          key: 'daysSinceLastWinBack',
+          label: 'Days Since Last Win-Back',
+          type: 'number',
+          passingValue: 95,
+          failingValue: 45,
+          helpText: 'Cooldown is 90 days. 90+ days will pass, <90 will fail.',
+        },
+      ],
       expectedOutcome: {
         campaignsTriggered: [],
         safeguardsPassed: false,
@@ -683,6 +703,16 @@ export const Screen14FlowBuilder: React.FC = () => {
         yearlyLimit: 3,
         inactiveDays: 40,
       },
+      editableFields: [
+        {
+          key: 'winBackOffersThisYear',
+          label: 'Win-Back Offers Received',
+          type: 'number',
+          passingValue: 2,
+          failingValue: 3,
+          helpText: 'Yearly limit is 3 offers. 3+ will fail, <3 will pass.',
+        },
+      ],
       expectedOutcome: {
         campaignsTriggered: [],
         safeguardsPassed: false,
@@ -1294,6 +1324,16 @@ export const Screen14FlowBuilder: React.FC = () => {
         minimumRedemption: 100,
         currentPoints: 500,
       },
+      editableFields: [
+        {
+          key: 'pointsToRedeem',
+          label: 'Points to Redeem',
+          type: 'number',
+          passingValue: 100,
+          failingValue: 50,
+          helpText: 'Minimum redemption is 100 points. 100+ will pass, <100 will fail.',
+        },
+      ],
       expectedOutcome: {
         pointsRedeemed: 0,
         safeguardsPassed: false,
@@ -1912,6 +1952,16 @@ export const Screen14FlowBuilder: React.FC = () => {
         discountAmount: 100,
         budgetPeriod: 'monthly',
       },
+      editableFields: [
+        {
+          key: 'budgetSpent',
+          label: 'Budget Already Spent ($)',
+          type: 'number',
+          passingValue: 9000,
+          failingValue: 9950,
+          helpText: 'Budget is $10,000. Spent + discount ($100) must be ≤ $10,000.',
+        },
+      ],
       expectedOutcome: {
         campaignsTriggered: [],
         safeguardsPassed: false,
@@ -2122,11 +2172,45 @@ export const Screen14FlowBuilder: React.FC = () => {
 
   const selectedScenario = testScenarios.find((t) => t.id === selectedTest);
 
+  // Helper function to determine if test should fail based on edited or default values
+  const shouldTestFail = (scenario: TestScenario): boolean => {
+    if (!scenario.editableFields || scenario.editableFields.length === 0) {
+      // No editable fields, use original fail logic
+      return ['test-6', 'test-9', 'test-10', 'test-11', 'test-12', 'test-13', 'test-20', 'test-29'].includes(scenario.id);
+    }
+
+    // Check editable fields to determine pass/fail
+    for (const field of scenario.editableFields) {
+      const currentValue = editedPayload[scenario.id]?.[field.key] ?? scenario.payload[field.key];
+
+      // Test-specific logic
+      if (scenario.id === 'test-6' && field.key === 'velocityCount') {
+        return currentValue > 3; // Fails if > 3 transactions
+      }
+      if (scenario.id === 'test-9' && field.key === 'daysSinceLastWinBack') {
+        return currentValue < 90; // Fails if < 90 days
+      }
+      if (scenario.id === 'test-10' && field.key === 'winBackOffersThisYear') {
+        return currentValue >= 3; // Fails if >= 3 offers
+      }
+      if (scenario.id === 'test-20' && field.key === 'pointsToRedeem') {
+        return currentValue < 100; // Fails if < 100 points
+      }
+      if (scenario.id === 'test-29' && field.key === 'budgetSpent') {
+        return (currentValue + 100) > 10000; // Fails if spent + discount > budget
+      }
+    }
+
+    return false;
+  };
+
   const runTest = async () => {
     if (!selectedScenario) return;
 
     setIsRunning(true);
     setCurrentStepIndex(-1);
+
+    const testShouldFail = shouldTestFail(selectedScenario);
 
     // Simulate step-by-step execution
     for (let i = 0; i < selectedScenario.steps.length; i++) {
@@ -2135,34 +2219,21 @@ export const Screen14FlowBuilder: React.FC = () => {
       // Simulate processing time
       await new Promise((resolve) => setTimeout(resolve, 1200));
 
-      // For demonstration, specific tests fail at specific steps to show different safeguard behaviors
-      if (selectedScenario.id === 'test-6' && i === 3) {
-        // Velocity check fails at the final step
-        selectedScenario.steps[i].status = 'fail';
-      } else if (selectedScenario.id === 'test-9' && i === 2) {
-        // Cooldown check fails at step 3
-        selectedScenario.steps[i].status = 'fail';
-      } else if (selectedScenario.id === 'test-10' && i === 2) {
-        // Benefit cap enforcement fails at step 3
-        selectedScenario.steps[i].status = 'fail';
-      } else if (selectedScenario.id === 'test-11' && i === 3) {
-        // Pattern detection flags at step 4
-        selectedScenario.steps[i].status = 'fail';
-      } else if (selectedScenario.id === 'test-12' && i === 2) {
-        // Communication frequency limit fails at step 3
-        selectedScenario.steps[i].status = 'fail';
-      } else if (selectedScenario.id === 'test-13' && i === 3) {
-        // Duplicate transaction block fails at step 4
-        selectedScenario.steps[i].status = 'fail';
-      } else if (selectedScenario.id === 'test-20' && i === 2) {
-        // Minimum redemption check fails at step 3
-        selectedScenario.steps[i].status = 'fail';
-      } else if (selectedScenario.id === 'test-29' && i === 2) {
-        // Budget validation fails at step 3
-        selectedScenario.steps[i].status = 'fail';
-      } else {
-        selectedScenario.steps[i].status = 'pass';
+      // Determine which step should fail (usually the validation step)
+      let shouldFailAtThisStep = false;
+
+      if (testShouldFail) {
+        if (selectedScenario.id === 'test-6' && i === 3) shouldFailAtThisStep = true;
+        else if (selectedScenario.id === 'test-9' && i === 2) shouldFailAtThisStep = true;
+        else if (selectedScenario.id === 'test-10' && i === 2) shouldFailAtThisStep = true;
+        else if (selectedScenario.id === 'test-11' && i === 3) shouldFailAtThisStep = true;
+        else if (selectedScenario.id === 'test-12' && i === 2) shouldFailAtThisStep = true;
+        else if (selectedScenario.id === 'test-13' && i === 3) shouldFailAtThisStep = true;
+        else if (selectedScenario.id === 'test-20' && i === 2) shouldFailAtThisStep = true;
+        else if (selectedScenario.id === 'test-29' && i === 2) shouldFailAtThisStep = true;
       }
+
+      selectedScenario.steps[i].status = shouldFailAtThisStep ? 'fail' : 'pass';
     }
 
     setCurrentStepIndex(selectedScenario.steps.length);
@@ -2283,7 +2354,7 @@ export const Screen14FlowBuilder: React.FC = () => {
             <Card className="p-5">
               <h2 className="font-bold text-gray-900 mb-4">Test Scenarios</h2>
 
-              <div className="space-y-4">
+              <div className="space-y-4 max-h-[calc(100vh-280px)] overflow-y-auto pr-2">
                 {categories.map((category) => {
                   const CategoryIcon = getCategoryIcon(category);
                   const categoryTests = testScenarios.filter((t) => t.category === category);
@@ -2361,21 +2432,96 @@ export const Screen14FlowBuilder: React.FC = () => {
                   <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
                     <div className="flex items-center justify-between mb-2">
                       <h3 className="text-sm font-semibold text-gray-700">Test Payload</h3>
-                      <button
-                        onClick={() => setEditMode(!editMode)}
-                        className="text-xs text-brand-600 hover:text-brand-700 font-medium flex items-center gap-1"
-                      >
-                        <Edit3 size={12} />
-                        {editMode ? 'View Mode' : 'Edit Values'}
-                      </button>
+                      {selectedScenario.editableFields && selectedScenario.editableFields.length > 0 && (
+                        <button
+                          onClick={() => setEditMode(!editMode)}
+                          className="text-xs text-brand-600 hover:text-brand-700 font-medium flex items-center gap-1"
+                          disabled={isRunning}
+                        >
+                          <Edit3 size={12} />
+                          {editMode ? 'View Mode' : 'Edit Values'}
+                        </button>
+                      )}
                     </div>
+
+                    {/* Editable Fields Section */}
+                    {editMode && selectedScenario.editableFields && selectedScenario.editableFields.length > 0 && (
+                      <div className="mb-4 space-y-3">
+                        <div className="text-xs text-gray-700 font-medium mb-2">Editable Parameters:</div>
+                        {selectedScenario.editableFields.map((field) => {
+                          const currentValue = editedPayload[selectedScenario.id]?.[field.key] ?? selectedScenario.payload[field.key];
+                          return (
+                            <div key={field.key} className="space-y-1">
+                              <label className="text-xs font-medium text-gray-700 flex items-center gap-2">
+                                {field.label}
+                                <span className="text-gray-500 font-normal italic">({field.helpText})</span>
+                              </label>
+                              <input
+                                type={field.type}
+                                value={currentValue}
+                                onChange={(e) => {
+                                  const newValue = field.type === 'number' ? parseFloat(e.target.value) : e.target.value;
+                                  setEditedPayload({
+                                    ...editedPayload,
+                                    [selectedScenario.id]: {
+                                      ...editedPayload[selectedScenario.id],
+                                      [field.key]: newValue,
+                                    },
+                                  });
+                                }}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+                              />
+                              <div className="flex gap-2 text-xs">
+                                <button
+                                  onClick={() => {
+                                    setEditedPayload({
+                                      ...editedPayload,
+                                      [selectedScenario.id]: {
+                                        ...editedPayload[selectedScenario.id],
+                                        [field.key]: field.passingValue,
+                                      },
+                                    });
+                                  }}
+                                  className="px-2 py-1 bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors"
+                                >
+                                  Set to Pass ({field.passingValue})
+                                </button>
+                                <button
+                                  onClick={() => {
+                                    setEditedPayload({
+                                      ...editedPayload,
+                                      [selectedScenario.id]: {
+                                        ...editedPayload[selectedScenario.id],
+                                        [field.key]: field.failingValue,
+                                      },
+                                    });
+                                  }}
+                                  className="px-2 py-1 bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"
+                                >
+                                  Set to Fail ({field.failingValue})
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                        <div className="h-px bg-gray-300 my-3"></div>
+                      </div>
+                    )}
+
+                    {/* All Payload Fields */}
                     <div className="grid grid-cols-2 gap-2 text-xs">
-                      {Object.entries(selectedScenario.payload).map(([key, value]) => (
-                        <div key={key} className="flex items-center gap-2">
-                          <span className="text-gray-600 font-mono">{key}:</span>
-                          <span className="text-gray-900 font-semibold font-mono">{String(value)}</span>
-                        </div>
-                      ))}
+                      {Object.entries(selectedScenario.payload).map(([key, value]) => {
+                        const displayValue = editedPayload[selectedScenario.id]?.[key] ?? value;
+                        const isEditable = selectedScenario.editableFields?.some(f => f.key === key);
+                        return (
+                          <div key={key} className="flex items-center gap-2">
+                            <span className="text-gray-600 font-mono">{key}:</span>
+                            <span className={`font-semibold font-mono ${isEditable && editedPayload[selectedScenario.id]?.[key] !== undefined ? 'text-brand-600' : 'text-gray-900'}`}>
+                              {String(displayValue)}
+                            </span>
+                          </div>
+                        );
+                      })}
                     </div>
                   </div>
                 </Card>
