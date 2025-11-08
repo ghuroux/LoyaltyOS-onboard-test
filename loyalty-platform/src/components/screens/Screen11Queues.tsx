@@ -92,6 +92,11 @@ export const Screen11Queues: React.FC = () => {
           <p className="text-sm text-gray-500 mt-2">
             Build signal templates that algorithmically detect operational patterns. Signals feed into queues for human-in-the-loop review before automation.
           </p>
+          <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+            <p className="text-sm text-blue-800">
+              <strong>Note:</strong> All signals configured here will be visible in their respective queues. Disabled signals remain in the queue but won't trigger alerts.
+            </p>
+          </div>
         </div>
 
         <div className="space-y-6">

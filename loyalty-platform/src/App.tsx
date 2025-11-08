@@ -17,8 +17,8 @@ import { Screen8Automations } from './components/screens/Screen8Automations';
 import { Screen9Safeguards } from './components/screens/Screen9Safeguards';
 import { Screen10Campaigns } from './components/screens/Screen10Campaigns';
 import { Screen11Queues } from './components/screens/Screen11Queues';
-import { Screen12Data } from './components/screens/Screen12Data';
-import { Screen13Analytics } from './components/screens/Screen13Analytics';
+import { Screen12Analytics } from './components/screens/Screen12Analytics';
+import { Screen13Data } from './components/screens/Screen13Data';
 import { Screen14FlowBuilder } from './components/screens/Screen14FlowBuilder';
 import { Screen15Deployment } from './components/screens/Screen15Deployment';
 
@@ -37,9 +37,9 @@ const screens = [
   Screen8Automations,    // 8 - Automations
   Screen9Safeguards,     // 9 - Safeguards
   Screen10Campaigns,     // 10 - Campaigns
-  Screen11Queues,        // 11 - Queues
-  Screen12Data,          // 12 - Data
-  Screen13Analytics,     // 13 - Analytics
+  Screen11Queues,        // 11 - Queue Intelligence
+  Screen12Analytics,     // 12 - Analytics & KPIs (moved from 13)
+  Screen13Data,          // 13 - Data & Integrations (moved from 12)
   Screen14FlowBuilder,   // 14 - Flow Builder
   Screen15Deployment,    // 15 - Deployment
 ];
