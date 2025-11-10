@@ -42,9 +42,9 @@ The configurator implements a comprehensive 16-screen onboarding flow:
 11. **Intelligence Queues** ⭐ - Four operational queues (Customer, Store Performance, Campaign, Fraud & Risk)
 
 ### Infrastructure & Deployment (Screens 12-15)
-12. **Data Strategy** - ETL configuration and data governance
-13. **Analytics & KPIs** - Dynamic KPI selection based on configured attributes
-14. **Flow Builder** - Visual workflow designer with drag-and-drop interface (React Flow)
+12. **Analytics & KPIs** - Dynamic KPI selection based on configured attributes with 5 specialized dashboards
+13. **Data Strategy** - ETL configuration and data governance
+14. **Configuration Testing** ⭐ - Interactive test scenarios to validate all configurations before deployment
 15. **Deployment** - Rollout strategy (pilot, phased, big bang)
 
 ## 🚀 Getting Started
@@ -77,7 +77,6 @@ Once running, open [http://localhost:5173](http://localhost:5173) in your browse
 - **Tailwind CSS** - Utility-first styling with custom design system
 - **Zustand** - Lightweight state management (811 lines of comprehensive state)
 - **Framer Motion** - Smooth animations and transitions
-- **React Flow** - Visual workflow builder (Screen 14)
 - **Lucide React** - Consistent icon system
 
 ## 📁 Project Structure
@@ -136,12 +135,15 @@ Sophisticated multi-dimensional earning configurations:
 - Behavioral bonuses (frequency, thresholds, birthdays, first purchase)
 - Tier-specific overrides
 
-### 4. Visual Flow Builder (Screen 14)
-React Flow-powered workflow designer for creating custom automation flows with:
-- Drag-and-drop interface
-- Triggers, actions, and decision nodes
-- Auto-generated API endpoints
-- Real-time flow visualization
+### 4. Configuration Testing & Validation (Screen 14)
+Interactive testing system with 31 comprehensive test scenarios across 9 categories:
+- **Editable Test Parameters** - Modify values to experiment with pass/fail conditions (5 tests have interactive parameters)
+- **Real-time Flow Visualization** - Watch each configuration step execute with input/output values
+- **Dynamic Test Results** - Results update based on edited parameter values (tests flip from red to green)
+- **Comprehensive Coverage** - Tests validate all configurations from screens 2-13
+- **9 Test Categories**: Member Lifecycle, Transaction Processing, Campaign Execution, Safeguards & Fraud, Tier & Status, Points & Earning Rules, Redemption & Rewards, Automations & Triggers, Advanced Features
+
+Example: Edit "Transactions in 10min" from 4 to 3 on the Velocity Limit test, and watch it flip from FAIL (red) to PASS (green).
 
 ## 💾 State Management
 
@@ -193,7 +195,7 @@ This configurator is designed to be:
 - **White-labelable** - Easy to rebrand for different channel partners
 - **Industry-Adaptive** - Templates for retail, hospitality, airlines, banking, telecom, and more
 - **Intelligence-Focused** - Positions loyalty as an entry point to comprehensive BI/automation
-- **Demo-Ready** - Polished UI with impressive features (flow builder, queue intelligence, real-time KPI tracking)
+- **Demo-Ready** - Polished UI with impressive features (interactive configuration testing, queue intelligence, real-time KPI tracking)
 - **Specification-Complete** - Detailed enough for partners to understand implementation requirements
 
 ### Target Distribution Partners
